@@ -1,188 +1,356 @@
-const https = require("https");
-const { URL } = require("url");
 
-const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
-const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+const puppeteer = require("puppeteer");
+const axios = require("axios");
 
-if (!TELEGRAM_TOKEN || !TELEGRAM_CHAT_ID) {
-  console.error("HATA: TELEGRAM_TOKEN veya TELEGRAM_CHAT_ID eksik.");
-  process.exit(1);
+const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+
+const URL = "https://www.turkishbulls.com/SignalList.aspx?lang=tr&MarketSymbol=IMKB";
+const DETAIL_URL = "https://www.turkishbulls.com/SignalPage.aspx?lang=tr&Ticker=";
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-const TARGET_URL =
-  "https://www.turkishbulls.com/SignalList.aspx?lang=tr&MarketSymbol=IMKB";
+function pad(value, width, right = false) {
+  const s = String(value ?? "-").trim();
+  if (s.length >= width) return s.slice(0, width);
+  return right ? s.padStart(width, " ") : s.padEnd(width, " ");
+}
 
-function fetchPage(url) {
-  return new Promise((resolve, reject) => {
-    const req = https.get(
-      url,
-      {
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-          Accept:
-            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-          "Accept-Language": "tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7",
-          Connection: "keep-alive",
-        },
-      },
-      (res) => {
-        let data = "";
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, "&")
+    .replace(/</g, "<")
+    .replace(/>/g, ">");
+}
 
-        res.on("data", (chunk) => {
-          data += chunk;
-        });
+async function sendTelegram(text) {
+  if (!TOKEN || !CHAT_ID) {
+    throw new Error("TOKEN veya CHAT_ID eksik");
+  }
 
-        res.on("end", () => {
-          resolve(data);
-        });
-      }
+  const api = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
+
+  await axios.post(api, {
+    chat_id: CHAT_ID,
+    text: `<pre>${escapeHtml(text)}</pre>`,
+    parse_mode: "HTML",
+    disable_web_page_preview: true
+  });
+}
+
+async function getVisibleTickerCount(page) {
+  return await page.evaluate(() => {
+    function getTickerFromHref(href) {
+      const m = String(href || "").match(/Ticker=([A-Z]+)/i);
+      return m ? m[1].toUpperCase() : null;
+    }
+
+    const links = Array.from(
+      document.querySelectorAll('a[href*="SignalPage"]')
     );
 
-    req.on("error", (err) => reject(err));
-    req.setTimeout(25000, () => {
-      req.destroy(new Error("İstek zaman aşımına uğradı."));
-    });
+    const tickers = new Set();
+    for (const link of links) {
+      const ticker = getTickerFromHref(link.getAttribute("href"));
+      if (ticker) tickers.add(ticker);
+    }
+
+    return tickers.size;
   });
 }
 
-function cleanText(text) {
-  return text
-    .replace(/&nbsp;/gi, " ")
-    .replace(/&#39;/gi, "'")
-    .replace(/&amp;/gi, "&")
-    .replace(/&quot;/gi, '"')
-    .replace(/<[^>]*>/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
+async function autoScroll(page) {
+  let stableRounds = 0;
+  let lastCount = 0;
+  let lastHeight = 0;
 
-function uniqueArray(arr) {
-  return [...new Set(arr)];
-}
-
-function extractTickers(html) {
-  const tickers = [];
-
-  const linkRegex =
-    /SignalPage\.aspx\?lang=tr&Ticker=([A-ZÇĞİÖŞÜ0-9]+)/gi;
-  let match;
-
-  while ((match = linkRegex.exec(html)) !== null) {
-    if (match[1]) {
-      tickers.push(match[1].trim().toUpperCase());
-    }
-  }
-
-  const tdRegex = /<td[^>]*>(.*?)<\/td>/gis;
-  while ((match = tdRegex.exec(html)) !== null) {
-    const text = cleanText(match[1]);
-    if (/^[A-ZÇĞİÖŞÜ]{3,6}$/.test(text)) {
-      tickers.push(text.toUpperCase());
-    }
-  }
-
-  return uniqueArray(tickers).sort();
-}
-
-function splitMessage(text, maxLen = 4000) {
-  const parts = [];
-  let current = "";
-
-  for (const line of text.split("\n")) {
-    if ((current + line + "\n").length > maxLen) {
-      parts.push(current.trim());
-      current = "";
-    }
-    current += line + "\n";
-  }
-
-  if (current.trim()) {
-    parts.push(current.trim());
-  }
-
-  return parts;
-}
-
-function sendTelegramMessage(message) {
-  return new Promise((resolve, reject) => {
-    const postData = JSON.stringify({
-      chat_id: TELEGRAM_CHAT_ID,
-      text: message,
-      disable_web_page_preview: true,
+  for (let round = 0; round < 80; round++) {
+    const before = await page.evaluate(() => {
+      const doc = document.scrollingElement || document.documentElement || document.body;
+      return {
+        scrollTop: doc.scrollTop,
+        scrollHeight: doc.scrollHeight,
+        clientHeight: doc.clientHeight
+      };
     });
 
-    const options = {
-      hostname: "api.telegram.org",
-      path: `/bot${TELEGRAM_TOKEN}/sendMessage`,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Content-Length": Buffer.byteLength(postData),
-      },
-    };
+    await page.evaluate(async () => {
+      const doc = document.scrollingElement || document.documentElement || document.body;
+      const distance = Math.max(500, Math.floor(window.innerHeight * 0.8));
+      const steps = 6;
 
-    const req = https.request(options, (res) => {
-      let data = "";
+      for (let i = 0; i < steps; i++) {
+        window.scrollBy(0, distance);
+        doc.scrollTop = doc.scrollTop + distance;
 
-      res.on("data", (chunk) => {
-        data += chunk;
-      });
+        const allEls = Array.from(document.querySelectorAll("*")).filter(el => {
+          const style = window.getComputedStyle(el);
+          const canScroll =
+            /(auto|scroll)/i.test(style.overflowY) &&
+            el.scrollHeight > el.clientHeight + 50;
+          return canScroll;
+        });
 
-      res.on("end", () => {
-        try {
-          const parsed = JSON.parse(data);
-          if (!parsed.ok) {
-            reject(new Error(`Telegram API hatası: ${data}`));
-            return;
-          }
-          resolve(parsed);
-        } catch (err) {
-          reject(new Error(`Telegram cevabı okunamadı: ${data}`));
+        for (const el of allEls) {
+          el.scrollTop = el.scrollHeight;
         }
-      });
+
+        await new Promise(resolve => setTimeout(resolve, 700));
+      }
     });
 
-    req.on("error", (err) => reject(err));
-    req.write(postData);
-    req.end();
+    await sleep(2000);
+
+    const currentCount = await getVisibleTickerCount(page);
+    const after = await page.evaluate(() => {
+      const doc = document.scrollingElement || document.documentElement || document.body;
+      return {
+        scrollTop: doc.scrollTop,
+        scrollHeight: doc.scrollHeight,
+        clientHeight: doc.clientHeight
+      };
+    });
+
+    const reachedBottom =
+      after.scrollTop + after.clientHeight >= after.scrollHeight - 5;
+
+    const countUnchanged = currentCount === lastCount;
+    const heightUnchanged = after.scrollHeight === lastHeight;
+
+    if (countUnchanged && heightUnchanged && reachedBottom) {
+      stableRounds++;
+    } else {
+      stableRounds = 0;
+    }
+
+    lastCount = currentCount;
+    lastHeight = after.scrollHeight;
+
+    if (stableRounds >= 3) {
+      break;
+    }
+
+    if (after.scrollTop === before.scrollTop && reachedBottom) {
+      stableRounds++;
+    }
+  }
+
+  await sleep(2000);
+}
+
+async function extractRows(page) {
+  return await page.evaluate(() => {
+    function clean(text) {
+      return String(text || "").replace(/\s+/g, " ").trim();
+    }
+
+    function getTickerFromHref(href) {
+      const m = String(href || "").match(/Ticker=([A-Z]+)/i);
+      return m ? m[1].toUpperCase() : null;
+    }
+
+    function looksNumeric(text) {
+      return /^[+\-]?\d[\d.,]*%?$/.test(clean(text));
+    }
+
+    const rows = [];
+    const trList = Array.from(document.querySelectorAll("tr"))
+      .filter(tr => tr.querySelector('a[href*="SignalPage"]'));
+
+    for (const tr of trList) {
+      const link = tr.querySelector('a[href*="SignalPage"]');
+      const ticker = getTickerFromHref(link?.getAttribute("href"));
+
+      if (!ticker) continue;
+
+      const cells = Array.from(tr.querySelectorAll("td, th"))
+        .map(el => clean(el.innerText || el.textContent))
+        .filter(Boolean);
+
+      let alis = "-";
+      let son = "-";
+      let yuzde = "-";
+
+      if (cells.length >= 4) {
+        const nonTickerCells = cells.filter(cell => !cell.includes(ticker));
+
+        if (nonTickerCells.length >= 3) {
+          alis = nonTickerCells[0] || "-";
+          son = nonTickerCells[1] || "-";
+          yuzde = nonTickerCells[2] || "-";
+        }
+      }
+
+      if (alis === "-" && son === "-" && yuzde === "-") {
+        const tokens = cells
+          .flatMap(cell => cell.split(/\s+/))
+          .map(clean)
+          .filter(Boolean)
+          .filter(token => !token.includes(ticker))
+          .filter(token => looksNumeric(token));
+
+        if (tokens.length >= 1) alis = tokens[0];
+        if (tokens.length >= 2) son = tokens[1];
+        if (tokens.length >= 3) yuzde = tokens[2];
+      }
+
+      rows.push({
+        ticker,
+        alis,
+        son,
+        yuzde
+      });
+    }
+
+    const seen = new Set();
+    return rows.filter(row => {
+      if (seen.has(row.ticker)) return false;
+      seen.add(row.ticker);
+      return true;
+    });
   });
 }
 
-async function main() {
+async function extractDetailLevels(detailPage, ticker) {
+  await detailPage.goto(`${DETAIL_URL}${ticker}`, {
+    waitUntil: "networkidle2",
+    timeout: 60000
+  });
+
+  await sleep(2500);
+
+  return await detailPage.evaluate(() => {
+    function clean(text) {
+      return String(text || "").replace(/\s+/g, " ").trim();
+    }
+
+    const bodyText = clean(document.body.innerText || "");
+
+    function pick(regexList) {
+      for (const regex of regexList) {
+        const m = bodyText.match(regex);
+        if (m && m[1]) {
+          return m[1].trim();
+        }
+      }
+      return "-";
+    }
+
+    const alSeviyesi = pick([
+      /Al Seviyesi[:\s]*([0-9.,]+)/i,
+      /AL Seviyesi[:\s]*([0-9.,]+)/i
+    ]);
+
+    const stoploss = pick([
+      /Stoploss[:\s]*([0-9.,]+)/i,
+      /Stop Loss[:\s]*([0-9.,]+)/i
+    ]);
+
+    return {
+      alSeviyesi,
+      stoploss
+    };
+  });
+}
+
+function buildTable(title, rows) {
+  let text = `${title}\n\n`;
+  text += `${pad("No", 3, true)} ${pad("Hisse", 6)} ${pad("Alis", 9, true)} ${pad("STOP", 9, true)} ${pad("Risk%", 6, true)}\n`;
+  text += `${pad("---", 3)} ${pad("------", 6)} ${pad("---------", 9)} ${pad("---------", 9)} ${pad("------", 6)}\n`;
+
+  rows.forEach((row, i) => {
+    let risk = "-";
+
+    const alis = parseFloat(String(row.alis).replace(",", "."));
+    const stop = parseFloat(String(row.son).replace(",", "."));
+
+    if (!isNaN(alis) && !isNaN(stop) && alis !== 0) {
+      risk = (((alis - stop) / alis) * 100).toFixed(2);
+    }
+
+    text += `${pad(i + 1, 3, true)} ${pad(row.ticker, 6)} ${pad(row.alis, 9, true)} ${pad(row.son, 9, true)} ${pad(risk, 6, true)}\n`;
+  });
+
+  text += `\nToplam: ${rows.length}`;
+  return text;
+}
+
+function splitRowsForTelegram(title, rows, chunkSize = 25) {
+  const messages = [];
+
+  for (let i = 0; i < rows.length; i += chunkSize) {
+    const chunk = rows.slice(i, i + chunkSize);
+    const chunkTitle = i === 0 ? title : `${title} (devam)`;
+    messages.push(buildTable(chunkTitle, chunk));
+  }
+
+  return messages;
+}
+
+async function run() {
+  const browser = await puppeteer.launch({
+    headless: "new",
+    args: ["--no-sandbox", "--disable-setuid-sandbox"]
+  });
+
   try {
-    console.log("Sayfa alınıyor...");
-    const html = await fetchPage(TARGET_URL);
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1400, height: 2200 });
 
-    const tickers = extractTickers(html);
+    await page.goto(URL, {
+      waitUntil: "networkidle2",
+      timeout: 60000
+    });
 
-    if (!tickers.length) {
-      await sendTelegramMessage(
-        "⚠️ Turkishbulls sayfasından hisse listesi alınamadı."
-      );
-      console.log("Liste boş.");
+    await sleep(5000);
+    await autoScroll(page);
+    await sleep(2000);
+
+    const rows = await extractRows(page);
+
+    if (!rows.length) {
+      await sendTelegram("Bot hatasi:\nListe bos geldi");
       return;
     }
 
-    let message = `📊 Turkishbulls AL listesi\n\nToplam hisse: ${tickers.length}\n\n`;
-    message += tickers.map((t, i) => `${i + 1}. ${t}`).join("\n");
+    const detailPage = await browser.newPage();
+    await detailPage.setViewport({ width: 1400, height: 2200 });
 
-    const parts = splitMessage(message);
+    for (const row of rows) {
+      try {
+        const detail = await extractDetailLevels(detailPage, row.ticker);
 
-    for (const part of parts) {
-      await sendTelegramMessage(part);
+        if (detail.alSeviyesi && detail.alSeviyesi !== "-") {
+          row.alis = detail.alSeviyesi;
+        }
+
+        if (detail.stoploss && detail.stoploss !== "-") {
+          row.son = detail.stoploss;
+        }
+      } catch (e) {}
+
+      await sleep(700);
     }
 
-    console.log("Telegram mesajı gönderildi.");
-  } catch (error) {
-    console.error("Genel hata:", error.message);
-    try {
-      await sendTelegramMessage(`❌ Bot hatası:\n${error.message}`);
-    } catch (telegramError) {
-      console.error("Telegram hata mesajı da gönderilemedi:", telegramError.message);
+    await detailPage.close();
+
+    const messages = splitRowsForTelegram("Guncel AL listesi", rows);
+
+    for (const message of messages) {
+      await sendTelegram(message);
+      await sleep(700);
     }
-    process.exit(1);
+  } finally {
+    await browser.close();
   }
 }
 
-main();
+run().catch(async err => {
+  try {
+    await sendTelegram(`Bot hatasi:\n${err.message}`);
+  } catch (e) {
+    console.log("Telegram hata gonderimi de basarisiz:", e.message);
+  }
+});
