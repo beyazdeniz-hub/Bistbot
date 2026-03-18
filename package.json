@@ -7,6 +7,6 @@
     "start": "node bot.js"
   },
   "dependencies": {
-    "playwright": "^1.52.0"
+    "puppeteer": "^24.7.1"
   }
 }
