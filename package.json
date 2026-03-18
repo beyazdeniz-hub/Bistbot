@@ -1,9 +1,12 @@
 {
   "name": "bistbot",
   "version": "1.0.0",
-  "description": "Turkishbulls liste takip botu",
+  "description": "Turkishbulls telegram bot",
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js"
+  },
+  "dependencies": {
+    "playwright": "^1.52.0"
   }
 }
