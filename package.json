@@ -1,0 +1,9 @@
+{
+  "name": "bistbot",
+  "version": "1.0.0",
+  "description": "Turkishbulls liste takip botu",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  }
+}
