@@ -1,9 +1,9 @@
-
 const puppeteer = require("puppeteer");
 const axios = require("axios");
 
-const token = process.env.TOKEN;
-const chatId = process.env.CHAT_ID;
+const TOKEN = "8775847619:AAGT8RrKMOLWV1YYuakcc6zAXLWIgaitias";
+const CHAT_ID = "-1003675682598";
+
 const URL = "https://www.turkishbulls.com/SignalList.aspx?lang=tr&MarketSymbol=IMKB";
 const DETAIL_URL = "https://www.turkishbulls.com/SignalPage.aspx?lang=tr&Ticker=";
 
@@ -19,9 +19,9 @@ function pad(value, width, right = false) {
 
 function escapeHtml(text) {
   return String(text)
-    .replace(/&/g, "&")
-    .replace(/</g, "<")
-    .replace(/>/g, ">");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
 async function sendTelegram(text) {
@@ -46,11 +46,9 @@ async function getVisibleTickerCount(page) {
       return m ? m[1].toUpperCase() : null;
     }
 
-    const links = Array.from(
-      document.querySelectorAll('a[href*="SignalPage"]')
-    );
-
+    const links = Array.from(document.querySelectorAll('a[href*="SignalPage"]'));
     const tickers = new Set();
+
     for (const link of links) {
       const ticker = getTickerFromHref(link.getAttribute("href"));
       if (ticker) tickers.add(ticker);
