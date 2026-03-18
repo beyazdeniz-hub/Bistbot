@@ -1,28 +1,28 @@
-name: BIST Bot
+name: Run Turkishbulls Bot
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "*/30 * * * *"
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Repo'yu çek
+      - name: Repo'yu indir
         uses: actions/checkout@v4
 
       - name: Node kur
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: 20
 
-      - name: Paketleri yükle
+      - name: Paketleri yukle
         run: npm install
 
-      - name: Botu çalıştır
+      - name: Botu calistir
         env:
-          TOKEN: ${{ secrets.TOKEN }}
-          CHAT_ID: ${{ secrets.CHAT_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: node bot.js
