@@ -1,4 +1,4 @@
-name: BIST Bot
+name: Turkishbulls Bot
 
 on:
   schedule:
@@ -10,19 +10,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Repo çek
+      - name: Repo'yu çek
         uses: actions/checkout@v4
 
       - name: Node kur
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: 20
 
-      - name: Paketleri yükle
+      - name: Bağımlılıkları yükle
         run: npm install
 
       - name: Botu çalıştır
-        run: node bot.js
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node bot.js
