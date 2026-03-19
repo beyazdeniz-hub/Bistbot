@@ -7,9 +7,6 @@ const CHAT_ID = "-1003675682598";
 const URL = "https://www.turkishbulls.com/SignalList.aspx?lang=tr&MarketSymbol=IMKB";
 const DETAIL_URL = "https://www.turkishbulls.com/SignalPage.aspx?lang=tr&Ticker=";
 
-// ✅ RİSK FİLTRESİ 3%
-const MAX_RISK_PERCENT = 3.0;
-
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -23,133 +20,143 @@ function pad(value, width, right = false) {
 async function sendTelegram(text) {
   await axios.post(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
     chat_id: CHAT_ID,
-    text: text,
+    text,
     parse_mode: "HTML"
   });
 }
 
-async function autoScroll(page) {
+async function runBot() {
+
+  // ✅ BURASI DÜZELTİLDİ (CRASH FIX)
+  const browser = await puppeteer.launch({
+    headless: "new",
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu"
+    ]
+  });
+
+  const page = await browser.newPage();
+  await page.goto(URL, { waitUntil: "networkidle2" });
+
+  // sayfayı en aşağı kadar kaydır
   await page.evaluate(async () => {
     await new Promise((resolve) => {
       let totalHeight = 0;
-      const distance = 500;
-
+      const distance = 300;
       const timer = setInterval(() => {
         window.scrollBy(0, distance);
         totalHeight += distance;
-
         if (totalHeight >= document.body.scrollHeight) {
           clearInterval(timer);
           resolve();
         }
-      }, 300);
+      }, 200);
     });
   });
-}
 
-function calculateRisk(al, stop) {
-  return ((al - stop) / al) * 100;
-}
-
-(async () => {
-  const browser = await puppeteer.launch({ headless: "new" });
-  const page = await browser.newPage();
-
-  await page.goto(URL, { waitUntil: "networkidle2" });
-
-  await autoScroll(page);
   await sleep(2000);
 
-  const hisseler = await page.evaluate(() => {
-    const rows = document.querySelectorAll("table tr");
-    let data = [];
+  const stocks = await page.evaluate(() => {
+    const rows = document.querySelectorAll("table tbody tr");
+    const data = [];
 
     rows.forEach(row => {
       const cols = row.querySelectorAll("td");
-      if (cols.length >= 2) {
-        const hisse = cols[1]?.innerText?.trim();
-        if (hisse && hisse.length <= 10) {
-          data.push(hisse);
+      if (cols.length > 1) {
+        const name = cols[0].innerText.trim();
+        const signal = cols[1].innerText.trim();
+
+        if (name && signal.includes("AL")) {
+          data.push(name);
         }
       }
     });
 
-    return [...new Set(data)];
+    return data;
   });
 
-  let results = [];
+  const results = [];
 
-  for (let hisse of hisseler) {
+  for (let stock of stocks) {
     try {
       const detailPage = await browser.newPage();
-      await detailPage.goto(DETAIL_URL + hisse, { waitUntil: "networkidle2" });
+      await detailPage.goto(DETAIL_URL + stock, { waitUntil: "networkidle2" });
+
       await sleep(1000);
 
-      const data = await detailPage.evaluate(() => {
-        let al = null;
-        let stop = null;
+      const detail = await detailPage.evaluate(() => {
+        const text = document.body.innerText;
 
-        const texts = document.body.innerText.split("\n");
+        const alMatch = text.match(/Al\s*:\s*([\d.]+)/i);
+        const stopMatch = text.match(/Stop\s*:\s*([\d.]+)/i);
 
-        texts.forEach(line => {
-          if (line.includes("Alış")) {
-            al = parseFloat(line.replace(",", ".").match(/\d+(\.\d+)?/));
-          }
-          if (line.includes("Stop")) {
-            stop = parseFloat(line.replace(",", ".").match(/\d+(\.\d+)?/));
-          }
-        });
-
-        return { al, stop };
+        return {
+          al: alMatch ? parseFloat(alMatch[1]) : null,
+          stop: stopMatch ? parseFloat(stopMatch[1]) : null
+        };
       });
 
       await detailPage.close();
 
-      if (data.al && data.stop && data.stop < data.al) {
-        const risk = calculateRisk(data.al, data.stop);
+      if (detail.al && detail.stop) {
+        const risk = ((detail.al - detail.stop) / detail.al) * 100;
 
-        // ✅ RİSK FİLTRESİ
-        if (risk <= MAX_RISK_PERCENT) {
-          results.push({
-            hisse,
-            al: data.al,
-            stop: data.stop,
-            risk
-          });
-        }
+        // ✅ STOP > AL OLANLARI ELE
+        if (detail.stop >= detail.al) continue;
+
+        // ✅ RİSK FİLTRESİ (3'ten küçük)
+        if (risk >= 3) continue;
+
+        results.push({
+          stock,
+          al: detail.al,
+          stop: detail.stop,
+          risk: risk.toFixed(2)
+        });
       }
 
-    } catch (e) {}
+    } catch (e) {
+      console.log("Hata:", stock);
+    }
   }
 
-  // Küçükten büyüğe sırala
+  // ✅ RİSKE GÖRE SIRALA
   results.sort((a, b) => a.risk - b.risk);
 
-  const now = new Date().toLocaleString("tr-TR");
+  let message = `<b>📊 Sinyal Listesi</b>\n\n`;
 
-  let mesaj = `<b>Guncel AL listesi</b>\n`;
-  mesaj += `Tarama: ${now}\n`;
-  mesaj += `Risk filtresi: <= ${MAX_RISK_PERCENT.toFixed(2)}%\n\n`;
-
-  mesaj += `No Hisse     Alis     STOP     Risk%\n`;
-  mesaj += `-----------------------------------\n`;
-
-  results.forEach((r, i) => {
-    mesaj += `${pad(i + 1, 2)} ${pad(r.hisse, 7)} ${pad(r.al.toFixed(2), 8, true)} ${pad(r.stop.toFixed(2), 8, true)} ${pad(r.risk.toFixed(2), 6, true)}\n`;
+  results.forEach(r => {
+    message += `${pad(r.stock, 10)} | AL: ${r.al} | STOP: ${r.stop} | Risk: %${r.risk}\n`;
   });
 
-  mesaj += `\nToplam: ${results.length}`;
+  if (results.length === 0) {
+    message += "Uygun sinyal yok.";
+  }
 
-  await sendTelegram(`<pre>${mesaj}</pre>`);
+  await sendTelegram(message);
 
-  // ✅ ERKEN ALIM (AŞIRI SATIM YAZISI KALDIRILDI)
-  let earlyMsg = `<b>Erken Alım Sinyali</b>\n`;
-  earlyMsg += `Tarama: ${now}\n`;
-  earlyMsg += `Risk filtresi: <= ${MAX_RISK_PERCENT.toFixed(2)}%\n\n`;
+  // ✅ ERKEN ALIM (AŞIRI SATIM)
+  const early = await page.evaluate(() => {
+    const text = document.body.innerText;
+    const lines = text.split("\n");
 
-  earlyMsg += `Uygun hisse bulunamadi.`;
+    return lines.filter(x => x.toLowerCase().includes("aşırı satım"));
+  });
 
-  await sendTelegram(`<pre>${earlyMsg}</pre>`);
+  if (early.length > 0) {
+    let earlyMsg = `\n\n<b>📌 ERKEN ALIM SİNYALLERİ</b>\n\n`;
+
+    early.forEach(e => {
+      earlyMsg += `${e}\n`;
+    });
+
+    await sendTelegram(earlyMsg);
+  }
 
   await browser.close();
-})();
+}
+
+runBot();
