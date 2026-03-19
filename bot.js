@@ -1,8 +1,8 @@
 const puppeteer = require("puppeteer");
 const axios = require("axios");
 
-const TOKEN = process.env.TELEGRAM_BOT_TOKEN || "BURAYA_BOT_TOKEN";
-const CHAT_ID = process.env.TELEGRAM_CHAT_ID || "BURAYA_CHAT_ID";
+const TOKEN = "8775847619:AAGT8RrKMOLWV1YYuakcc6zAXLWIgaitias";
+const CHAT_ID = "-1003675682598";
 
 const URL = "https://www.turkishbulls.com/SignalList.aspx?lang=tr&MarketSymbol=IMKB";
 const DETAIL_URL = "https://www.turkishbulls.com/SignalPage.aspx?lang=tr&Ticker=";
@@ -24,264 +24,359 @@ function escapeHtml(text) {
     .replace(/>/g, "&gt;");
 }
 
+function parseNumber(value) {
+  if (value == null) return NaN;
+
+  const s = String(value)
+    .trim()
+    .replace(/\s+/g, "")
+    .replace("%,?", "")
+    .replace(/\.(?=\d{3}(\D|$))/g, "")
+    .replace(",", ".");
+
+  return parseFloat(s);
+}
+
+function getScanTimeText() {
+  const now = new Date();
+
+  const tarih = now.toLocaleDateString("tr-TR");
+  const saat = now.toLocaleTimeString("tr-TR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+
+  return `Tarama: ${tarih} ${saat}`;
+}
+
 async function sendTelegram(text) {
-  if (!TOKEN || !CHAT_ID || TOKEN === "BURAYA_BOT_TOKEN" || CHAT_ID === "BURAYA_CHAT_ID") {
-    throw new Error("TOKEN veya CHAT_ID eksik.");
+  if (!TOKEN || !CHAT_ID) {
+    throw new Error("TOKEN veya CHAT_ID eksik");
   }
 
-  const MAX_LEN = 4000;
-  const chunks = [];
+  const api = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
 
-  if (text.length <= MAX_LEN) {
-    chunks.push(text);
-  } else {
-    let current = "";
-    const lines = text.split("\n");
+  await axios.post(api, {
+    chat_id: CHAT_ID,
+    text: `<pre>${escapeHtml(text)}</pre>`,
+    parse_mode: "HTML",
+    disable_web_page_preview: true
+  });
+}
 
-    for (const line of lines) {
-      if ((current + line + "\n").length > MAX_LEN) {
-        if (current.trim()) chunks.push(current);
-        current = line + "\n";
-      } else {
-        current += line + "\n";
-      }
+async function getVisibleTickerCount(page) {
+  return await page.evaluate(() => {
+    function getTickerFromHref(href) {
+      const m = String(href || "").match(/Ticker=([A-Z]+)/i);
+      return m ? m[1].toUpperCase() : null;
     }
-    if (current.trim()) chunks.push(current);
-  }
 
-  for (const chunk of chunks) {
-    await axios.post(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
-      chat_id: CHAT_ID,
-      text: chunk,
-      parse_mode: "HTML"
-    });
-    await sleep(1200);
-  }
+    const links = Array.from(document.querySelectorAll('a[href*="SignalPage"]'));
+    const tickers = new Set();
+
+    for (const link of links) {
+      const ticker = getTickerFromHref(link.getAttribute("href"));
+      if (ticker) tickers.add(ticker);
+    }
+
+    return tickers.size;
+  });
 }
 
 async function autoScroll(page) {
+  let stableRounds = 0;
+  let lastCount = 0;
   let lastHeight = 0;
-  let sameCount = 0;
 
-  for (let i = 0; i < 30; i++) {
-    const newHeight = await page.evaluate(async () => {
-      window.scrollTo(0, document.body.scrollHeight);
-      await new Promise(r => setTimeout(r, 1200));
-      return document.body.scrollHeight;
+  for (let round = 0; round < 80; round++) {
+    const before = await page.evaluate(() => {
+      const doc = document.scrollingElement || document.documentElement || document.body;
+      return {
+        scrollTop: doc.scrollTop,
+        scrollHeight: doc.scrollHeight,
+        clientHeight: doc.clientHeight
+      };
     });
 
-    if (newHeight === lastHeight) {
-      sameCount++;
-      if (sameCount >= 3) break;
+    await page.evaluate(async () => {
+      const doc = document.scrollingElement || document.documentElement || document.body;
+      const distance = Math.max(500, Math.floor(window.innerHeight * 0.8));
+      const steps = 6;
+
+      for (let i = 0; i < steps; i++) {
+        window.scrollBy(0, distance);
+        doc.scrollTop = doc.scrollTop + distance;
+
+        const allEls = Array.from(document.querySelectorAll("*")).filter(el => {
+          const style = window.getComputedStyle(el);
+          const canScroll =
+            /(auto|scroll)/i.test(style.overflowY) &&
+            el.scrollHeight > el.clientHeight + 50;
+          return canScroll;
+        });
+
+        for (const el of allEls) {
+          el.scrollTop = el.scrollHeight;
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 700));
+      }
+    });
+
+    await sleep(2000);
+
+    const currentCount = await getVisibleTickerCount(page);
+    const after = await page.evaluate(() => {
+      const doc = document.scrollingElement || document.documentElement || document.body;
+      return {
+        scrollTop: doc.scrollTop,
+        scrollHeight: doc.scrollHeight,
+        clientHeight: doc.clientHeight
+      };
+    });
+
+    const reachedBottom =
+      after.scrollTop + after.clientHeight >= after.scrollHeight - 5;
+
+    const countUnchanged = currentCount === lastCount;
+    const heightUnchanged = after.scrollHeight === lastHeight;
+
+    if (countUnchanged && heightUnchanged && reachedBottom) {
+      stableRounds++;
     } else {
-      sameCount = 0;
-      lastHeight = newHeight;
+      stableRounds = 0;
+    }
+
+    lastCount = currentCount;
+    lastHeight = after.scrollHeight;
+
+    if (stableRounds >= 3) {
+      break;
+    }
+
+    if (after.scrollTop === before.scrollTop && reachedBottom) {
+      stableRounds++;
     }
   }
 
-  await page.evaluate(() => window.scrollTo(0, 0));
-  await sleep(1000);
+  await sleep(2000);
 }
 
-function parseNumber(value) {
-  if (!value) return null;
+async function extractRows(page) {
+  return await page.evaluate(() => {
+    function clean(text) {
+      return String(text || "").replace(/\s+/g, " ").trim();
+    }
 
-  let s = String(value)
-    .replace(/\s/g, "")
-    .replace(/[^0-9,.-]/g, "");
+    function getTickerFromHref(href) {
+      const m = String(href || "").match(/Ticker=([A-Z]+)/i);
+      return m ? m[1].toUpperCase() : null;
+    }
 
-  if (!s) return null;
+    function looksNumeric(text) {
+      return /^[+\-]?\d[\d.,]*%?$/.test(clean(text));
+    }
 
-  const commaCount = (s.match(/,/g) || []).length;
-  const dotCount = (s.match(/\./g) || []).length;
+    const rows = [];
+    const trList = Array.from(document.querySelectorAll("tr"))
+      .filter(tr => tr.querySelector('a[href*="SignalPage"]'));
 
-  if (commaCount > 0 && dotCount > 0) {
-    s = s.replace(/\./g, "").replace(",", ".");
-  } else if (commaCount > 0 && dotCount === 0) {
-    s = s.replace(",", ".");
+    for (const tr of trList) {
+      const link = tr.querySelector('a[href*="SignalPage"]');
+      const ticker = getTickerFromHref(link?.getAttribute("href"));
+
+      if (!ticker) continue;
+
+      const cells = Array.from(tr.querySelectorAll("td, th"))
+        .map(el => clean(el.innerText || el.textContent))
+        .filter(Boolean);
+
+      let alis = "-";
+      let son = "-";
+      let yuzde = "-";
+
+      if (cells.length >= 4) {
+        const nonTickerCells = cells.filter(cell => !cell.includes(ticker));
+
+        if (nonTickerCells.length >= 3) {
+          alis = nonTickerCells[0] || "-";
+          son = nonTickerCells[1] || "-";
+          yuzde = nonTickerCells[2] || "-";
+        }
+      }
+
+      if (alis === "-" && son === "-" && yuzde === "-") {
+        const tokens = cells
+          .flatMap(cell => cell.split(/\s+/))
+          .map(clean)
+          .filter(Boolean)
+          .filter(token => !token.includes(ticker))
+          .filter(token => looksNumeric(token));
+
+        if (tokens.length >= 1) alis = tokens[0];
+        if (tokens.length >= 2) son = tokens[1];
+        if (tokens.length >= 3) yuzde = tokens[2];
+      }
+
+      rows.push({
+        ticker,
+        alis,
+        son,
+        yuzde
+      });
+    }
+
+    const seen = new Set();
+    return rows.filter(row => {
+      if (seen.has(row.ticker)) return false;
+      seen.add(row.ticker);
+      return true;
+    });
+  });
+}
+
+async function extractDetailLevels(detailPage, ticker) {
+  await detailPage.goto(`${DETAIL_URL}${ticker}`, {
+    waitUntil: "networkidle2",
+    timeout: 60000
+  });
+
+  await sleep(2500);
+
+  return await detailPage.evaluate(() => {
+    function clean(text) {
+      return String(text || "").replace(/\s+/g, " ").trim();
+    }
+
+    const bodyText = clean(document.body.innerText || "");
+
+    function pick(regexList) {
+      for (const regex of regexList) {
+        const m = bodyText.match(regex);
+        if (m && m[1]) {
+          return m[1].trim();
+        }
+      }
+      return "-";
+    }
+
+    const alSeviyesi = pick([
+      /Al Seviyesi[:\s]*([0-9.,]+)/i,
+      /AL Seviyesi[:\s]*([0-9.,]+)/i
+    ]);
+
+    const stoploss = pick([
+      /Stoploss[:\s]*([0-9.,]+)/i,
+      /Stop Loss[:\s]*([0-9.,]+)/i
+    ]);
+
+    return {
+      alSeviyesi,
+      stoploss
+    };
+  });
+}
+
+function buildTable(title, rows) {
+  let text = `${title}\n`;
+  text += `${getScanTimeText()}\n\n`;
+  text += `${pad("No", 3, true)} ${pad("Hisse", 6)} ${pad("Alis", 9, true)} ${pad("STOP", 9, true)} ${pad("Risk%", 7, true)}\n`;
+  text += `${pad("---", 3)} ${pad("------", 6)} ${pad("---------", 9)} ${pad("---------", 9)} ${pad("-------", 7)}\n`;
+
+  rows.forEach((row, i) => {
+    let risk = "-";
+
+    const alis = parseNumber(row.alis);
+    const stop = parseNumber(row.son);
+
+    if (!isNaN(alis) && !isNaN(stop) && alis > 0) {
+      risk = (((alis - stop) / alis) * 100).toFixed(2);
+    }
+
+    text += `${pad(i + 1, 3, true)} ${pad(row.ticker, 6)} ${pad(row.alis, 9, true)} ${pad(row.son, 9, true)} ${pad(risk, 7, true)}\n`;
+  });
+
+  text += `\nToplam: ${rows.length}`;
+  return text;
+}
+
+function splitRowsForTelegram(title, rows, chunkSize = 20) {
+  const messages = [];
+
+  for (let i = 0; i < rows.length; i += chunkSize) {
+    const chunk = rows.slice(i, i + chunkSize);
+    const chunkTitle = i === 0 ? title : `${title} (devam)`;
+    messages.push(buildTable(chunkTitle, chunk));
   }
 
-  const num = parseFloat(s);
-  return Number.isFinite(num) ? num : null;
+  return messages;
 }
 
-async function getDetailData(browser, ticker) {
-  const page = await browser.newPage();
+async function run() {
+  const browser = await puppeteer.launch({
+    headless: "new",
+    args: ["--no-sandbox", "--disable-setuid-sandbox"]
+  });
 
   try {
-    await page.goto(`${DETAIL_URL}${ticker}`, {
-      waitUntil: "domcontentloaded",
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1400, height: 2200 });
+
+    await page.goto(URL, {
+      waitUntil: "networkidle2",
       timeout: 60000
     });
 
-    await sleep(2500);
-
-    const data = await page.evaluate(() => {
-      const text = document.body ? document.body.innerText : "";
-
-      function pick(regexList) {
-        for (const rgx of regexList) {
-          const m = text.match(rgx);
-          if (m && m[1]) return m[1].trim();
-        }
-        return null;
-      }
-
-      const alis = pick([
-        /Al(?:ış)?(?:\s+Seviyesi)?\s*[:\-]?\s*([0-9.,]+)/i,
-        /AL\s*[:\-]?\s*([0-9.,]+)/i
-      ]);
-
-      const stop = pick([
-        /Stop(?:\s+Seviyesi)?\s*[:\-]?\s*([0-9.,]+)/i,
-        /STOP\s*[:\-]?\s*([0-9.,]+)/i
-      ]);
-
-      return { alis, stop };
-    });
-
-    return data;
-  } catch (err) {
-    return { alis: null, stop: null };
-  } finally {
-    await page.close();
-  }
-}
-
-function formatTable(title, rows, timeText) {
-  let out = `<pre>${escapeHtml(title)}\n`;
-  if (timeText) out += `${escapeHtml(timeText)}\n\n`;
-
-  out +=
-    `${pad("No", 3)} ${pad("Hisse", 7)} ${pad("Alis", 10, true)} ${pad("STOP", 9, true)} ${pad("Risk%", 6, true)}\n` +
-    `${pad("---", 3)} ${pad("------", 7)} ${pad("----------", 10, true)} ${pad("---------", 9, true)} ${pad("------", 6, true)}\n`;
-
-  rows.forEach((r, i) => {
-    out +=
-      `${pad(i + 1, 3, true)} ${pad(r.hisse, 7)} ${pad(r.alisText, 10, true)} ${pad(r.stopText, 9, true)} ${pad(r.riskText, 6, true)}\n`;
-  });
-
-  out += `\nToplam: ${rows.length}</pre>`;
-  return out;
-}
-
-(async () => {
-  let browser;
-
-  try {
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"]
-    });
-
-    const page = await browser.newPage();
-    await page.goto(URL, { waitUntil: "domcontentloaded", timeout: 60000 });
-    await sleep(3000);
-
+    await sleep(5000);
     await autoScroll(page);
+    await sleep(2000);
 
-    const hisseList = await page.evaluate(() => {
-      const text = document.body ? document.body.innerText : "";
-      const lines = text.split("\n").map(x => x.trim()).filter(Boolean);
+    const rows = await extractRows(page);
 
-      const result = [];
-      const seen = new Set();
+    if (!rows.length) {
+      await sendTelegram(`Bot hatasi:\n${getScanTimeText()}\nListe bos geldi`);
+      return;
+    }
 
-      for (const line of lines) {
-        const m = line.match(/\b([A-ZÇĞİÖŞÜ]{2,10})\b/g);
-        if (!m) continue;
+    const detailPage = await browser.newPage();
+    await detailPage.setViewport({ width: 1400, height: 2200 });
 
-        for (const item of m) {
-          const hisse = item.trim().toUpperCase();
+    for (const row of rows) {
+      try {
+        const detail = await extractDetailLevels(detailPage, row.ticker);
 
-          if (
-            hisse.length >= 2 &&
-            hisse.length <= 10 &&
-            !seen.has(hisse) &&
-            ![
-              "BIST",
-              "IMKB",
-              "AL",
-              "SAT",
-              "STOP",
-              "RISK",
-              "TR",
-              "EN",
-              "TL"
-            ].includes(hisse)
-          ) {
-            seen.add(hisse);
-            result.push(hisse);
-          }
+        if (detail.alSeviyesi && detail.alSeviyesi !== "-") {
+          row.alis = detail.alSeviyesi;
         }
+
+        if (detail.stoploss && detail.stoploss !== "-") {
+          row.son = detail.stoploss;
+        }
+      } catch (e) {
+        // Detay sayfası okunamazsa mevcut değerler kalsın
       }
 
-      return result;
-    });
-
-    if (!hisseList.length) {
-      await sendTelegram("Bot hatası: Hisse listesi alınamadı.");
-      return;
+      await sleep(700);
     }
 
-    const results = [];
+    await detailPage.close();
 
-    for (const hisse of hisseList) {
-      const detail = await getDetailData(browser, hisse);
+    const messages = splitRowsForTelegram("Guncel AL listesi", rows);
 
-      const alisNum = parseNumber(detail.alis);
-      const stopNum = parseNumber(detail.stop);
-
-      if (alisNum == null || stopNum == null) continue;
-      if (stopNum >= alisNum) continue;
-
-      const risk = ((alisNum - stopNum) / alisNum) * 100;
-
-      results.push({
-        hisse,
-        alis: alisNum,
-        stop: stopNum,
-        risk,
-        alisText: detail.alis,
-        stopText: detail.stop,
-        riskText: risk.toFixed(2)
-      });
-
-      await sleep(500);
-    }
-
-    results.sort((a, b) => a.risk - b.risk);
-
-    const now = new Date();
-    const timeText =
-      `Tarama saati: ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-
-    if (!results.length) {
-      await sendTelegram(`<pre>Guncel AL listesi\n${timeText}\n\nUygun veri bulunamadi.</pre>`);
-      return;
-    }
-
-    const PART_SIZE = 25;
-
-    for (let i = 0; i < results.length; i += PART_SIZE) {
-      const part = results.slice(i, i + PART_SIZE);
-      const isFirst = i === 0;
-      const title =
-        results.length > PART_SIZE
-          ? `Guncel AL listesi${isFirst ? "" : " (devam)"}`
-          : "Guncel AL listesi";
-
-      const message = formatTable(title, part, isFirst ? timeText : "");
+    for (const message of messages) {
       await sendTelegram(message);
-    }
-
-  } catch (err) {
-    try {
-      await sendTelegram(`Bot hatasi:\n${String(err.message || err)}`);
-    } catch (_) {
-      console.error("Telegram'a hata da gonderilemedi:", err);
+      await sleep(700);
     }
   } finally {
-    if (browser) await browser.close();
+    await browser.close();
   }
-})();
+}
+
+run().catch(async err => {
+  try {
+    await sendTelegram(`Bot hatasi:\n${getScanTimeText()}\n${err.message}`);
+  } catch (e) {
+    console.log("Telegram hata gonderimi de basarisiz:", e.message);
+  }
+});
