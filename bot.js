@@ -286,6 +286,20 @@ function splitRowsForTelegram(title, rows, chunkSize = 25) {
   return messages;
 }
 
+function filterRowsByMaxRisk(rows, maxRisk = 3) {
+  return rows.filter(row => {
+    const alis = parseFloat(String(row.alis).replace(",", "."));
+    const stop = parseFloat(String(row.son).replace(",", "."));
+
+    if (isNaN(alis) || isNaN(stop) || alis === 0) {
+      return false;
+    }
+
+    const risk = ((alis - stop) / alis) * 100;
+    return risk <= maxRisk;
+  });
+}
+
 async function run() {
   const browser = await puppeteer.launch({
     headless: "new",
@@ -333,7 +347,14 @@ async function run() {
 
     await detailPage.close();
 
-    const messages = splitRowsForTelegram("Guncel AL listesi", rows);
+    const filteredRows = filterRowsByMaxRisk(rows, 3);
+
+    if (!filteredRows.length) {
+      await sendTelegram("Guncel AL listesi\n\nRisk maksimum %3 filtresine uyan hisse bulunamadi");
+      return;
+    }
+
+    const messages = splitRowsForTelegram("Guncel AL listesi (Risk <= %3)", filteredRows);
 
     for (const message of messages) {
       await sendTelegram(message);
