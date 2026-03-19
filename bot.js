@@ -340,13 +340,30 @@ async function run() {
     await detailPage.close();
 
     // STOP seviyesi AL seviyesinden büyük olanları ele
-    rows = rows.filter(row => {
-      const alis = parseNumber(row.alis);
-      const stop = parseNumber(row.son);
+    // STOP filtresi + Risk ≤ %3 filtresi + sıralama
+rows = rows
+  .filter(row => {
+    const alis = parseNumber(row.alis);
+    const stop = parseNumber(row.son);
 
-      if (isNaN(alis) || isNaN(stop)) return true;
-      return stop <= alis;
-    });
+    if (isNaN(alis) || isNaN(stop) || alis === 0) return false;
+
+    const risk = ((alis - stop) / alis) * 100;
+
+    // stop > alis olanları da burada zaten elemiş oluyoruz
+    return stop <= alis && risk <= 3;
+  })
+  .sort((a, b) => {
+    const alisA = parseNumber(a.alis);
+    const stopA = parseNumber(a.son);
+    const riskA = ((alisA - stopA) / alisA) * 100;
+
+    const alisB = parseNumber(b.alis);
+    const stopB = parseNumber(b.son);
+    const riskB = ((alisB - stopB) / alisB) * 100;
+
+    return riskA - riskB; // küçükten büyüğe
+  });
 
     if (!rows.length) {
       await sendTelegram("Guncel AL listesi\n\nFiltre sonrasi uygun hisse kalmadi.");
