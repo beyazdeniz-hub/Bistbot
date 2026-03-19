@@ -27,12 +27,9 @@ function cleanText(v) {
 function normalizePrice(v) {
   if (!v) return "-";
   let s = cleanText(v);
-
   const m = s.match(/-?\d+(?:[.,]\d+)?/);
-  if (!m) return s || "-";
-
-  s = m[0].replace(",", ".");
-  return s;
+  if (!m) return "-";
+  return m[0].replace(",", ".");
 }
 
 function formatDateTR() {
@@ -61,18 +58,21 @@ async function sendTelegramMessage(text) {
   }
 }
 
+async function sendLongTelegramMessage(parts) {
+  for (const part of parts) {
+    await sendTelegramMessage(part);
+    await sleep(1200);
+  }
+}
+
 async function autoScroll(page) {
   await page.evaluate(async () => {
     await new Promise((resolve) => {
-      let totalHeight = 0;
-      let distance = 800;
       let stableCount = 0;
       let lastHeight = document.body.scrollHeight;
 
       const timer = setInterval(() => {
-        window.scrollBy(0, distance);
-        totalHeight += distance;
-
+        window.scrollBy(0, 900);
         const newHeight = document.body.scrollHeight;
 
         if (newHeight === lastHeight) {
@@ -106,45 +106,38 @@ async function readDetailData(browser, ticker) {
     const detail = await detailPage.evaluate(() => {
       const pageText = document.body ? document.body.innerText : "";
 
-      function getByRegex(text, regexList) {
-        for (const rgx of regexList) {
-          const m = text.match(rgx);
-          if (m && m[1]) return m[1].trim();
-        }
-        return "";
+      function onlyNumber(text) {
+        const m = String(text || "").match(/-?\d+(?:[.,]\d+)?/);
+        return m ? m[0] : "";
       }
 
-      function findValueNearKeywords() {
-        const candidates = [];
-
-        const allEls = Array.from(document.querySelectorAll("td, span, div, b, strong, font"));
-        for (const el of allEls) {
-          const txt = (el.innerText || "").replace(/\s+/g, " ").trim();
-          if (!txt) continue;
-          candidates.push(txt);
-        }
+      function scanNearby() {
+        const els = Array.from(document.querySelectorAll("td, span, div, b, strong, font"));
+        const arr = els
+          .map(el => (el.innerText || "").replace(/\s+/g, " ").trim())
+          .filter(Boolean);
 
         let al = "";
         let stop = "";
 
-        for (let i = 0; i < candidates.length; i++) {
-          const t = candidates[i].toLowerCase();
+        for (let i = 0; i < arr.length; i++) {
+          const t = arr[i].toLowerCase();
 
-          if (!al && (t.includes("al seviyesi") || t === "al" || t.includes("alış seviyesi"))) {
-            for (let j = i; j <= i + 3 && j < candidates.length; j++) {
-              const m = candidates[j].match(/-?\d+(?:[.,]\d+)?/);
-              if (m) {
-                al = m[0];
+          if (!al && (t.includes("al seviyesi") || t.includes("alış seviyesi"))) {
+            for (let j = i + 1; j <= i + 4 && j < arr.length; j++) {
+              const n = onlyNumber(arr[j]);
+              if (n) {
+                al = n;
                 break;
               }
             }
           }
 
-          if (!stop && (t.includes("stop") || t.includes("zarar kes"))) {
-            for (let j = i; j <= i + 3 && j < candidates.length; j++) {
-              const m = candidates[j].match(/-?\d+(?:[.,]\d+)?/);
-              if (m) {
-                stop = m[0];
+          if (!stop && (t === "stop" || t.includes("stop seviyesi") || t.includes("zarar kes"))) {
+            for (let j = i + 1; j <= i + 4 && j < arr.length; j++) {
+              const n = onlyNumber(arr[j]);
+              if (n) {
+                stop = n;
                 break;
               }
             }
@@ -154,22 +147,29 @@ async function readDetailData(browser, ticker) {
         return { al, stop };
       }
 
-      const near = findValueNearKeywords();
+      function byRegex(text, regexList) {
+        for (const rgx of regexList) {
+          const m = text.match(rgx);
+          if (m && m[1]) return m[1].trim();
+        }
+        return "";
+      }
 
-      let al =
+      const near = scanNearby();
+
+      const al =
         near.al ||
-        getByRegex(pageText, [
-          /Al\s*Seviyesi[:\s]*([0-9.,]+)/i,
-          /Alış\s*Seviyesi[:\s]*([0-9.,]+)/i,
-          /\bAL[:\s]*([0-9.,]+)/i
+        byRegex(pageText, [
+          /Al\s*Seviyesi\s*[:\-]?\s*([0-9.,]+)/i,
+          /Alış\s*Seviyesi\s*[:\-]?\s*([0-9.,]+)/i
         ]);
 
-      let stop =
+      const stop =
         near.stop ||
-        getByRegex(pageText, [
-          /Stop[:\s]*([0-9.,]+)/i,
-          /Zarar\s*Kes[:\s]*([0-9.,]+)/i,
-          /\bSTOP[:\s]*([0-9.,]+)/i
+        byRegex(pageText, [
+          /Stop\s*Seviyesi\s*[:\-]?\s*([0-9.,]+)/i,
+          /Stop\s*[:\-]?\s*([0-9.,]+)/i,
+          /Zarar\s*Kes\s*[:\-]?\s*([0-9.,]+)/i
         ]);
 
       return { al, stop };
@@ -185,6 +185,40 @@ async function readDetailData(browser, ticker) {
   } finally {
     await detailPage.close();
   }
+}
+
+function buildTableLines(list) {
+  const lines = [];
+  lines.push(`${pad("No", 3)} ${pad("Hisse", 8, true)} ${pad("Al", 10)} ${pad("Stop", 10)}`);
+  lines.push("-".repeat(36));
+
+  list.forEach((item, i) => {
+    lines.push(
+      `${pad(i + 1, 3)} ${pad(item.ticker, 8, true)} ${pad(item.al, 10)} ${pad(item.stop, 10)}`
+    );
+  });
+
+  lines.push("");
+  lines.push(`Toplam: ${list.length}`);
+  return lines;
+}
+
+function chunkLines(lines, maxLinesPerMessage = 25) {
+  const chunks = [];
+  for (let i = 0; i < lines.length; i += maxLinesPerMessage) {
+    chunks.push(lines.slice(i, i + maxLinesPerMessage));
+  }
+  return chunks;
+}
+
+function buildMessageParts(title, now, list) {
+  const lines = buildTableLines(list);
+  const chunks = chunkLines(lines, 25);
+
+  return chunks.map((chunk, index) => {
+    const partNo = chunks.length > 1 ? ` (${index + 1}/${chunks.length})` : "";
+    return `📊 <b>Turkishbulls Tarama</b>\n🕒 ${now}\n\n<b>${title}${partNo}</b>\n<pre>${chunk.join("\n")}</pre>`;
+  });
 }
 
 async function scrape() {
@@ -242,13 +276,13 @@ async function scrape() {
           if (ticker) break;
         }
         if (!ticker) ticker = findTickerInText(rowText);
-
         if (!ticker) continue;
 
         const isBuy =
-          low.includes("al") ||
-          low.includes("buy") ||
-          low.includes("al sinyali");
+          low.includes("al sinyali") ||
+          low.includes(" buy ") ||
+          low.startsWith("al ") ||
+          low.includes(" al ");
 
         const isOversold =
           low.includes("aşırı satım") ||
@@ -266,32 +300,33 @@ async function scrape() {
         }
       }
 
-      if (alList.length === 0) {
-        const allLinks = Array.from(document.querySelectorAll("a[href*='SignalPage.aspx?lang=tr&Ticker=']"));
-        for (const a of allLinks) {
-          const row = a.closest("tr");
-          const rowText = txt(row || a);
-          const low = rowText.toLowerCase();
-          const ticker = findTickerFromLink(a) || findTickerInText(txt(a)) || findTickerInText(rowText);
+      const allLinks = Array.from(
+        document.querySelectorAll("a[href*='SignalPage.aspx?lang=tr&Ticker=']")
+      );
 
-          if (!ticker) continue;
+      for (const a of allLinks) {
+        const row = a.closest("tr");
+        const rowText = txt(row || a);
+        const low = rowText.toLowerCase();
+        const ticker = findTickerFromLink(a) || findTickerInText(txt(a)) || findTickerInText(rowText);
 
-          if (
-            (low.includes("al") || low.includes("buy") || low.includes("al sinyali")) &&
-            !seenAl.has(ticker)
-          ) {
-            seenAl.add(ticker);
-            alList.push({ ticker });
-          }
+        if (!ticker) continue;
 
-          if (
-            (low.includes("aşırı satım") || low.includes("asiri satim") || low.includes("oversold")) &&
-            !seenEarly.has(ticker) &&
-            !seenAl.has(ticker)
-          ) {
-            seenEarly.add(ticker);
-            earlyList.push({ ticker });
-          }
+        if (
+          (low.includes("al sinyali") || low.includes(" buy ") || low.startsWith("al ") || low.includes(" al ")) &&
+          !seenAl.has(ticker)
+        ) {
+          seenAl.add(ticker);
+          alList.push({ ticker });
+        }
+
+        if (
+          (low.includes("aşırı satım") || low.includes("asiri satim") || low.includes("oversold")) &&
+          !seenEarly.has(ticker) &&
+          !seenAl.has(ticker)
+        ) {
+          seenEarly.add(ticker);
+          earlyList.push({ ticker });
         }
       }
 
@@ -315,37 +350,22 @@ async function scrape() {
       await sleep(700);
     }
 
-    let message = `📊 <b>Turkishbulls Tarama</b>\n🕒 ${formatDateTR()}\n\n`;
+    const now = formatDateTR();
+    const allParts = [];
 
     if (result.alList.length > 0) {
-      message += `<b>AL Sinyali Verenler</b>\n`;
-      message += `<pre>`;
-      message += `${pad("Hisse", 10, true)} ${pad("Al", 10)} ${pad("Stop", 10)}\n`;
-      message += `${"-".repeat(32)}\n`;
-
-      for (const item of result.alList) {
-        message += `${pad(item.ticker, 10, true)} ${pad(item.al, 10)} ${pad(item.stop, 10)}\n`;
-      }
-
-      message += `</pre>\n`;
+      allParts.push(...buildMessageParts("AL Sinyali Verenler", now, result.alList));
     } else {
-      message += `❌ Şu anda AL sinyali veren hisse bulunamadı.\n\n`;
+      allParts.push(`📊 <b>Turkishbulls Tarama</b>\n🕒 ${now}\n\n❌ <b>AL sinyali veren hisse bulunamadı.</b>`);
     }
 
     if (result.earlyList.length > 0) {
-      message += `\n<b>Erken Alım Sinyali (Aşırı Satım)</b>\n`;
-      message += `<pre>`;
-      message += `${pad("Hisse", 10, true)} ${pad("Al", 10)} ${pad("Stop", 10)}\n`;
-      message += `${"-".repeat(32)}\n`;
-
-      for (const item of result.earlyList) {
-        message += `${pad(item.ticker, 10, true)} ${pad(item.al, 10)} ${pad(item.stop, 10)}\n`;
-      }
-
-      message += `</pre>`;
+      allParts.push(...buildMessageParts("Erken Alım Sinyali (Aşırı Satım)", now, result.earlyList));
+    } else {
+      allParts.push(`📊 <b>Turkishbulls Tarama</b>\n🕒 ${now}\n\nℹ️ <b>Aşırı satım listesinde hisse bulunamadı.</b>`);
     }
 
-    await sendTelegramMessage(message);
+    await sendLongTelegramMessage(allParts);
   } catch (err) {
     console.error("Genel hata:", err);
     await sendTelegramMessage(`⚠️ Bot hata verdi:\n${err.message}`);
