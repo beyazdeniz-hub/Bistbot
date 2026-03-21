@@ -3,14 +3,14 @@ name: BIST Bot
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "15,30,45,0 * * * *"
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Repoyu cek
+      - name: Depoyu çek
         uses: actions/checkout@v4
 
       - name: Node kur
@@ -18,8 +18,11 @@ jobs:
         with:
           node-version: 20
 
-      - name: Paketleri yukle
+      - name: Paketleri yükle
         run: npm install
 
-      - name: Botu calistir
+      - name: Botu çalıştır
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: node bot.js
