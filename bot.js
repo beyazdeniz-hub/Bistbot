@@ -1,12 +1,13 @@
 const puppeteer = require("puppeteer");
 const axios = require("axios");
 
-const TOKEN = "8775847619:AAGT8RrKMOLWV1YYuakcc6zAXLWIgaitias";
-const CHAT_ID = "-1003675682598";
+const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 const URL = "https://www.turkishbulls.com/SignalList.aspx?lang=tr&MarketSymbol=IMKB";
-const HOME_URL = "https://www.turkishbulls.com/Default.aspx?lang=tr";
 const DETAIL_URL = "https://www.turkishbulls.com/SignalPage.aspx?lang=tr&Ticker=";
+
+const TEST_MODE = true;
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -20,9 +21,9 @@ function pad(value, width, right = false) {
 
 function escapeHtml(text) {
   return String(text)
-    .replace(/&/g, "&")
-    .replace(/</g, "<")
-    .replace(/>/g, ">");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
 function parseNumber(value) {
@@ -42,12 +43,61 @@ function parseNumber(value) {
   return parseFloat(raw);
 }
 
-function calculateRisk(alisValue, stopValue) {
-  const alis = parseNumber(alisValue);
-  const stop = parseNumber(stopValue);
+function calculateRisk(row) {
+  const alis = parseNumber(row.alis);
+  const stop = parseNumber(row.son);
 
   if (isNaN(alis) || isNaN(stop) || alis === 0) return NaN;
   return ((alis - stop) / alis) * 100;
+}
+
+function calculateScore(row) {
+  const risk = calculateRisk(row);
+  if (isNaN(risk)) return 0;
+
+  let score = 0;
+
+  if (risk <= 1) score = 100;
+  else if (risk <= 1.5) score = 90;
+  else if (risk <= 2) score = 75;
+  else if (risk <= 2.5) score = 60;
+  else if (risk <= 3) score = 45;
+  else score = 0;
+
+  return score;
+}
+
+function applyRiskFilterAndSort(rows) {
+  return rows
+    .map(row => {
+      const risk = calculateRisk(row);
+      const score = calculateScore(row);
+
+      return {
+        ...row,
+        riskValue: risk,
+        score
+      };
+    })
+    .filter(row => {
+      const alis = parseNumber(row.alis);
+      const stop = parseNumber(row.son);
+
+      if (isNaN(alis) || isNaN(stop)) return false;
+      if (alis <= 0) return false;
+      if (stop > alis) return false;
+      if (isNaN(row.riskValue)) return false;
+      if (row.riskValue < 0) return false;
+      if (row.riskValue > 3) return false;
+
+      return true;
+    })
+    .sort((a, b) => {
+      if (a.riskValue !== b.riskValue) {
+        return a.riskValue - b.riskValue;
+      }
+      return b.score - a.score;
+    });
 }
 
 async function sendTelegram(text) {
@@ -72,9 +122,11 @@ async function getVisibleTickerCount(page) {
       return m ? m[1].toUpperCase() : null;
     }
 
-    const links = Array.from(document.querySelectorAll('a[href*="SignalPage"]'));
-    const tickers = new Set();
+    const links = Array.from(
+      document.querySelectorAll('a[href*="SignalPage"]')
+    );
 
+    const tickers = new Set();
     for (const link of links) {
       const ticker = getTickerFromHref(link.getAttribute("href"));
       if (ticker) tickers.add(ticker);
@@ -236,55 +288,6 @@ async function extractRows(page) {
   });
 }
 
-async function extractOversoldTickers(homePage) {
-  await homePage.goto(HOME_URL, {
-    waitUntil: "networkidle2",
-    timeout: 60000
-  });
-
-  await sleep(3000);
-
-  return await homePage.evaluate(() => {
-    function clean(text) {
-      return String(text || "").replace(/\s+/g, " ").trim();
-    }
-
-    function pickTicker(text) {
-      const m = clean(text).match(/\b([A-ZÇĞİÖŞÜ]{4,6})\b/u);
-      return m ? m[1].toUpperCase() : null;
-    }
-
-    const tickers = [];
-    const seen = new Set();
-
-    const anchors = Array.from(document.querySelectorAll("a"));
-
-    for (const a of anchors) {
-      const text = clean(a.innerText || a.textContent || "");
-      if (!text) continue;
-
-      const lower = text.toLocaleLowerCase("tr-TR");
-
-      if (
-        lower.includes("aşırı satım") ||
-        lower.includes("asiri satim")
-      ) {
-        const ticker = pickTicker(text);
-        if (ticker && !seen.has(ticker)) {
-          seen.add(ticker);
-          tickers.push({
-            ticker,
-            alis: "-",
-            son: "-"
-          });
-        }
-      }
-    }
-
-    return tickers;
-  });
-}
-
 async function extractDetailLevels(detailPage, ticker) {
   await detailPage.goto(`${DETAIL_URL}${ticker}`, {
     waitUntil: "networkidle2",
@@ -317,8 +320,7 @@ async function extractDetailLevels(detailPage, ticker) {
 
     const stoploss = pick([
       /Stoploss[:\s]*([0-9.,]+)/i,
-      /Stop Loss[:\s]*([0-9.,]+)/i,
-      /Satış[:\s]*([0-9.,]+)/i
+      /Stop Loss[:\s]*([0-9.,]+)/i
     ]);
 
     return {
@@ -328,44 +330,22 @@ async function extractDetailLevels(detailPage, ticker) {
   });
 }
 
-function applyRiskFilterAndSort(rows) {
-  return rows
-    .filter(row => {
-      const alis = parseNumber(row.alis);
-      const stop = parseNumber(row.son);
-
-      if (isNaN(alis) || isNaN(stop) || alis === 0) return false;
-
-      const risk = ((alis - stop) / alis) * 100;
-
-      return stop <= alis && risk <= 3;
-    })
-    .sort((a, b) => {
-      const riskA = calculateRisk(a.alis, a.son);
-      const riskB = calculateRisk(b.alis, b.son);
-
-      if (isNaN(riskA) && isNaN(riskB)) return 0;
-      if (isNaN(riskA)) return 1;
-      if (isNaN(riskB)) return -1;
-
-      return riskA - riskB;
-    });
-}
-
 function buildTable(title, rows) {
   let text = `${title}\n\n`;
-  text += `${pad("No", 3, true)} ${pad("Hisse", 6)} ${pad("Alis", 9, true)} ${pad("STOP", 9, true)} ${pad("Risk%", 6, true)}\n`;
-  text += `${pad("---", 3)} ${pad("------", 6)} ${pad("---------", 9)} ${pad("---------", 9)} ${pad("------", 6)}\n`;
+  text += `${pad("No", 3, true)} ${pad("Hisse", 6)} ${pad("Alis", 9, true)} ${pad("STOP", 9, true)} ${pad("Risk%", 6, true)} ${pad("Skor", 5, true)}\n`;
+  text += `${pad("---", 3)} ${pad("------", 6)} ${pad("---------", 9)} ${pad("---------", 9)} ${pad("------", 6)} ${pad("-----", 5)}\n`;
 
   rows.forEach((row, i) => {
     let riskText = "-";
-    const risk = calculateRisk(row.alis, row.son);
+    const risk = calculateRisk(row);
 
     if (!isNaN(risk)) {
       riskText = risk.toFixed(2);
     }
 
-    text += `${pad(i + 1, 3, true)} ${pad(row.ticker, 6)} ${pad(row.alis, 9, true)} ${pad(row.son, 9, true)} ${pad(riskText, 6, true)}\n`;
+    const scoreText = row.score !== undefined ? String(row.score) : "-";
+
+    text += `${pad(i + 1, 3, true)} ${pad(row.ticker, 6)} ${pad(row.alis, 9, true)} ${pad(row.son, 9, true)} ${pad(riskText, 6, true)} ${pad(scoreText, 5, true)}\n`;
   });
 
   text += `\nToplam: ${rows.length}`;
@@ -382,24 +362,6 @@ function splitRowsForTelegram(title, rows, chunkSize = 25) {
   }
 
   return messages;
-}
-
-async function enrichRowsWithDetails(detailPage, rows) {
-  for (const row of rows) {
-    try {
-      const detail = await extractDetailLevels(detailPage, row.ticker);
-
-      if (detail.alSeviyesi && detail.alSeviyesi !== "-") {
-        row.alis = detail.alSeviyesi;
-      }
-
-      if (detail.stoploss && detail.stoploss !== "-") {
-        row.son = detail.stoploss;
-      }
-    } catch (e) {}
-
-    await sleep(700);
-  }
 }
 
 async function run() {
@@ -421,59 +383,60 @@ async function run() {
     await autoScroll(page);
     await sleep(2000);
 
-    let rows = await extractRows(page);
+    const rows = await extractRows(page);
 
     if (!rows.length) {
-      await sendTelegram("Bot hatasi:\nListe bos geldi");
+      if (TEST_MODE) {
+        console.log("Bot hatasi: Liste bos geldi");
+      } else {
+        await sendTelegram("Bot hatasi:\nListe bos geldi");
+      }
       return;
     }
 
     const detailPage = await browser.newPage();
     await detailPage.setViewport({ width: 1400, height: 2200 });
 
-    await enrichRowsWithDetails(detailPage, rows);
+    for (const row of rows) {
+      try {
+        const detail = await extractDetailLevels(detailPage, row.ticker);
 
-    rows = applyRiskFilterAndSort(rows);
+        if (detail.alSeviyesi && detail.alSeviyesi !== "-") {
+          row.alis = detail.alSeviyesi;
+        }
 
-    if (!rows.length) {
-      await sendTelegram("Guncel AL listesi\n\nFiltre sonrasi uygun hisse kalmadi.");
-    } else {
-      const messages = splitRowsForTelegram("Guncel AL listesi", rows);
+        if (detail.stoploss && detail.stoploss !== "-") {
+          row.son = detail.stoploss;
+        }
+      } catch (e) {}
 
-      for (const message of messages) {
+      await sleep(700);
+    }
+
+    await detailPage.close();
+
+    const filteredRows = applyRiskFilterAndSort(rows);
+
+    if (!filteredRows.length) {
+      if (TEST_MODE) {
+        console.log("\nFiltre sonrasi uygun hisse kalmadi.\n");
+      } else {
+        await sendTelegram("Guncel AL listesi\n\nFiltre sonrasi uygun hisse kalmadi.");
+      }
+      return;
+    }
+
+    const messages = splitRowsForTelegram("Guncel AL listesi", filteredRows);
+
+    for (const message of messages) {
+      if (TEST_MODE) {
+        console.log("\n=== TEST MESAJ ===\n");
+        console.log(message);
+      } else {
         await sendTelegram(message);
         await sleep(700);
       }
     }
-
-    // Ana sayfadaki aşırı satım hisseleri
-    const homePage = await browser.newPage();
-    await homePage.setViewport({ width: 1400, height: 2200 });
-
-    let earlyRows = [];
-    try {
-      earlyRows = await extractOversoldTickers(homePage);
-    } catch (e) {
-      earlyRows = [];
-    }
-
-    await homePage.close();
-
-    if (earlyRows.length) {
-      await enrichRowsWithDetails(detailPage, earlyRows);
-      earlyRows = applyRiskFilterAndSort(earlyRows);
-
-      if (earlyRows.length) {
-        const earlyMessages = splitRowsForTelegram("erken alım sinyali", earlyRows);
-
-        for (const message of earlyMessages) {
-          await sendTelegram(message);
-          await sleep(700);
-        }
-      }
-    }
-
-    await detailPage.close();
   } finally {
     await browser.close();
   }
@@ -481,7 +444,11 @@ async function run() {
 
 run().catch(async err => {
   try {
-    await sendTelegram(`Bot hatasi:\n${err.message}`);
+    if (TEST_MODE) {
+      console.log("Bot hatasi:", err.message);
+    } else {
+      await sendTelegram(`Bot hatasi:\n${err.message}`);
+    }
   } catch (e) {
     console.log("Telegram hata gonderimi de basarisiz:", e.message);
   }
