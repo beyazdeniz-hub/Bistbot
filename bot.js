@@ -269,6 +269,8 @@ async function run() {
     const tickers = await getSignalTickers(page);
 
     const uniqueTickers = [...new Set(tickers)].filter(x => /^[A-ZÇĞİÖŞÜ]{3,6}$/.test(x));
+    console.log("Bulunan ticker sayısı:", uniqueTickers.length);
+console.log("İlk 20 ticker:", uniqueTickers.slice(0, 20));
 
     const rawRows = [];
     for (const ticker of uniqueTickers) {
@@ -278,7 +280,34 @@ async function run() {
     }
 
     const rows = buildRows(rawRows);
-    const message = buildTelegramMessage(rows);
+    console.log("Detay çekilen kayıt sayısı:", rawRows.length);
+console.log("Filtre sonrası kayıt sayısı:", rows.length);
+console.log("İlk 10 ham kayıt:", JSON.stringify(rawRows.slice(0, 10), null, 2));
+console.log("İlk 10 filtreli kayıt:", JSON.stringify(rows.slice(0, 10), null, 2));
+    function buildTelegramMessage(rows) {
+  const now = new Date();
+  const timeText = now.toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" });
+
+  if (!rows.length) {
+    return escapeHtml(
+      `Tarama zamanı: ${timeText}\n\nUygun sinyal bulunamadı.`
+    );
+  }
+
+  let msg = "";
+  msg += `Tarama zamanı: ${escapeHtml(timeText)}\n\n`;
+  msg += `<b>Risk <= 3 uygun hisseler</b>\n`;
+  msg += `<pre>`;
+  msg += `${pad("Hisse", 7)} ${pad("Alış", 10, true)} ${pad("Stop", 10, true)} ${pad("Hedef", 10, true)} ${pad("Risk%", 7, true)} ${pad("Kar%", 7, true)}\n`;
+  msg += `${"-".repeat(60)}\n`;
+
+  for (const r of rows) {
+    msg += `${pad(r.ticker, 7)} ${pad(r.alis, 10, true)} ${pad(r.stop, 10, true)} ${pad(r.hedef ?? "-", 10, true)} ${pad(r.risk, 7, true)} ${pad(r.karPotansiyeli ?? "-", 7, true)}\n`;
+  }
+
+  msg += `</pre>`;
+  return msg;
+}
 
     await sendTelegram(message);
 
