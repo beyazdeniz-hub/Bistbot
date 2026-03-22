@@ -17,13 +17,6 @@ function pad(value, width, right = false) {
   return right ? s.padStart(width, " ") : s.padEnd(width, " ");
 }
 
-function escapeHtml(text) {
-  return String(text ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
-
 function toNumber(text) {
   if (!text) return null;
   let s = text.replace(",", ".");
@@ -108,7 +101,7 @@ function buildRows(raw) {
 
     if (alis == null) continue;
 
-    // STOP YOKSA GEÇİCİ OLARAK EKLE
+    // stop yoksa yine listeye al (test için)
     if (stop == null) {
       rows.push({
         ticker: r.ticker,
@@ -191,7 +184,6 @@ async function run() {
     console.log("Filtre sonrası:", rows.length);
 
     const message = buildTelegramMessage(rows);
-
     await sendTelegram(message);
 
     console.log("Bitti");
