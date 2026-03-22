@@ -1,6 +1,5 @@
 const puppeteer = require("puppeteer");
 const axios = require("axios");
-const fs = require("fs");
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
@@ -36,27 +35,6 @@ function toNumber(value) {
     .replace(/[^\d.-]/g, "");
 
   return Number(s);
-}
-
-function normalizeRow(row) {
-  return {
-    ticker: String(row.ticker ?? "").trim(),
-    buy: String(row.buy ?? "").trim(),
-    stop: String(row.stop ?? "").trim(),
-    target: String(row.target ?? "").trim(),
-    riskPct: String(row.riskPct ?? "").trim()
-  };
-}
-
-function saveJson(signals) {
-  const payload = {
-    updatedAt: new Date().toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" }),
-    signals: signals.map(normalizeRow),
-    earlySignals: []
-  };
-
-  fs.writeFileSync("signals.json", JSON.stringify(payload, null, 2), "utf8");
-  console.log("signals.json oluşturuldu.");
 }
 
 async function sendTelegram(text) {
@@ -108,12 +86,10 @@ async function autoScroll(page) {
     await sleep(1500);
 
     if (newHeight === lastHeight) {
-      console.log("Sayfa sonuna ulaşıldı.");
       break;
     }
 
     lastHeight = newHeight;
-    console.log(`Scroll turu ${i + 1} tamam.`);
   }
 
   await page.evaluate(() => window.scrollTo(0, 0));
@@ -122,7 +98,10 @@ async function autoScroll(page) {
 
 async function getTickers(page) {
   const tickers = await page.evaluate(() => {
-    const anchors = Array.from(document.querySelectorAll('a[href*="SignalPage.aspx?lang=tr&Ticker="]'));
+    const anchors = Array.from(
+      document.querySelectorAll('a[href*="SignalPage.aspx?lang=tr&Ticker="]')
+    );
+
     const result = new Set();
 
     for (const a of anchors) {
@@ -200,7 +179,6 @@ async function scrapeData() {
     const page = await browser.newPage();
     await page.setViewport({ width: 1400, height: 2500 });
 
-    console.log("Ana sayfa açılıyor...");
     await page.goto(URL, {
       waitUntil: "networkidle2",
       timeout: 120000
@@ -210,36 +188,27 @@ async function scrapeData() {
     await autoScroll(page);
 
     const tickers = await getTickers(page);
-    console.log("Bulunan ticker sayısı:", tickers.length);
-    console.log("Tickerlar:", tickers);
-
     const results = [];
 
     for (const ticker of tickers) {
       try {
-        console.log(`Detay okunuyor: ${ticker}`);
         const row = await readDetail(browser, ticker);
 
         const buyNum = toNumber(row.buy);
         const stopNum = toNumber(row.stop);
         const targetNum = toNumber(row.target);
 
-        console.log("Detay verisi:", row);
-
         if (!row.ticker || Number.isNaN(buyNum) || Number.isNaN(stopNum) || Number.isNaN(targetNum)) {
-          console.log(`Eksik veri nedeniyle atlandı: ${ticker}`);
           continue;
         }
 
         if (stopNum >= buyNum) {
-          console.log(`Stop >= Alış olduğu için elendi: ${ticker}`);
           continue;
         }
 
         const riskPct = ((buyNum - stopNum) / buyNum) * 100;
 
         if (riskPct > 3) {
-          console.log(`Risk 3'ten büyük olduğu için elendi: ${ticker} (${riskPct.toFixed(2)}%)`);
           continue;
         }
 
@@ -257,8 +226,6 @@ async function scrapeData() {
 
     results.sort((a, b) => Number(a.riskPct) - Number(b.riskPct));
 
-    console.log("Filtre sonrası sonuç sayısı:", results.length);
-
     return results;
   } finally {
     await browser.close();
@@ -268,12 +235,8 @@ async function scrapeData() {
 async function main() {
   try {
     const results = await scrapeData();
-
-    saveJson(results);
-
     const telegramMessage = buildTelegramMessage(results);
     await sendTelegram(telegramMessage);
-
     console.log("İşlem tamamlandı.");
   } catch (err) {
     console.error("Genel hata:", err);
