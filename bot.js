@@ -9,12 +9,19 @@ const URL = "https://www.turkishbulls.com/SignalList.aspx?lang=tr&MarketSymbol=I
 const DETAIL_URL = "https://www.turkishbulls.com/SignalPage.aspx?lang=tr&Ticker=";
 
 const MAX_ROWS = 200;
-const MAX_AI_COMMENTS = 8; // maliyet ve sure icin; istersen arttirirsin
+const TELEGRAM_CHUNK_SIZE = 25;
 const RISK_LIMIT = 3;
+const MAX_AI_COMMENTS = 5;
 const TELEGRAM_MAX_LEN = 3500;
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function pad(value, width, right = false) {
+  const s = String(value ?? "-").trim();
+  if (s.length >= width) return s.slice(0, width);
+  return right ? s.padStart(width, " ") : s.padEnd(width, " ");
 }
 
 function escapeHtml(text) {
@@ -41,31 +48,30 @@ function fmt(value, digits = 2) {
   return n == null ? "-" : n.toFixed(digits);
 }
 
-function formatPct(value, digits = 2) {
-  const n = typeof value === "number" ? value : toNumber(value);
-  return n == null ? "-" : `%${n.toFixed(digits)}`;
-}
-
-async function sendTelegram(text) {
+async function sendTelegram(text, usePre = true) {
   if (!TOKEN || !CHAT_ID) {
     throw new Error("TOKEN veya CHAT_ID eksik");
   }
 
   const api = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
 
+  const finalText = usePre
+    ? `<pre>${escapeHtml(text)}</pre>`
+    : escapeHtml(text);
+
   await axios.post(api, {
     chat_id: CHAT_ID,
-    text: escapeHtml(text),
+    text: finalText,
     parse_mode: "HTML",
     disable_web_page_preview: true
   });
 }
 
 async function sendTelegramLong(text) {
+  const parts = String(text).split("\n");
   const chunks = [];
   let current = "";
 
-  const parts = String(text).split("\n");
   for (const part of parts) {
     if ((current + part + "\n").length > TELEGRAM_MAX_LEN) {
       if (current.trim()) chunks.push(current.trim());
@@ -74,10 +80,13 @@ async function sendTelegramLong(text) {
       current += part + "\n";
     }
   }
-  if (current.trim()) chunks.push(current.trim());
+
+  if (current.trim()) {
+    chunks.push(current.trim());
+  }
 
   for (const chunk of chunks) {
-    await sendTelegram(chunk);
+    await sendTelegram(chunk, false);
     await sleep(700);
   }
 }
@@ -354,16 +363,20 @@ async function autoScrollDetail(detailPage) {
   for (let i = 0; i < 20; i++) {
     await detailPage.evaluate(() => {
       window.scrollBy(0, Math.max(window.innerHeight * 0.9, 700));
+
       const els = Array.from(document.querySelectorAll("*")).filter(el => {
         const style = window.getComputedStyle(el);
         return /(auto|scroll)/i.test(style.overflowY) && el.scrollHeight > el.clientHeight + 50;
       });
+
       for (const el of els) {
         el.scrollTop = el.scrollHeight;
       }
     });
+
     await sleep(900);
   }
+
   await sleep(1500);
 }
 
@@ -377,7 +390,7 @@ async function extractSignalHistory(detailPage) {
     }
 
     function parseDate(text) {
-      const m = String(text).match(/(\d{1,2}[./-]\d{1,2}[./-]\d{2,4})/);
+      const m = String(text).match(/(\d{1,2}[./-]\d{1,2}(?:[./-]\d{2,4})?)/);
       return m ? m[1] : null;
     }
 
@@ -469,6 +482,32 @@ function enrichAndFilterRows(rows) {
   return out;
 }
 
+function buildTable(title, rows, scanTime) {
+  let text = `Tarama zamani: ${scanTime}\n`;
+  text += `${title}\n\n`;
+  text += `${pad("No", 3, true)} ${pad("Hisse", 6)} ${pad("Alis", 9, true)} ${pad("STOP", 9, true)} ${pad("Hedef", 9, true)} ${pad("Risk%", 6, true)} ${pad("Kar%", 6, true)}\n`;
+  text += `${pad("---", 3)} ${pad("------", 6)} ${pad("---------", 9)} ${pad("---------", 9)} ${pad("---------", 9)} ${pad("------", 6)} ${pad("------", 6)}\n`;
+
+  rows.forEach((row, i) => {
+    text += `${pad(i + 1, 3, true)} ${pad(row.ticker, 6)} ${pad(row.alis, 9, true)} ${pad(row.stop, 9, true)} ${pad(row.hedef, 9, true)} ${pad(row.risk, 6, true)} ${pad(row.kar, 6, true)}\n`;
+  });
+
+  text += `\nToplam: ${rows.length}`;
+  return text;
+}
+
+function splitRowsForTelegram(title, rows, scanTime, chunkSize = TELEGRAM_CHUNK_SIZE) {
+  const messages = [];
+
+  for (let i = 0; i < rows.length; i += chunkSize) {
+    const chunk = rows.slice(i, i + chunkSize);
+    const chunkTitle = i === 0 ? title : `${title} (devam)`;
+    messages.push(buildTable(chunkTitle, chunk, scanTime));
+  }
+
+  return messages;
+}
+
 function summarizeHistory(history) {
   const total = history.length;
   const alRows = history.filter(x => x.signal === "AL");
@@ -540,7 +579,7 @@ function extractResponseText(data) {
   return "";
 }
 
-async function getAICommentForRow(row, history, historySummary) {
+async function getAICommentForRow(row, historySummary) {
   if (!OPENAI_API_KEY) {
     throw new Error("OPENAI_API_KEY eksik");
   }
@@ -550,7 +589,7 @@ Sen BIST hisseleri icin teknik yorum ureten bir asistansin.
 
 Amac:
 - Kullaniciya uzun ama net bir yorum ver.
-- Yorum, burada bu sohbette daha once yaptigin tarzda olsun.
+- Yorum, onceki yaptigimiz tarzda olsun.
 - Gereksiz abarti yapma.
 - Bilmedigin seyi uydurma.
 - Yorumda sunlar olsun:
@@ -620,8 +659,8 @@ Kurallar:
   return text.trim();
 }
 
-async function buildCommentMessage(row, history, historySummary) {
-  const aiText = await getAICommentForRow(row, history, historySummary);
+async function buildCommentMessage(row, historySummary) {
+  const aiText = await getAICommentForRow(row, historySummary);
 
   return [
     `Tarama zamani: ${new Date().toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" })}`,
@@ -687,18 +726,30 @@ async function run() {
     }
 
     const filteredRows = enrichAndFilterRows(rows);
+    const scanTime = new Date().toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" });
 
     if (!filteredRows.length) {
-      const scanTime = new Date().toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" });
       await sendTelegram(`Tarama zamani: ${scanTime}\n\nRisk <= ${RISK_LIMIT} uygun sinyal bulunamadi.`);
       await detailPage.close();
       return;
     }
 
+    const tableMessages = splitRowsForTelegram(
+      `Risk <= ${RISK_LIMIT} uygun hisseler`,
+      filteredRows,
+      scanTime
+    );
+
+    for (const message of tableMessages) {
+      await sendTelegram(message);
+      await sleep(700);
+    }
+
     const selectedRows = filteredRows.slice(0, MAX_AI_COMMENTS);
 
     await sendTelegram(
-      `Tarama basladi.\nRisk <= ${RISK_LIMIT} filtreyi gecen ${filteredRows.length} hisse bulundu.\nYorum uretilen hisse sayisi: ${selectedRows.length}`
+      `Tarama basladi.\nRisk <= ${RISK_LIMIT} filtreyi gecen ${filteredRows.length} hisse bulundu.\nYorum uretilen hisse sayisi: ${selectedRows.length}`,
+      false
     );
     await sleep(700);
 
@@ -714,11 +765,12 @@ async function run() {
         const history = await extractSignalHistory(detailPage);
         const historySummary = summarizeHistory(history);
 
-        const msg = await buildCommentMessage(row, history, historySummary);
+        const msg = await buildCommentMessage(row, historySummary);
         await sendTelegramLong(msg);
       } catch (e) {
         await sendTelegram(
-          `${row.ticker} yorumu olusturulamadi.\nNeden: ${e.message}`
+          `${row.ticker} yorumu olusturulamadi.\nNeden: ${e.message}`,
+          false
         );
       }
 
