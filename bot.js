@@ -44,6 +44,23 @@ function fmt(value, digits = 2) {
   return n == null ? "-" : n.toFixed(digits);
 }
 
+function buildShortComment(riskValue, karValue, hedefText) {
+  const hasTarget = hedefText && hedefText !== "-";
+  const rr = (riskValue != null && karValue != null && riskValue > 0)
+    ? karValue / riskValue
+    : null;
+
+  if (!hasTarget || karValue == null) {
+    if (riskValue != null && riskValue <= 1.0) return "Izle";
+    return "HedefY";
+  }
+
+  if (rr != null && rr >= 2.5 && riskValue <= 1.5) return "Guclu";
+  if (rr != null && rr >= 1.5) return "Iyi";
+  if (riskValue != null && riskValue <= 1.0) return "Kisa";
+  return "Zayif";
+}
+
 async function sendTelegram(text) {
   if (!TOKEN || !CHAT_ID) {
     throw new Error("TOKEN veya CHAT_ID eksik");
@@ -308,6 +325,8 @@ function enrichAndFilterRows(rows) {
       ? ((hedefNum - alisNum) / alisNum) * 100
       : null;
 
+    const yorum = buildShortComment(riskNum, karNum, row.hedef);
+
     out.push({
       ticker: row.ticker,
       alis: fmt(alisNum),
@@ -315,7 +334,9 @@ function enrichAndFilterRows(rows) {
       hedef: hedefNum != null ? fmt(hedefNum) : "-",
       risk: fmt(riskNum),
       kar: karNum != null ? fmt(karNum) : "-",
-      riskValue: riskNum
+      yorum,
+      riskValue: riskNum,
+      karValue: karNum
     });
   }
 
@@ -326,14 +347,15 @@ function enrichAndFilterRows(rows) {
 function buildTable(title, rows, scanTime) {
   let text = `Tarama zamani: ${scanTime}\n`;
   text += `${title}\n\n`;
-  text += `${pad("No", 3, true)} ${pad("Hisse", 6)} ${pad("Alis", 9, true)} ${pad("STOP", 9, true)} ${pad("Hedef", 9, true)} ${pad("Risk%", 6, true)} ${pad("Kar%", 6, true)}\n`;
-  text += `${pad("---", 3)} ${pad("------", 6)} ${pad("---------", 9)} ${pad("---------", 9)} ${pad("---------", 9)} ${pad("------", 6)} ${pad("------", 6)}\n`;
+  text += `${pad("No", 3, true)} ${pad("Hisse", 6)} ${pad("Alis", 8, true)} ${pad("STOP", 8, true)} ${pad("Hdf", 8, true)} ${pad("Rsk%", 6, true)} ${pad("Kar%", 6, true)} ${pad("Yrm", 6)}\n`;
+  text += `${pad("---", 3)} ${pad("------", 6)} ${pad("--------", 8)} ${pad("--------", 8)} ${pad("--------", 8)} ${pad("------", 6)} ${pad("------", 6)} ${pad("------", 6)}\n`;
 
   rows.forEach((row, i) => {
-    text += `${pad(i + 1, 3, true)} ${pad(row.ticker, 6)} ${pad(row.alis, 9, true)} ${pad(row.stop, 9, true)} ${pad(row.hedef, 9, true)} ${pad(row.risk, 6, true)} ${pad(row.kar, 6, true)}\n`;
+    text += `${pad(i + 1, 3, true)} ${pad(row.ticker, 6)} ${pad(row.alis, 8, true)} ${pad(row.stop, 8, true)} ${pad(row.hedef, 8, true)} ${pad(row.risk, 6, true)} ${pad(row.kar, 6, true)} ${pad(row.yorum, 6)}\n`;
   });
 
   text += `\nToplam: ${rows.length}`;
+  text += `\nYrm: Guclu/Iyi/Kisa/Izle/Zayif`;
   return text;
 }
 
