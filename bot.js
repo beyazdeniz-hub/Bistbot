@@ -75,25 +75,28 @@ function buildTelegramMessage(rows) {
 }
 
 async function autoScroll(page) {
-  let lastHeight = 0;
+  let previousHeight = 0;
 
   for (let i = 0; i < 20; i++) {
-    const newHeight = await page.evaluate(() => {
-      window.scrollTo(0, document.body.scrollHeight);
-      return document.body.scrollHeight;
-    });
+    const currentHeight = await page.evaluate(() => document.body.scrollHeight);
+    console.log(`Scroll turu ${i + 1}, yükseklik: ${currentHeight}`);
 
-    await sleep(1500);
-
-    if (newHeight === lastHeight) {
+    if (currentHeight === previousHeight) {
+      console.log("Sayfa sonuna ulaşıldı.");
       break;
     }
 
-    lastHeight = newHeight;
+    previousHeight = currentHeight;
+
+    await page.evaluate(() => {
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+
+    await sleep(1500);
   }
 
   await page.evaluate(() => window.scrollTo(0, 0));
-  await sleep(800);
+  await sleep(1000);
 }
 
 async function getTickers(page) {
@@ -128,7 +131,7 @@ async function readDetail(browser, ticker) {
     });
 
     await page.setViewport({ width: 1400, height: 2200 });
-    await sleep(1500);
+    await sleep(2000);
 
     const data = await page.evaluate((fallbackTicker) => {
       const bodyText = document.body.innerText || "";
@@ -159,7 +162,8 @@ async function readDetail(browser, ticker) {
         ticker: detectTicker(),
         buy: pickValue(["Alış Seviyesi", "Alis Seviyesi"]),
         stop: pickValue(["Stop Seviyesi"]),
-        target: pickValue(["Hedef Seviyesi"])
+        target: pickValue(["Hedef Seviyesi"]),
+        bodyPreview: bodyText.slice(0, 1500)
       };
     }, ticker);
 
@@ -179,36 +183,60 @@ async function scrapeData() {
     const page = await browser.newPage();
     await page.setViewport({ width: 1400, height: 2500 });
 
+    console.log("Ana sayfa açılıyor...");
     await page.goto(URL, {
       waitUntil: "networkidle2",
       timeout: 120000
     });
 
-    await sleep(2000);
+    await sleep(2500);
     await autoScroll(page);
 
     const tickers = await getTickers(page);
+    console.log("Bulunan ticker sayısı:", tickers.length);
+    console.log("Ticker listesi:", tickers);
+
     const results = [];
 
     for (const ticker of tickers) {
       try {
+        console.log(`Detay okunuyor: ${ticker}`);
         const row = await readDetail(browser, ticker);
+
+        console.log(`OKUNAN DETAY [${ticker}] ->`, {
+          ticker: row.ticker,
+          buy: row.buy,
+          stop: row.stop,
+          target: row.target
+        });
+
+        if (!row.buy || !row.stop || !row.target) {
+          console.log(`Eksik veri: ${ticker}`);
+          console.log(`Body preview [${ticker}]:\n${row.bodyPreview}\n---`);
+          continue;
+        }
 
         const buyNum = toNumber(row.buy);
         const stopNum = toNumber(row.stop);
         const targetNum = toNumber(row.target);
 
+        console.log(`SAYISAL [${ticker}] -> buy=${buyNum}, stop=${stopNum}, target=${targetNum}`);
+
         if (!row.ticker || Number.isNaN(buyNum) || Number.isNaN(stopNum) || Number.isNaN(targetNum)) {
+          console.log(`Sayısal dönüşüm hatası: ${ticker}`);
           continue;
         }
 
         if (stopNum >= buyNum) {
+          console.log(`Stop >= Alış olduğu için elendi: ${ticker}`);
           continue;
         }
 
         const riskPct = ((buyNum - stopNum) / buyNum) * 100;
+        console.log(`Risk [${ticker}] = ${riskPct.toFixed(2)}%`);
 
         if (riskPct > 3) {
+          console.log(`Risk büyük olduğu için elendi: ${ticker}`);
           continue;
         }
 
@@ -225,6 +253,7 @@ async function scrapeData() {
     }
 
     results.sort((a, b) => Number(a.riskPct) - Number(b.riskPct));
+    console.log("Filtre sonrası sonuç sayısı:", results.length);
 
     return results;
   } finally {
