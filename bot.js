@@ -3,26 +3,22 @@ const axios = require("axios");
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 const URL = "https://www.turkishbulls.com/SignalList.aspx?lang=tr&MarketSymbol=IMKB";
 const DETAIL_URL = "https://www.turkishbulls.com/SignalPage.aspx?lang=tr&Ticker=";
 
 const MAX_ROWS = 200;
-const TELEGRAM_CHUNK_SIZE = 25;
-const RISK_LIMIT = 3; // risk <= 3
+const MAX_AI_COMMENTS = 8; // maliyet ve sure icin; istersen arttirirsin
+const RISK_LIMIT = 3;
+const TELEGRAM_MAX_LEN = 3500;
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function pad(value, width, right = false) {
-  const s = String(value ?? "-").trim();
-  if (s.length >= width) return s.slice(0, width);
-  return right ? s.padStart(width, " ") : s.padEnd(width, " ");
-}
-
 function escapeHtml(text) {
-  return String(text)
+  return String(text ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
@@ -34,6 +30,7 @@ function toNumber(value) {
     .trim()
     .replace(/\s+/g, "")
     .replace(/%/g, "")
+    .replace(/\.(?=\d{3}\b)/g, "")
     .replace(",", ".");
   const n = parseFloat(s);
   return Number.isNaN(n) ? null : n;
@@ -44,21 +41,9 @@ function fmt(value, digits = 2) {
   return n == null ? "-" : n.toFixed(digits);
 }
 
-function buildShortComment(riskValue, karValue, hedefText) {
-  const hasTarget = hedefText && hedefText !== "-";
-  const rr = (riskValue != null && karValue != null && riskValue > 0)
-    ? karValue / riskValue
-    : null;
-
-  if (!hasTarget || karValue == null) {
-    if (riskValue != null && riskValue <= 1.0) return "Izle";
-    return "HedefY";
-  }
-
-  if (rr != null && rr >= 2.5 && riskValue <= 1.5) return "Guclu";
-  if (rr != null && rr >= 1.5) return "Iyi";
-  if (riskValue != null && riskValue <= 1.0) return "Kisa";
-  return "Zayif";
+function formatPct(value, digits = 2) {
+  const n = typeof value === "number" ? value : toNumber(value);
+  return n == null ? "-" : `%${n.toFixed(digits)}`;
 }
 
 async function sendTelegram(text) {
@@ -70,10 +55,31 @@ async function sendTelegram(text) {
 
   await axios.post(api, {
     chat_id: CHAT_ID,
-    text: `<pre>${escapeHtml(text)}</pre>`,
+    text: escapeHtml(text),
     parse_mode: "HTML",
     disable_web_page_preview: true
   });
+}
+
+async function sendTelegramLong(text) {
+  const chunks = [];
+  let current = "";
+
+  const parts = String(text).split("\n");
+  for (const part of parts) {
+    if ((current + part + "\n").length > TELEGRAM_MAX_LEN) {
+      if (current.trim()) chunks.push(current.trim());
+      current = part + "\n";
+    } else {
+      current += part + "\n";
+    }
+  }
+  if (current.trim()) chunks.push(current.trim());
+
+  for (const chunk of chunks) {
+    await sendTelegram(chunk);
+    await sleep(700);
+  }
 }
 
 async function getVisibleTickerCount(page) {
@@ -302,6 +308,128 @@ async function extractDetailLevels(detailPage, ticker) {
   });
 }
 
+async function click24Months(detailPage) {
+  const clicked = await detailPage.evaluate(() => {
+    function textOf(el) {
+      return (
+        el.innerText ||
+        el.textContent ||
+        el.value ||
+        el.getAttribute("aria-label") ||
+        el.getAttribute("title") ||
+        ""
+      ).replace(/\s+/g, " ").trim();
+    }
+
+    const candidates = Array.from(
+      document.querySelectorAll("a, button, input[type='button'], input[type='submit'], span, div, li")
+    );
+
+    const target = candidates.find(el => {
+      const t = textOf(el).toLowerCase();
+      return (
+        t.includes("24 ay") ||
+        t.includes("24ay") ||
+        t.includes("24 ayl") ||
+        t.includes("24 aylik") ||
+        t.includes("24 aylık") ||
+        t.includes("24 month")
+      );
+    });
+
+    if (!target) return false;
+
+    target.click();
+    return true;
+  });
+
+  if (clicked) {
+    await sleep(2500);
+  }
+
+  return clicked;
+}
+
+async function autoScrollDetail(detailPage) {
+  for (let i = 0; i < 20; i++) {
+    await detailPage.evaluate(() => {
+      window.scrollBy(0, Math.max(window.innerHeight * 0.9, 700));
+      const els = Array.from(document.querySelectorAll("*")).filter(el => {
+        const style = window.getComputedStyle(el);
+        return /(auto|scroll)/i.test(style.overflowY) && el.scrollHeight > el.clientHeight + 50;
+      });
+      for (const el of els) {
+        el.scrollTop = el.scrollHeight;
+      }
+    });
+    await sleep(900);
+  }
+  await sleep(1500);
+}
+
+async function extractSignalHistory(detailPage) {
+  await click24Months(detailPage);
+  await autoScrollDetail(detailPage);
+
+  return await detailPage.evaluate(() => {
+    function clean(text) {
+      return String(text || "").replace(/\s+/g, " ").trim();
+    }
+
+    function parseDate(text) {
+      const m = String(text).match(/(\d{1,2}[./-]\d{1,2}[./-]\d{2,4})/);
+      return m ? m[1] : null;
+    }
+
+    function parsePct(text) {
+      const m = String(text).match(/([+\-]?\d+(?:[.,]\d+)?)\s*%/);
+      return m ? m[1].replace(",", ".") : null;
+    }
+
+    function parseSignal(text) {
+      const t = clean(text).toUpperCase();
+      if (/\bAL\b/.test(t)) return "AL";
+      if (/\bSAT\b/.test(t)) return "SAT";
+      return null;
+    }
+
+    const trs = Array.from(document.querySelectorAll("tr"));
+    const rows = [];
+
+    for (const tr of trs) {
+      const cells = Array.from(tr.querySelectorAll("td, th"))
+        .map(el => clean(el.innerText || el.textContent))
+        .filter(Boolean);
+
+      if (!cells.length) continue;
+
+      const joined = cells.join(" | ");
+      const signal = parseSignal(joined);
+      const date = parseDate(joined);
+
+      if (!signal || !date) continue;
+
+      const pct = parsePct(joined);
+
+      rows.push({
+        date,
+        signal,
+        pct,
+        cells,
+        raw: joined
+      });
+    }
+
+    const seen = new Set();
+    return rows.filter(row => {
+      const key = `${row.date}_${row.signal}_${row.raw}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  });
+}
+
 function enrichAndFilterRows(rows) {
   const out = [];
 
@@ -325,8 +453,6 @@ function enrichAndFilterRows(rows) {
       ? ((hedefNum - alisNum) / alisNum) * 100
       : null;
 
-    const yorum = buildShortComment(riskNum, karNum, row.hedef);
-
     out.push({
       ticker: row.ticker,
       alis: fmt(alisNum),
@@ -334,7 +460,6 @@ function enrichAndFilterRows(rows) {
       hedef: hedefNum != null ? fmt(hedefNum) : "-",
       risk: fmt(riskNum),
       kar: karNum != null ? fmt(karNum) : "-",
-      yorum,
       riskValue: riskNum,
       karValue: karNum
     });
@@ -344,31 +469,168 @@ function enrichAndFilterRows(rows) {
   return out;
 }
 
-function buildTable(title, rows, scanTime) {
-  let text = `Tarama zamani: ${scanTime}\n`;
-  text += `${title}\n\n`;
-  text += `${pad("No", 3, true)} ${pad("Hisse", 6)} ${pad("Alis", 8, true)} ${pad("STOP", 8, true)} ${pad("Hdf", 8, true)} ${pad("Rsk%", 6, true)} ${pad("Kar%", 6, true)} ${pad("Yrm", 6)}\n`;
-  text += `${pad("---", 3)} ${pad("------", 6)} ${pad("--------", 8)} ${pad("--------", 8)} ${pad("--------", 8)} ${pad("------", 6)} ${pad("------", 6)} ${pad("------", 6)}\n`;
+function summarizeHistory(history) {
+  const total = history.length;
+  const alRows = history.filter(x => x.signal === "AL");
+  const satRows = history.filter(x => x.signal === "SAT");
 
-  rows.forEach((row, i) => {
-    text += `${pad(i + 1, 3, true)} ${pad(row.ticker, 6)} ${pad(row.alis, 8, true)} ${pad(row.stop, 8, true)} ${pad(row.hedef, 8, true)} ${pad(row.risk, 6, true)} ${pad(row.kar, 6, true)} ${pad(row.yorum, 6)}\n`;
-  });
+  const alPctNums = alRows
+    .map(x => toNumber(x.pct))
+    .filter(x => x != null);
 
-  text += `\nToplam: ${rows.length}`;
-  text += `\nYrm: Guclu/Iyi/Kisa/Izle/Zayif`;
-  return text;
-}
+  const posAlPct = alPctNums.filter(x => x > 0);
+  const negAlPct = alPctNums.filter(x => x < 0);
 
-function splitRowsForTelegram(title, rows, scanTime, chunkSize = TELEGRAM_CHUNK_SIZE) {
-  const messages = [];
-
-  for (let i = 0; i < rows.length; i += chunkSize) {
-    const chunk = rows.slice(i, i + chunkSize);
-    const chunkTitle = i === 0 ? title : `${title} (devam)`;
-    messages.push(buildTable(chunkTitle, chunk, scanTime));
+  let alternations = 0;
+  for (let i = 1; i < history.length; i++) {
+    if (history[i].signal !== history[i - 1].signal) alternations++;
   }
 
-  return messages;
+  const alternationRate =
+    history.length >= 2 ? alternations / (history.length - 1) : 0;
+
+  const recent = history.slice(0, 10).map(x =>
+    `${x.date} ${x.signal}${x.pct != null ? ` ${x.pct}%` : ""}`
+  );
+
+  const rawCompact = history.slice(0, 25).map(x => x.raw);
+
+  return {
+    total,
+    alCount: alRows.length,
+    satCount: satRows.length,
+    alPctCount: alPctNums.length,
+    avgAlPct: alPctNums.length
+      ? (alPctNums.reduce((a, b) => a + b, 0) / alPctNums.length)
+      : null,
+    maxAlPct: alPctNums.length ? Math.max(...alPctNums) : null,
+    minAlPct: alPctNums.length ? Math.min(...alPctNums) : null,
+    positiveRate: alPctNums.length ? posAlPct.length / alPctNums.length : null,
+    negativeRate: alPctNums.length ? negAlPct.length / alPctNums.length : null,
+    alternationRate,
+    recent,
+    rawCompact
+  };
+}
+
+function extractResponseText(data) {
+  if (typeof data?.output_text === "string" && data.output_text.trim()) {
+    return data.output_text.trim();
+  }
+
+  if (Array.isArray(data?.output)) {
+    const parts = [];
+
+    for (const item of data.output) {
+      if (Array.isArray(item?.content)) {
+        for (const c of item.content) {
+          if (c?.type === "output_text" && c?.text) {
+            parts.push(c.text);
+          }
+          if (c?.type === "text" && c?.text) {
+            parts.push(c.text);
+          }
+        }
+      }
+    }
+
+    if (parts.length) return parts.join("\n").trim();
+  }
+
+  return "";
+}
+
+async function getAICommentForRow(row, history, historySummary) {
+  if (!OPENAI_API_KEY) {
+    throw new Error("OPENAI_API_KEY eksik");
+  }
+
+  const prompt = `
+Sen BIST hisseleri icin teknik yorum ureten bir asistansin.
+
+Amac:
+- Kullaniciya uzun ama net bir yorum ver.
+- Yorum, burada bu sohbette daha once yaptigin tarzda olsun.
+- Gereksiz abarti yapma.
+- Bilmedigin seyi uydurma.
+- Yorumda sunlar olsun:
+  1) Gecmis 24 aylik sinyal davranisinin ozeti
+  2) Hissenin trend mi yoksa daha cok kisa trade hissesi mi oldugu
+  3) Mevcut sinyalin nasil okunmasi gerektigi
+  4) Yaklasik hedef / kar-al / risk mantigi
+  5) Sonuc cumlesi
+
+Veriler:
+
+Hisse: ${row.ticker}
+Alis seviyesi: ${row.alis}
+Stop seviyesi: ${row.stop}
+Hedef: ${row.hedef}
+Risk: %${row.risk}
+Potansiyel kar: ${row.kar === "-" ? "bilinmiyor" : "%" + row.kar}
+
+24 ay gecmis sinyal ozetleri:
+- Toplam sinyal sayisi: ${historySummary.total}
+- AL sayisi: ${historySummary.alCount}
+- SAT sayisi: ${historySummary.satCount}
+- Yuzde verisi olan AL sayisi: ${historySummary.alPctCount}
+- Ortalama AL yuzdesi: ${historySummary.avgAlPct == null ? "-" : historySummary.avgAlPct.toFixed(2) + "%"}
+- En iyi AL yuzdesi: ${historySummary.maxAlPct == null ? "-" : historySummary.maxAlPct.toFixed(2) + "%"}
+- En kotu AL yuzdesi: ${historySummary.minAlPct == null ? "-" : historySummary.minAlPct.toFixed(2) + "%"}
+- Pozitif AL orani: ${historySummary.positiveRate == null ? "-" : (historySummary.positiveRate * 100).toFixed(0) + "%"}
+- Negatif AL orani: ${historySummary.negativeRate == null ? "-" : (historySummary.negativeRate * 100).toFixed(0) + "%"}
+- AL/SAT sirali degisim orani: ${(historySummary.alternationRate * 100).toFixed(0)}%
+
+Son 10 sinyal ozeti:
+${historySummary.recent.map(x => "- " + x).join("\n")}
+
+Ham satirlar (ilk 25):
+${historySummary.rawCompact.map(x => "- " + x).join("\n")}
+
+Kurallar:
+- Teknik yorum dili kullan ama anlasilir yaz.
+- Uzunluk orta-uzun olsun.
+- Madde isareti kullanma.
+- Metni direkt Telegram'da kullanilacak sekilde yaz.
+- Ilk satirda "${row.ticker} yorumu:" diye basla.
+`;
+
+  const response = await axios.post(
+    "https://api.openai.com/v1/responses",
+    {
+      model: "gpt-5.4",
+      input: prompt,
+      max_output_tokens: 700
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${OPENAI_API_KEY}`
+      },
+      timeout: 120000
+    }
+  );
+
+  const text = extractResponseText(response.data);
+
+  if (!text) {
+    throw new Error(`${row.ticker} icin AI yorum donmedi`);
+  }
+
+  return text.trim();
+}
+
+async function buildCommentMessage(row, history, historySummary) {
+  const aiText = await getAICommentForRow(row, history, historySummary);
+
+  return [
+    `Tarama zamani: ${new Date().toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" })}`,
+    "",
+    aiText,
+    "",
+    `Mevcut seviye ozeti: Alis ${row.alis} | Stop ${row.stop} | Hedef ${row.hedef} | Risk %${row.risk}${row.kar !== "-" ? ` | Kar %${row.kar}` : ""}`,
+    `24 ay sinyal ozeti: Toplam ${historySummary.total} | AL ${historySummary.alCount} | SAT ${historySummary.satCount}`
+  ].join("\n");
 }
 
 async function run() {
@@ -424,26 +686,46 @@ async function run() {
       await sleep(700);
     }
 
-    await detailPage.close();
-
     const filteredRows = enrichAndFilterRows(rows);
-    const scanTime = new Date().toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" });
 
     if (!filteredRows.length) {
+      const scanTime = new Date().toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" });
       await sendTelegram(`Tarama zamani: ${scanTime}\n\nRisk <= ${RISK_LIMIT} uygun sinyal bulunamadi.`);
+      await detailPage.close();
       return;
     }
 
-    const messages = splitRowsForTelegram(
-      `Risk <= ${RISK_LIMIT} uygun hisseler`,
-      filteredRows,
-      scanTime
-    );
+    const selectedRows = filteredRows.slice(0, MAX_AI_COMMENTS);
 
-    for (const message of messages) {
-      await sendTelegram(message);
-      await sleep(700);
+    await sendTelegram(
+      `Tarama basladi.\nRisk <= ${RISK_LIMIT} filtreyi gecen ${filteredRows.length} hisse bulundu.\nYorum uretilen hisse sayisi: ${selectedRows.length}`
+    );
+    await sleep(700);
+
+    for (const row of selectedRows) {
+      try {
+        await detailPage.goto(`${DETAIL_URL}${row.ticker}`, {
+          waitUntil: "networkidle2",
+          timeout: 60000
+        });
+
+        await sleep(2500);
+
+        const history = await extractSignalHistory(detailPage);
+        const historySummary = summarizeHistory(history);
+
+        const msg = await buildCommentMessage(row, history, historySummary);
+        await sendTelegramLong(msg);
+      } catch (e) {
+        await sendTelegram(
+          `${row.ticker} yorumu olusturulamadi.\nNeden: ${e.message}`
+        );
+      }
+
+      await sleep(1200);
     }
+
+    await detailPage.close();
   } finally {
     await browser.close();
   }
