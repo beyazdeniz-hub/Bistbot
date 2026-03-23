@@ -1,12 +1,6 @@
 {
-  "updatedAt": "23.03.2026 04:03:00",
+  "updatedAt": "23.03.2026 08:29:11",
   "signals": [
-    {
-      "ticker": "GARFA",
-      "buy": "26.92",
-      "stop": "26.78",
-      "riskPct": "0.52"
-    },
     {
       "ticker": "ISSEN",
       "buy": "7.1950",
@@ -56,10 +50,10 @@
       "riskPct": "1.47"
     },
     {
-      "ticker": "HURGZ",
-      "buy": "5.8050",
-      "stop": "5.7100",
-      "riskPct": "1.64"
+      "ticker": "GARFA",
+      "buy": "26.92",
+      "stop": "26.50",
+      "riskPct": "1.56"
     },
     {
       "ticker": "FORMT",
@@ -96,12 +90,6 @@
       "buy": "242.60",
       "stop": "237.70",
       "riskPct": "2.02"
-    },
-    {
-      "ticker": "GATEG",
-      "buy": "323.00",
-      "stop": "316.00",
-      "riskPct": "2.17"
     },
     {
       "ticker": "FENER",
