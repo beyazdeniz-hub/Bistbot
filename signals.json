@@ -1,12 +1,6 @@
 {
-  "updatedAt": "23.03.2026 23:03:12",
+  "updatedAt": "24.03.2026 00:58:01",
   "signals": [
-    {
-      "ticker": "BIGCH",
-      "buy": "6.8400",
-      "stop": "6.7900",
-      "riskPct": "0.73"
-    },
     {
       "ticker": "THYAO",
       "buy": "290.13",
@@ -18,6 +12,12 @@
       "buy": "89.85",
       "stop": "89.10",
       "riskPct": "0.83"
+    },
+    {
+      "ticker": "BIGCH",
+      "buy": "6.8100",
+      "stop": "6.7500",
+      "riskPct": "0.88"
     },
     {
       "ticker": "SAHOL",
