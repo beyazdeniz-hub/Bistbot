@@ -5,6 +5,9 @@ on:
   schedule:
     - cron: "15,30,45 * * * *"
 
+permissions:
+  contents: write
+
 jobs:
   run-bot:
     runs-on: ubuntu-latest
@@ -12,6 +15,8 @@ jobs:
     steps:
       - name: Repo'yu çek
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Node.js kur
         uses: actions/setup-node@v4
@@ -26,3 +31,11 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: node bot.js
+
+      - name: signals.json dosyasını kaydet
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add signals.json
+          git diff --cached --quiet || git commit -m "Update signals.json"
+          git push
