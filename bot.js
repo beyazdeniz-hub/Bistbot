@@ -54,22 +54,12 @@ async function sendTelegram(text) {
 function saveJson(rows) {
   const payload = {
     updatedAt: new Date().toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" }),
-    signals: rows.map(row => {
-      const alisNum = toNumber(row.alis);
-      const stopNum = toNumber(row.son);
-
-      let riskPct = "-";
-      if (!isNaN(alisNum) && !isNaN(stopNum) && alisNum > 0) {
-        riskPct = (((alisNum - stopNum) / alisNum) * 100).toFixed(2);
-      }
-
-      return {
-        ticker: row.ticker,
-        buy: row.alis,
-        stop: row.son,
-        riskPct
-      };
-    }),
+    signals: rows.map(row => ({
+      ticker: row.ticker,
+      buy: row.alis,
+      stop: row.son,
+      riskPct: row.risk.toFixed(2)
+    })),
     earlySignals: []
   };
 
@@ -298,16 +288,7 @@ function buildTable(title, rows) {
   text += `${pad("---", 3)} ${pad("------", 6)} ${pad("---------", 9)} ${pad("---------", 9)} ${pad("------", 6)}\n`;
 
   rows.forEach((row, i) => {
-    let risk = "-";
-
-    const alis = toNumber(row.alis);
-    const stop = toNumber(row.son);
-
-    if (!isNaN(alis) && !isNaN(stop) && alis !== 0) {
-      risk = (((alis - stop) / alis) * 100).toFixed(2);
-    }
-
-    text += `${pad(i + 1, 3, true)} ${pad(row.ticker, 6)} ${pad(row.alis, 9, true)} ${pad(row.son, 9, true)} ${pad(risk, 6, true)}\n`;
+    text += `${pad(i + 1, 3, true)} ${pad(row.ticker, 6)} ${pad(row.alis, 9, true)} ${pad(row.son, 9, true)} ${pad(row.risk.toFixed(2), 6, true)}\n`;
   });
 
   text += `\nToplam: ${rows.length}`;
@@ -373,9 +354,34 @@ async function run() {
 
     await detailPage.close();
 
-    saveJson(rows);
+    const filtered = rows
+      .map(row => {
+        const alisNum = toNumber(row.alis);
+        const stopNum = toNumber(row.son);
 
-    const messages = splitRowsForTelegram("Guncel AL listesi", rows);
+        if (isNaN(alisNum) || isNaN(stopNum) || alisNum <= 0 || stopNum >= alisNum) {
+          return null;
+        }
+
+        const risk = ((alisNum - stopNum) / alisNum) * 100;
+
+        return {
+          ...row,
+          risk
+        };
+      })
+      .filter(Boolean)
+      .filter(row => row.risk <= 3)
+      .sort((a, b) => a.risk - b.risk);
+
+    saveJson(filtered);
+
+    if (!filtered.length) {
+      await sendTelegram("Risk <= 3 uygun sinyal bulunamadi");
+      return;
+    }
+
+    const messages = splitRowsForTelegram("Risk <= 3 Uygun Hisseler", filtered);
 
     for (const message of messages) {
       await sendTelegram(message);
