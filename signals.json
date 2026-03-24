@@ -1,5 +1,5 @@
 {
-  "updatedAt": "24.03.2026 11:19:04",
+  "updatedAt": "24.03.2026 14:27:35",
   "signals": [
     {
       "ticker": "BASCM",
@@ -8,28 +8,10 @@
       "riskPct": "0.90"
     },
     {
-      "ticker": "OSTIM",
-      "buy": "2.8100",
-      "stop": "2.7800",
-      "riskPct": "1.07"
-    },
-    {
       "ticker": "HTTBT",
       "buy": "37.30",
       "stop": "36.84",
       "riskPct": "1.23"
-    },
-    {
-      "ticker": "TTKOM",
-      "buy": "60.65",
-      "stop": "59.90",
-      "riskPct": "1.24"
-    },
-    {
-      "ticker": "BFREN",
-      "buy": "143.00",
-      "stop": "141.10",
-      "riskPct": "1.33"
     },
     {
       "ticker": "SEGYO",
@@ -84,12 +66,6 @@
       "buy": "23.42",
       "stop": "23.02",
       "riskPct": "1.71"
-    },
-    {
-      "ticker": "KAYSE",
-      "buy": "4.6000",
-      "stop": "4.5200",
-      "riskPct": "1.74"
     },
     {
       "ticker": "PETUN",
@@ -170,10 +146,22 @@
       "riskPct": "2.01"
     },
     {
-      "ticker": "VAKFN",
-      "buy": "1.8900",
-      "stop": "1.8500",
-      "riskPct": "2.12"
+      "ticker": "EKSUN",
+      "buy": "5.4100",
+      "stop": "5.3000",
+      "riskPct": "2.03"
+    },
+    {
+      "ticker": "DOHOL",
+      "buy": "21.22",
+      "stop": "20.78",
+      "riskPct": "2.07"
+    },
+    {
+      "ticker": "MRGYO",
+      "buy": "1.4400",
+      "stop": "1.4100",
+      "riskPct": "2.08"
     },
     {
       "ticker": "CEMAS",
@@ -194,6 +182,12 @@
       "riskPct": "2.35"
     },
     {
+      "ticker": "KZBGY",
+      "buy": "3.1550",
+      "stop": "3.0800",
+      "riskPct": "2.38"
+    },
+    {
       "ticker": "BVSAN",
       "buy": "107.00",
       "stop": "104.40",
@@ -210,6 +204,12 @@
       "buy": "1.0050",
       "stop": "0.9800",
       "riskPct": "2.49"
+    },
+    {
+      "ticker": "GOZDE",
+      "buy": "21.32",
+      "stop": "20.76",
+      "riskPct": "2.63"
     },
     {
       "ticker": "HOROZ",
