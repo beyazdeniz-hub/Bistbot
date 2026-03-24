@@ -1,5 +1,5 @@
 {
-  "updatedAt": "24.03.2026 17:57:47",
+  "updatedAt": "24.03.2026 21:20:17",
   "signals": [
     {
       "ticker": "BASCM",
@@ -8,28 +8,28 @@
       "riskPct": "0.90"
     },
     {
-      "ticker": "HTTBT",
-      "buy": "37.30",
-      "stop": "36.84",
-      "riskPct": "1.23"
-    },
-    {
-      "ticker": "SEGYO",
-      "buy": "4.6250",
-      "stop": "4.5600",
-      "riskPct": "1.41"
-    },
-    {
       "ticker": "AKENR",
       "buy": "9.7500",
       "stop": "9.6000",
       "riskPct": "1.54"
     },
     {
+      "ticker": "ANELE",
+      "buy": "14.22",
+      "stop": "14.00",
+      "riskPct": "1.55"
+    },
+    {
       "ticker": "YIGIT",
       "buy": "22.46",
       "stop": "22.10",
       "riskPct": "1.60"
+    },
+    {
+      "ticker": "HTTBT",
+      "buy": "37.20",
+      "stop": "36.60",
+      "riskPct": "1.61"
     },
     {
       "ticker": "PATEK",
@@ -80,6 +80,24 @@
       "riskPct": "2.01"
     },
     {
+      "ticker": "DOHOL",
+      "buy": "21.22",
+      "stop": "20.78",
+      "riskPct": "2.07"
+    },
+    {
+      "ticker": "BINBN",
+      "buy": "161.40",
+      "stop": "158.00",
+      "riskPct": "2.11"
+    },
+    {
+      "ticker": "PASEU",
+      "buy": "122.75",
+      "stop": "120.00",
+      "riskPct": "2.24"
+    },
+    {
       "ticker": "EUHOL",
       "buy": "12.75",
       "stop": "12.45",
@@ -90,6 +108,12 @@
       "buy": "3.1550",
       "stop": "3.0800",
       "riskPct": "2.38"
+    },
+    {
+      "ticker": "SEGYO",
+      "buy": "4.6000",
+      "stop": "4.4900",
+      "riskPct": "2.39"
     },
     {
       "ticker": "BVSAN",
@@ -110,18 +134,6 @@
       "riskPct": "2.49"
     },
     {
-      "ticker": "HOROZ",
-      "buy": "56.25",
-      "stop": "54.75",
-      "riskPct": "2.67"
-    },
-    {
-      "ticker": "BINBN",
-      "buy": "161.70",
-      "stop": "157.30",
-      "riskPct": "2.72"
-    },
-    {
       "ticker": "BOBET",
       "buy": "19.20",
       "stop": "18.67",
@@ -132,6 +144,18 @@
       "buy": "28.20",
       "stop": "27.40",
       "riskPct": "2.84"
+    },
+    {
+      "ticker": "DOFER",
+      "buy": "36.04",
+      "stop": "35.00",
+      "riskPct": "2.89"
+    },
+    {
+      "ticker": "SEYKM",
+      "buy": "4.4500",
+      "stop": "4.3200",
+      "riskPct": "2.92"
     },
     {
       "ticker": "JANTS",
