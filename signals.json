@@ -1,12 +1,6 @@
 {
-  "updatedAt": "24.03.2026 02:56:26",
+  "updatedAt": "24.03.2026 08:31:47",
   "signals": [
-    {
-      "ticker": "FMIZP",
-      "buy": "300.39",
-      "stop": "298.00",
-      "riskPct": "0.80"
-    },
     {
       "ticker": "THYAO",
       "buy": "290.13",
@@ -108,6 +102,12 @@
       "buy": "52.95",
       "stop": "52.10",
       "riskPct": "1.61"
+    },
+    {
+      "ticker": "FMIZP",
+      "buy": "296.00",
+      "stop": "290.75",
+      "riskPct": "1.77"
     },
     {
       "ticker": "AVHOL",
