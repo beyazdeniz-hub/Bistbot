@@ -1,47 +1,11 @@
 {
-  "updatedAt": "24.03.2026 21:20:17",
+  "updatedAt": "24.03.2026 23:05:23",
   "signals": [
-    {
-      "ticker": "BASCM",
-      "buy": "14.39",
-      "stop": "14.26",
-      "riskPct": "0.90"
-    },
-    {
-      "ticker": "AKENR",
-      "buy": "9.7500",
-      "stop": "9.6000",
-      "riskPct": "1.54"
-    },
-    {
-      "ticker": "ANELE",
-      "buy": "14.22",
-      "stop": "14.00",
-      "riskPct": "1.55"
-    },
-    {
-      "ticker": "YIGIT",
-      "buy": "22.46",
-      "stop": "22.10",
-      "riskPct": "1.60"
-    },
-    {
-      "ticker": "HTTBT",
-      "buy": "37.20",
-      "stop": "36.60",
-      "riskPct": "1.61"
-    },
     {
       "ticker": "PATEK",
       "buy": "17.80",
       "stop": "17.51",
       "riskPct": "1.63"
-    },
-    {
-      "ticker": "TUKAS",
-      "buy": "2.3500",
-      "stop": "2.3100",
-      "riskPct": "1.70"
     },
     {
       "ticker": "DCTTR",
@@ -50,52 +14,10 @@
       "riskPct": "1.78"
     },
     {
-      "ticker": "SUMAS",
-      "buy": "263.00",
-      "stop": "258.25",
-      "riskPct": "1.81"
-    },
-    {
-      "ticker": "CEMTS",
-      "buy": "10.49",
-      "stop": "10.30",
-      "riskPct": "1.81"
-    },
-    {
-      "ticker": "SAMAT",
-      "buy": "5.4000",
-      "stop": "5.3000",
-      "riskPct": "1.85"
-    },
-    {
-      "ticker": "PLTUR",
-      "buy": "24.02",
-      "stop": "23.54",
-      "riskPct": "2.00"
-    },
-    {
       "ticker": "PAHOL",
       "buy": "1.4900",
       "stop": "1.4600",
       "riskPct": "2.01"
-    },
-    {
-      "ticker": "DOHOL",
-      "buy": "21.22",
-      "stop": "20.78",
-      "riskPct": "2.07"
-    },
-    {
-      "ticker": "BINBN",
-      "buy": "161.40",
-      "stop": "158.00",
-      "riskPct": "2.11"
-    },
-    {
-      "ticker": "PASEU",
-      "buy": "122.75",
-      "stop": "120.00",
-      "riskPct": "2.24"
     },
     {
       "ticker": "EUHOL",
@@ -104,64 +26,16 @@
       "riskPct": "2.35"
     },
     {
-      "ticker": "KZBGY",
-      "buy": "3.1550",
-      "stop": "3.0800",
-      "riskPct": "2.38"
-    },
-    {
-      "ticker": "SEGYO",
-      "buy": "4.6000",
-      "stop": "4.4900",
-      "riskPct": "2.39"
-    },
-    {
-      "ticker": "BVSAN",
-      "buy": "107.00",
-      "stop": "104.40",
-      "riskPct": "2.43"
-    },
-    {
       "ticker": "TUPRS",
       "buy": "254.75",
       "stop": "248.50",
       "riskPct": "2.45"
     },
     {
-      "ticker": "ADESE",
-      "buy": "1.0050",
-      "stop": "0.9800",
-      "riskPct": "2.49"
-    },
-    {
-      "ticker": "BOBET",
-      "buy": "19.20",
-      "stop": "18.67",
-      "riskPct": "2.76"
-    },
-    {
-      "ticker": "MEDTR",
-      "buy": "28.20",
-      "stop": "27.40",
-      "riskPct": "2.84"
-    },
-    {
       "ticker": "DOFER",
       "buy": "36.04",
       "stop": "35.00",
       "riskPct": "2.89"
-    },
-    {
-      "ticker": "SEYKM",
-      "buy": "4.4500",
-      "stop": "4.3200",
-      "riskPct": "2.92"
-    },
-    {
-      "ticker": "JANTS",
-      "buy": "16.98",
-      "stop": "16.48",
-      "riskPct": "2.94"
     }
   ],
   "earlySignals": []
