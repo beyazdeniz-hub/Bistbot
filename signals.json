@@ -1,5 +1,5 @@
 {
-  "updatedAt": "25.03.2026 13:50:13",
+  "updatedAt": "25.03.2026 17:58:14",
   "signals": [
     {
       "ticker": "DMLKT",
@@ -18,12 +18,6 @@
       "buy": "19.77",
       "stop": "19.57",
       "riskPct": "1.01"
-    },
-    {
-      "ticker": "ORGE",
-      "buy": "67.90",
-      "stop": "67.00",
-      "riskPct": "1.33"
     },
     {
       "ticker": "AKENR",
@@ -56,12 +50,6 @@
       "riskPct": "1.61"
     },
     {
-      "ticker": "MERCN",
-      "buy": "17.08",
-      "stop": "16.80",
-      "riskPct": "1.64"
-    },
-    {
       "ticker": "TUKAS",
       "buy": "2.3500",
       "stop": "2.3100",
@@ -92,12 +80,6 @@
       "riskPct": "1.85"
     },
     {
-      "ticker": "PLTUR",
-      "buy": "24.02",
-      "stop": "23.54",
-      "riskPct": "2.00"
-    },
-    {
       "ticker": "EKSUN",
       "buy": "5.4100",
       "stop": "5.3000",
@@ -120,12 +102,6 @@
       "buy": "4.6700",
       "stop": "4.5700",
       "riskPct": "2.14"
-    },
-    {
-      "ticker": "PASEU",
-      "buy": "122.75",
-      "stop": "120.00",
-      "riskPct": "2.24"
     },
     {
       "ticker": "ALTIN",
@@ -174,12 +150,6 @@
       "buy": "2.3500",
       "stop": "2.2900",
       "riskPct": "2.55"
-    },
-    {
-      "ticker": "HOROZ",
-      "buy": "56.25",
-      "stop": "54.75",
-      "riskPct": "2.67"
     },
     {
       "ticker": "TDGYO",
