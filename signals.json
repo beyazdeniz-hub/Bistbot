@@ -1,5 +1,5 @@
 {
-  "updatedAt": "25.03.2026 11:17:50",
+  "updatedAt": "25.03.2026 13:50:13",
   "signals": [
     {
       "ticker": "DMLKT",
@@ -12,6 +12,18 @@
       "buy": "14.39",
       "stop": "14.26",
       "riskPct": "0.90"
+    },
+    {
+      "ticker": "DNISI",
+      "buy": "19.77",
+      "stop": "19.57",
+      "riskPct": "1.01"
+    },
+    {
+      "ticker": "ORGE",
+      "buy": "67.90",
+      "stop": "67.00",
+      "riskPct": "1.33"
     },
     {
       "ticker": "AKENR",
@@ -44,6 +56,12 @@
       "riskPct": "1.61"
     },
     {
+      "ticker": "MERCN",
+      "buy": "17.08",
+      "stop": "16.80",
+      "riskPct": "1.64"
+    },
+    {
       "ticker": "TUKAS",
       "buy": "2.3500",
       "stop": "2.3100",
@@ -66,12 +84,6 @@
       "buy": "10.49",
       "stop": "10.30",
       "riskPct": "1.81"
-    },
-    {
-      "ticker": "BNTAS",
-      "buy": "6.2850",
-      "stop": "6.1700",
-      "riskPct": "1.83"
     },
     {
       "ticker": "SAMAT",
@@ -164,22 +176,10 @@
       "riskPct": "2.55"
     },
     {
-      "ticker": "GOZDE",
-      "buy": "21.32",
-      "stop": "20.76",
-      "riskPct": "2.63"
-    },
-    {
       "ticker": "HOROZ",
       "buy": "56.25",
       "stop": "54.75",
       "riskPct": "2.67"
-    },
-    {
-      "ticker": "OSMEN",
-      "buy": "7.5250",
-      "stop": "7.3200",
-      "riskPct": "2.72"
     },
     {
       "ticker": "TDGYO",
