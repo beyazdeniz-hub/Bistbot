@@ -1,12 +1,6 @@
 {
-  "updatedAt": "26.03.2026 13:03:34",
+  "updatedAt": "26.03.2026 18:02:42",
   "signals": [
-    {
-      "ticker": "CMENT",
-      "buy": "330.13",
-      "stop": "330.00",
-      "riskPct": "0.04"
-    },
     {
       "ticker": "EMNIS",
       "buy": "152.20",
@@ -26,22 +20,16 @@
       "riskPct": "0.44"
     },
     {
-      "ticker": "YBTAS",
-      "buy": "19.16",
-      "stop": "19.00",
-      "riskPct": "0.84"
+      "ticker": "BUCIM",
+      "buy": "6.1050",
+      "stop": "6.0600",
+      "riskPct": "0.74"
     },
     {
       "ticker": "MTRKS",
       "buy": "21.39",
       "stop": "21.20",
       "riskPct": "0.89"
-    },
-    {
-      "ticker": "BASCM",
-      "buy": "14.39",
-      "stop": "14.26",
-      "riskPct": "0.90"
     },
     {
       "ticker": "ASGYO",
@@ -54,18 +42,6 @@
       "buy": "117.70",
       "stop": "116.60",
       "riskPct": "0.93"
-    },
-    {
-      "ticker": "GSRAY",
-      "buy": "1.0700",
-      "stop": "1.0600",
-      "riskPct": "0.93"
-    },
-    {
-      "ticker": "UNLU",
-      "buy": "13.69",
-      "stop": "13.56",
-      "riskPct": "0.95"
     },
     {
       "ticker": "EUYO",
@@ -86,18 +62,6 @@
       "riskPct": "1.02"
     },
     {
-      "ticker": "DOAS",
-      "buy": "195.60",
-      "stop": "193.50",
-      "riskPct": "1.07"
-    },
-    {
-      "ticker": "RTALB",
-      "buy": "3.7200",
-      "stop": "3.6800",
-      "riskPct": "1.08"
-    },
-    {
       "ticker": "ALFAS",
       "buy": "36.90",
       "stop": "36.50",
@@ -110,58 +74,22 @@
       "riskPct": "1.12"
     },
     {
-      "ticker": "QNBFK",
-      "buy": "53.15",
-      "stop": "52.55",
-      "riskPct": "1.13"
-    },
-    {
-      "ticker": "GLRYH",
-      "buy": "4.2300",
-      "stop": "4.1800",
-      "riskPct": "1.18"
-    },
-    {
-      "ticker": "TBORG",
-      "buy": "145.75",
-      "stop": "144.00",
-      "riskPct": "1.20"
-    },
-    {
       "ticker": "DARDL",
       "buy": "2.0050",
       "stop": "1.9800",
       "riskPct": "1.25"
     },
     {
-      "ticker": "CWENE",
-      "buy": "29.24",
-      "stop": "28.86",
+      "ticker": "FENER",
+      "buy": "2.6850",
+      "stop": "2.6500",
       "riskPct": "1.30"
-    },
-    {
-      "ticker": "EBEBK",
-      "buy": "61.08",
-      "stop": "60.25",
-      "riskPct": "1.36"
     },
     {
       "ticker": "ATATP",
       "buy": "146.10",
       "stop": "144.10",
       "riskPct": "1.37"
-    },
-    {
-      "ticker": "BNTAS",
-      "buy": "6.1750",
-      "stop": "6.0900",
-      "riskPct": "1.38"
-    },
-    {
-      "ticker": "BRLSM",
-      "buy": "15.16",
-      "stop": "14.95",
-      "riskPct": "1.39"
     },
     {
       "ticker": "CLEBI",
@@ -188,22 +116,10 @@
       "riskPct": "1.42"
     },
     {
-      "ticker": "BRYAT",
-      "buy": "2171",
-      "stop": "2140",
-      "riskPct": "1.43"
-    },
-    {
       "ticker": "GOODY",
       "buy": "13.93",
       "stop": "13.73",
       "riskPct": "1.44"
-    },
-    {
-      "ticker": "MNDRS",
-      "buy": "13.48",
-      "stop": "13.28",
-      "riskPct": "1.48"
     },
     {
       "ticker": "LYDHO",
@@ -224,18 +140,6 @@
       "riskPct": "1.52"
     },
     {
-      "ticker": "ARCLK",
-      "buy": "114.95",
-      "stop": "113.20",
-      "riskPct": "1.52"
-    },
-    {
-      "ticker": "AKENR",
-      "buy": "9.7500",
-      "stop": "9.6000",
-      "riskPct": "1.54"
-    },
-    {
       "ticker": "OZYSR",
       "buy": "45.52",
       "stop": "44.80",
@@ -246,18 +150,6 @@
       "buy": "22.46",
       "stop": "22.10",
       "riskPct": "1.60"
-    },
-    {
-      "ticker": "KRDMD",
-      "buy": "29.71",
-      "stop": "29.22",
-      "riskPct": "1.65"
-    },
-    {
-      "ticker": "PAPIL",
-      "buy": "16.00",
-      "stop": "15.73",
-      "riskPct": "1.69"
     },
     {
       "ticker": "TUKAS",
@@ -284,12 +176,6 @@
       "riskPct": "1.74"
     },
     {
-      "ticker": "MEDTR",
-      "buy": "27.95",
-      "stop": "27.46",
-      "riskPct": "1.75"
-    },
-    {
       "ticker": "PETUN",
       "buy": "11.31",
       "stop": "11.11",
@@ -299,12 +185,6 @@
       "ticker": "DNISI",
       "buy": "19.60",
       "stop": "19.25",
-      "riskPct": "1.79"
-    },
-    {
-      "ticker": "ORCAY",
-      "buy": "3.3500",
-      "stop": "3.2900",
       "riskPct": "1.79"
     },
     {
@@ -362,12 +242,6 @@
       "riskPct": "1.91"
     },
     {
-      "ticker": "VAKFN",
-      "buy": "1.8350",
-      "stop": "1.8000",
-      "riskPct": "1.91"
-    },
-    {
       "ticker": "MAVI",
       "buy": "43.23",
       "stop": "42.38",
@@ -416,22 +290,10 @@
       "riskPct": "2.06"
     },
     {
-      "ticker": "DOHOL",
-      "buy": "21.22",
-      "stop": "20.78",
-      "riskPct": "2.07"
-    },
-    {
       "ticker": "EKIZ",
       "buy": "98.05",
       "stop": "96.00",
       "riskPct": "2.09"
-    },
-    {
-      "ticker": "BIOEN",
-      "buy": "17.01",
-      "stop": "16.65",
-      "riskPct": "2.12"
     },
     {
       "ticker": "SKBNK",
@@ -470,12 +332,6 @@
       "riskPct": "2.29"
     },
     {
-      "ticker": "YKBNK",
-      "buy": "34.04",
-      "stop": "33.26",
-      "riskPct": "2.29"
-    },
-    {
       "ticker": "PRKAB",
       "buy": "40.71",
       "stop": "39.76",
@@ -506,22 +362,10 @@
       "riskPct": "2.39"
     },
     {
-      "ticker": "MAKTK",
-      "buy": "13.32",
-      "stop": "13.00",
-      "riskPct": "2.40"
-    },
-    {
       "ticker": "BVSAN",
       "buy": "107.00",
       "stop": "104.40",
       "riskPct": "2.43"
-    },
-    {
-      "ticker": "VKGYO",
-      "buy": "2.6650",
-      "stop": "2.6000",
-      "riskPct": "2.44"
     },
     {
       "ticker": "RGYAS",
@@ -530,16 +374,10 @@
       "riskPct": "2.45"
     },
     {
-      "ticker": "ULAS",
-      "buy": "32.23",
-      "stop": "31.44",
-      "riskPct": "2.45"
-    },
-    {
-      "ticker": "ECILC",
-      "buy": "117.10",
-      "stop": "114.20",
-      "riskPct": "2.48"
+      "ticker": "KRDMA",
+      "buy": "29.64",
+      "stop": "28.90",
+      "riskPct": "2.50"
     },
     {
       "ticker": "ELITE",
@@ -552,12 +390,6 @@
       "buy": "51.75",
       "stop": "50.45",
       "riskPct": "2.51"
-    },
-    {
-      "ticker": "EREGL",
-      "buy": "28.14",
-      "stop": "27.42",
-      "riskPct": "2.56"
     },
     {
       "ticker": "BIZIM",
@@ -584,18 +416,6 @@
       "riskPct": "2.65"
     },
     {
-      "ticker": "ICBCT",
-      "buy": "14.70",
-      "stop": "14.31",
-      "riskPct": "2.65"
-    },
-    {
-      "ticker": "HOROZ",
-      "buy": "56.25",
-      "stop": "54.75",
-      "riskPct": "2.67"
-    },
-    {
       "ticker": "SUWEN",
       "buy": "8.9400",
       "stop": "8.7000",
@@ -606,12 +426,6 @@
       "buy": "39.42",
       "stop": "38.36",
       "riskPct": "2.69"
-    },
-    {
-      "ticker": "TEKTU",
-      "buy": "9.0000",
-      "stop": "8.7500",
-      "riskPct": "2.78"
     },
     {
       "ticker": "GZNMI",
