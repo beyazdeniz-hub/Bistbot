@@ -8,7 +8,7 @@ const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
-const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY; // örn: beyazdeniz-hub/Bistbot
+const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY;
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || "main";
 
 const URL = "https://www.turkishbulls.com/SignalList.aspx?lang=tr&MarketSymbol=IMKB";
@@ -512,7 +512,6 @@ async function addLevelsToImage(baseImagePath, outputImagePath, row) {
   const chartMax = max + padding;
   const range = chartMax - chartMin || 1;
 
-  // grafik alanı yaklaşık
   const topY = 95;
   const bottomY = 650;
   const leftX = 70;
@@ -545,7 +544,6 @@ async function addLevelsToImage(baseImagePath, outputImagePath, row) {
     drawLineLabel(ctx, `${label}: ${Number(value).toFixed(2)}`, rightX, y, color, true);
   }
 
-  // sol üst küçük bilgi kutusu
   ctx.globalAlpha = 0.85;
   ctx.fillStyle = "#07101d";
   ctx.fillRect(18, 18, 280, 92);
@@ -731,23 +729,21 @@ async function run() {
     }
 
     const category = getTimeCategory();
+    const chartFolder =
+      category === "onay" ? "onay" :
+      category === "seans" ? "seans" :
+      "diger";
 
-const chartFolder = category === "onay" ? "onay" : category === "seans" ? "seans" : "diger";
-await generateAndUploadCharts(browser, filtered, chartFolder);
+    await generateAndUploadCharts(browser, filtered, chartFolder);
 
-saveLatestJson("signals.json", filtered);
+    saveLatestJson("signals.json", filtered);
 
-if (category === "onay") {
-  saveLatestJson("onay.json", filtered);
-  saveHistory(filtered);
-}
-
-if (category === "seans") {
-  saveLatestJson("seans.json", filtered);
-}
+    if (category === "onay") {
+      saveLatestJson("onay.json", filtered);
+      saveHistory(filtered);
+    }
 
     if (category === "seans") {
-      await generateAndUploadCharts(browser, filtered, "seans");
       saveLatestJson("seans.json", filtered);
     }
 
