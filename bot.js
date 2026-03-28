@@ -732,13 +732,19 @@ async function run() {
 
     const category = getTimeCategory();
 
-    saveLatestJson("signals.json", filtered);
+const chartFolder = category === "onay" ? "onay" : category === "seans" ? "seans" : "diger";
+await generateAndUploadCharts(browser, filtered, chartFolder);
 
-    if (category === "onay") {
-      await generateAndUploadCharts(browser, filtered, "onay");
-      saveLatestJson("onay.json", filtered);
-      saveHistory(filtered);
-    }
+saveLatestJson("signals.json", filtered);
+
+if (category === "onay") {
+  saveLatestJson("onay.json", filtered);
+  saveHistory(filtered);
+}
+
+if (category === "seans") {
+  saveLatestJson("seans.json", filtered);
+}
 
     if (category === "seans") {
       await generateAndUploadCharts(browser, filtered, "seans");
