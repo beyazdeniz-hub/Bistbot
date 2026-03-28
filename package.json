@@ -1,13 +1,14 @@
 {
   "name": "bistbot",
   "version": "1.0.0",
-  "description": "Turkishbulls telegram bot",
+  "description": "BIST signal bot with chart screenshots",
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js"
   },
   "dependencies": {
-    "axios": "^1.7.9",
-    "puppeteer": "^24.6.1"
+    "axios": "^1.7.7",
+    "canvas": "^2.11.2",
+    "puppeteer": "^24.7.1"
   }
 }
