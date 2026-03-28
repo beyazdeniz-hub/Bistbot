@@ -91,27 +91,26 @@ function splitRowsForTelegram(title, rows, chunkSize = 25) {
   return messages;
 }
 
-function saveSignals(rows) {
+function saveLatestJson(filename, rows) {
   const payload = {
-    updatedAt: new Date().toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" }),
+    updatedAt: getTurkeyNow().toLocaleString("tr-TR"),
     signals: rows.map((row) => ({
       ticker: row.ticker,
       alis: row.alis,
       stop: row.stop,
-      risk: row.risk,
+      risk: row.risk.toFixed(2),
       current: row.current ?? null,
       change: row.change ?? null,
     })),
   };
 
-  fs.writeFileSync("signals.json", JSON.stringify(payload, null, 2), "utf8");
-  console.log("signals.json oluşturuldu");
+  fs.writeFileSync(filename, JSON.stringify(payload, null, 2), "utf8");
+  console.log(`${filename} oluşturuldu`);
 }
 
 function saveHistory(rows) {
   const now = getTurkeyNow();
   const today = now.toLocaleDateString("tr-TR");
-  const category = getTimeCategory();
 
   let db = {};
 
@@ -123,23 +122,18 @@ function saveHistory(rows) {
     }
   }
 
-  if (!db[today]) {
-    db[today] = {
-      onay: [],
-      seans: [],
-    };
-  }
-
-  if (category === "onay" || category === "seans") {
-    db[today][category] = rows.map((row) => ({
+  db[today] = {
+    date: today,
+    updatedAt: now.toLocaleString("tr-TR"),
+    signals: rows.map((row) => ({
       ticker: row.ticker,
       alis: row.alis,
       stop: row.stop,
-      risk: row.risk,
+      risk: row.risk.toFixed(2),
       current: row.current ?? null,
       change: row.change ?? null,
-    }));
-  }
+    })),
+  };
 
   fs.writeFileSync("history.json", JSON.stringify(db, null, 2), "utf8");
   console.log("history.json güncellendi");
@@ -239,13 +233,8 @@ async function autoScroll(page) {
     lastCount = currentCount;
     lastHeight = after.scrollHeight;
 
-    if (stableRounds >= 3) {
-      break;
-    }
-
-    if (after.scrollTop === before.scrollTop && reachedBottom) {
-      stableRounds++;
-    }
+    if (stableRounds >= 3) break;
+    if (after.scrollTop === before.scrollTop && reachedBottom) stableRounds++;
   }
 
   await sleep(2000);
@@ -287,7 +276,6 @@ async function extractRows(page) {
 
       if (cells.length >= 4) {
         const nonTickerCells = cells.filter((cell) => !cell.includes(ticker));
-
         if (nonTickerCells.length >= 3) {
           alis = nonTickerCells[0] || "-";
           son = nonTickerCells[1] || "-";
@@ -343,9 +331,7 @@ async function extractDetailLevels(detailPage, ticker) {
     function pick(regexList) {
       for (const regex of regexList) {
         const m = bodyText.match(regex);
-        if (m && m[1]) {
-          return m[1].trim();
-        }
+        if (m && m[1]) return m[1].trim();
       }
       return "-";
     }
@@ -401,14 +387,9 @@ async function run() {
       try {
         const detail = await extractDetailLevels(detailPage, row.ticker);
 
-        if (detail.alSeviyesi && detail.alSeviyesi !== "-") {
-          row.alis = detail.alSeviyesi;
-        }
-
-        if (detail.stoploss && detail.stoploss !== "-") {
-          row.son = detail.stoploss;
-        }
-      } catch (e) {}
+        if (detail.alSeviyesi && detail.alSeviyesi !== "-") row.alis = detail.alSeviyesi;
+        if (detail.stoploss && detail.stoploss !== "-") row.son = detail.stoploss;
+      } catch {}
 
       await sleep(700);
     }
@@ -444,20 +425,28 @@ async function run() {
         change: change !== null ? change.toFixed(2) : null,
       });
 
-      await sleep(300);
+      await sleep(250);
     }
 
-    saveSignals(filtered);
-    saveHistory(filtered);
+    const category = getTimeCategory();
+
+    if (category === "onay") {
+      saveLatestJson("onay.json", filtered);
+      saveHistory(filtered);
+    }
+
+    if (category === "seans") {
+      saveLatestJson("seans.json", filtered);
+    }
+
+    saveLatestJson("signals.json", filtered);
 
     if (!filtered.length) {
       await sendTelegram("Risk <= 3 uygun sinyal bulunamadı");
       return;
     }
 
-    const category = getTimeCategory();
     let title = "Risk <= 3 Uygun Hisseler";
-
     if (category === "onay") title = "21:00 Onay Alan Hisseler";
     if (category === "seans") title = "Seans İçi Sinyaller";
 
