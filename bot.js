@@ -233,8 +233,13 @@ async function autoScroll(page) {
     lastCount = currentCount;
     lastHeight = after.scrollHeight;
 
-    if (stableRounds >= 3) break;
-    if (after.scrollTop === before.scrollTop && reachedBottom) stableRounds++;
+    if (stableRounds >= 3) {
+      break;
+    }
+
+    if (after.scrollTop === before.scrollTop && reachedBottom) {
+      stableRounds++;
+    }
   }
 
   await sleep(2000);
@@ -387,9 +392,14 @@ async function run() {
       try {
         const detail = await extractDetailLevels(detailPage, row.ticker);
 
-        if (detail.alSeviyesi && detail.alSeviyesi !== "-") row.alis = detail.alSeviyesi;
-        if (detail.stoploss && detail.stoploss !== "-") row.son = detail.stoploss;
-      } catch {}
+        if (detail.alSeviyesi && detail.alSeviyesi !== "-") {
+          row.alis = detail.alSeviyesi;
+        }
+
+        if (detail.stoploss && detail.stoploss !== "-") {
+          row.son = detail.stoploss;
+        }
+      } catch (e) {}
 
       await sleep(700);
     }
@@ -428,15 +438,19 @@ async function run() {
       await sleep(250);
     }
 
+    // KAYIT KISMI BURADA DOĞRU YERDE
     const category = getTimeCategory();
 
-// Ana genel dosya
-saveLatestJson("signals.json", filtered);
+    saveLatestJson("signals.json", filtered);
 
-// TEST İÇİN: her çalıştırmada hepsini doldur
-saveLatestJson("onay.json", filtered);
-saveLatestJson("seans.json", filtered);
-saveHistory(filtered);
+    if (category === "onay") {
+      saveLatestJson("onay.json", filtered);
+      saveHistory(filtered);
+    }
+
+    if (category === "seans") {
+      saveLatestJson("seans.json", filtered);
+    }
 
     if (!filtered.length) {
       await sendTelegram("Risk <= 3 uygun sinyal bulunamadı");
