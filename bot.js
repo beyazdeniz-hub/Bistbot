@@ -430,16 +430,13 @@ async function run() {
 
     const category = getTimeCategory();
 
-    if (category === "onay") {
-      saveLatestJson("onay.json", filtered);
-      saveHistory(filtered);
-    }
+// Ana genel dosya
+saveLatestJson("signals.json", filtered);
 
-    if (category === "seans") {
-      saveLatestJson("seans.json", filtered);
-    }
-
-    saveLatestJson("signals.json", filtered);
+// TEST İÇİN: her çalıştırmada hepsini doldur
+saveLatestJson("onay.json", filtered);
+saveLatestJson("seans.json", filtered);
+saveHistory(filtered);
 
     if (!filtered.length) {
       await sendTelegram("Risk <= 3 uygun sinyal bulunamadı");
