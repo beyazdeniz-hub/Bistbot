@@ -1,0 +1,112 @@
+{
+  "28.03.2026": {
+    "date": "28.03.2026",
+    "updatedAt": "28.03.2026 04:21:28",
+    "signals": [
+      {
+        "ticker": "ANELE",
+        "alis": "14.22",
+        "stop": "14.00",
+        "risk": "1.55",
+        "current": null,
+        "change": null
+      },
+      {
+        "ticker": "BMSCH",
+        "alis": "17.01",
+        "stop": "16.58",
+        "risk": "2.53",
+        "current": null,
+        "change": null
+      },
+      {
+        "ticker": "CRFSA",
+        "alis": "117.70",
+        "stop": "116.60",
+        "risk": "0.93",
+        "current": null,
+        "change": null
+      },
+      {
+        "ticker": "CWENE",
+        "alis": "29.24",
+        "stop": "28.86",
+        "risk": "1.30",
+        "current": null,
+        "change": null
+      },
+      {
+        "ticker": "EGEGY",
+        "alis": "28.44",
+        "stop": "28.20",
+        "risk": "0.84",
+        "current": null,
+        "change": null
+      },
+      {
+        "ticker": "KRDMB",
+        "alis": "56.58",
+        "stop": "55.00",
+        "risk": "2.79",
+        "current": null,
+        "change": null
+      },
+      {
+        "ticker": "MACKO",
+        "alis": "32.46",
+        "stop": "31.70",
+        "risk": "2.34",
+        "current": null,
+        "change": null
+      },
+      {
+        "ticker": "PCILT",
+        "alis": "29.16",
+        "stop": "28.34",
+        "risk": "2.81",
+        "current": null,
+        "change": null
+      },
+      {
+        "ticker": "POLHO",
+        "alis": "20.80",
+        "stop": "20.18",
+        "risk": "2.98",
+        "current": null,
+        "change": null
+      },
+      {
+        "ticker": "RGYAS",
+        "alis": "155.10",
+        "stop": "151.30",
+        "risk": "2.45",
+        "current": null,
+        "change": null
+      },
+      {
+        "ticker": "SELEC",
+        "alis": "81.00",
+        "stop": "78.85",
+        "risk": "2.65",
+        "current": null,
+        "change": null
+      },
+      {
+        "ticker": "SKYMD",
+        "alis": "11.98",
+        "stop": "11.80",
+        "risk": "1.50",
+        "current": null,
+        "change": null
+      },
+      {
+        "ticker": "ULKER",
+        "alis": "111.35",
+        "stop": "108.80",
+        "risk": "2.29",
+        "current": null,
+        "change": null
+      }
+    ]
+  }
+}
