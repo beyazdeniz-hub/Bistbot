@@ -1,12 +1,21 @@
 const puppeteer = require("puppeteer");
 const axios = require("axios");
 const fs = require("fs");
+const path = require("path");
+const { createCanvas, loadImage } = require("canvas");
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY; // örn: beyazdeniz-hub/Bistbot
+const GITHUB_BRANCH = process.env.GITHUB_BRANCH || "main";
+
 const URL = "https://www.turkishbulls.com/SignalList.aspx?lang=tr&MarketSymbol=IMKB";
 const DETAIL_URL = "https://www.turkishbulls.com/SignalPage.aspx?lang=tr&Ticker=";
+
+const MAX_CHARTS_PER_RUN = 12;
+const TEMP_DIR = "tmp_charts";
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -49,6 +58,12 @@ function getTimeCategory() {
   if (hour === 21) return "onay";
   if (hour >= 9 && hour <= 18) return "seans";
   return "diger";
+}
+
+function ensureDir(dirPath) {
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
 }
 
 async function sendTelegram(text) {
@@ -101,6 +116,7 @@ function saveLatestJson(filename, rows) {
       risk: row.risk.toFixed(2),
       current: row.current ?? null,
       change: row.change ?? null,
+      grafikUrl: row.grafikUrl ?? null,
     })),
   };
 
@@ -132,6 +148,7 @@ function saveHistory(rows) {
       risk: row.risk.toFixed(2),
       current: row.current ?? null,
       change: row.change ?? null,
+      grafikUrl: row.grafikUrl ?? null,
     })),
   };
 
@@ -359,7 +376,281 @@ async function extractDetailLevels(detailPage, ticker) {
   });
 }
 
+function makeTradingViewHtml(ticker) {
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>${ticker}</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #0b1220;
+      width: 1280px;
+      height: 720px;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    #wrap {
+      width: 1280px;
+      height: 720px;
+      position: relative;
+      background: #0b1220;
+    }
+    .tradingview-widget-container,
+    .tradingview-widget-container__widget {
+      width: 1280px !important;
+      height: 720px !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <div class="tradingview-widget-container">
+      <div id="tv_chart"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+      <script type="text/javascript">
+        new TradingView.widget({
+          "width": 1280,
+          "height": 720,
+          "symbol": "BIST:${ticker}",
+          "interval": "D",
+          "timezone": "Europe/Istanbul",
+          "theme": "dark",
+          "style": "1",
+          "locale": "tr",
+          "toolbar_bg": "#0b1220",
+          "enable_publishing": false,
+          "hide_top_toolbar": false,
+          "hide_legend": false,
+          "save_image": false,
+          "container_id": "tv_chart"
+        });
+      </script>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
+async function captureTradingViewBase(browser, ticker) {
+  ensureDir(TEMP_DIR);
+
+  const htmlPath = path.join(TEMP_DIR, `tv_${ticker}.html`);
+  const shotPath = path.join(TEMP_DIR, `tv_${ticker}_base.png`);
+
+  fs.writeFileSync(htmlPath, makeTradingViewHtml(ticker), "utf8");
+
+  const page = await browser.newPage();
+  await page.setViewport({ width: 1280, height: 720, deviceScaleFactor: 1 });
+
+  await page.goto(`file://${path.resolve(htmlPath)}`, {
+    waitUntil: "networkidle2",
+    timeout: 60000,
+  });
+
+  await sleep(9000);
+
+  await page.screenshot({
+    path: shotPath,
+    type: "png",
+  });
+
+  await page.close();
+
+  return shotPath;
+}
+
+function drawLineLabel(ctx, text, x, y, color, alignRight = true) {
+  const paddingX = 8;
+  const paddingY = 5;
+  ctx.font = "bold 18px Arial";
+
+  const metrics = ctx.measureText(text);
+  const boxW = metrics.width + paddingX * 2;
+  const boxH = 28;
+
+  const boxX = alignRight ? x - boxW - 10 : x + 10;
+  const boxY = Math.max(8, Math.min(y - boxH / 2, 720 - boxH - 8));
+
+  ctx.globalAlpha = 0.9;
+  ctx.fillStyle = "#0b1220";
+  ctx.fillRect(boxX, boxY, boxW, boxH);
+
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.strokeRect(boxX, boxY, boxW, boxH);
+
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillText(text, boxX + paddingX, boxY + 19);
+}
+
+async function addLevelsToImage(baseImagePath, outputImagePath, row) {
+  const image = await loadImage(baseImagePath);
+  const canvas = createCanvas(image.width, image.height);
+  const ctx = canvas.getContext("2d");
+
+  ctx.drawImage(image, 0, 0);
+
+  const buy = toNumber(row.alis);
+  const stop = toNumber(row.stop);
+  const current = toNumber(row.current);
+  const target = !isNaN(buy) && !isNaN(stop) && buy > stop ? buy + (buy - stop) * 2 : NaN;
+
+  const values = [buy, stop, current, target].filter((v) => !isNaN(v));
+  if (!values.length) {
+    fs.writeFileSync(outputImagePath, canvas.toBuffer("image/png"));
+    return;
+  }
+
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const padding = Math.max((max - min) * 0.18, 0.4);
+  const chartMin = min - padding;
+  const chartMax = max + padding;
+  const range = chartMax - chartMin || 1;
+
+  // grafik alanı yaklaşık
+  const topY = 95;
+  const bottomY = 650;
+  const leftX = 70;
+  const rightX = image.width - 45;
+
+  function yPos(value) {
+    const ratio = (value - chartMin) / range;
+    return bottomY - ratio * (bottomY - topY);
+  }
+
+  function drawHorizontal(value, color, label, dashed = false) {
+    if (isNaN(value)) return;
+
+    const y = yPos(value);
+
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 3;
+
+    if (dashed) {
+      ctx.setLineDash([12, 10]);
+    }
+
+    ctx.beginPath();
+    ctx.moveTo(leftX, y);
+    ctx.lineTo(rightX, y);
+    ctx.stroke();
+    ctx.restore();
+
+    drawLineLabel(ctx, `${label}: ${Number(value).toFixed(2)}`, rightX, y, color, true);
+  }
+
+  // sol üst küçük bilgi kutusu
+  ctx.globalAlpha = 0.85;
+  ctx.fillStyle = "#07101d";
+  ctx.fillRect(18, 18, 280, 92);
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = "#22324a";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(18, 18, 280, 92);
+
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 28px Arial";
+  ctx.fillText(row.ticker, 32, 52);
+
+  ctx.font = "18px Arial";
+  ctx.fillStyle = "#cbd5e1";
+  ctx.fillText(`Alış: ${row.alis}   Stop: ${row.stop}`, 32, 80);
+  ctx.fillText(`Güncel: ${row.current ?? "-"}   Risk: %${row.risk.toFixed(2)}`, 32, 102);
+
+  drawHorizontal(stop, "#ef4444", "STOP");
+  drawHorizontal(buy, "#22d3ee", "ALIŞ");
+  drawHorizontal(current, "#22c55e", "GÜNCEL");
+  drawHorizontal(target, "#f59e0b", "HEDEF", true);
+
+  fs.writeFileSync(outputImagePath, canvas.toBuffer("image/png"));
+}
+
+async function getExistingGitHubSha(ownerRepo, remotePath) {
+  try {
+    const url = `https://api.github.com/repos/${ownerRepo}/contents/${remotePath}?ref=${encodeURIComponent(GITHUB_BRANCH)}`;
+    const res = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: "application/vnd.github+json",
+      },
+      timeout: 20000,
+    });
+
+    return res.data?.sha || null;
+  } catch {
+    return null;
+  }
+}
+
+async function uploadFileToGithub(localPath, remotePath) {
+  if (!GITHUB_TOKEN || !GITHUB_REPOSITORY) {
+    return null;
+  }
+
+  const contentBase64 = fs.readFileSync(localPath, "base64");
+  const sha = await getExistingGitHubSha(GITHUB_REPOSITORY, remotePath);
+
+  const url = `https://api.github.com/repos/${GITHUB_REPOSITORY}/contents/${remotePath}`;
+
+  await axios.put(
+    url,
+    {
+      message: `chart upload: ${remotePath}`,
+      content: contentBase64,
+      branch: GITHUB_BRANCH,
+      ...(sha ? { sha } : {}),
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: "application/vnd.github+json",
+      },
+      timeout: 30000,
+    }
+  );
+
+  return `https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${GITHUB_BRANCH}/${remotePath}`;
+}
+
+async function generateAndUploadCharts(browser, rows, folderName) {
+  if (!rows.length) return rows;
+
+  ensureDir(TEMP_DIR);
+
+  const subset = rows.slice(0, MAX_CHARTS_PER_RUN);
+
+  for (const row of subset) {
+    try {
+      const basePath = await captureTradingViewBase(browser, row.ticker);
+      const outPath = path.join(TEMP_DIR, `final_${folderName}_${row.ticker}.png`);
+
+      await addLevelsToImage(basePath, outPath, row);
+
+      const remotePath = `charts/${folderName}/${row.ticker}.png`;
+      const grafikUrl = await uploadFileToGithub(outPath, remotePath);
+
+      row.grafikUrl = grafikUrl || null;
+      console.log(`Grafik hazır: ${row.ticker}`);
+    } catch (e) {
+      row.grafikUrl = null;
+      console.log(`Grafik üretilemedi (${row.ticker}): ${e.message}`);
+    }
+
+    await sleep(1200);
+  }
+
+  return rows;
+}
+
 async function run() {
+  ensureDir(TEMP_DIR);
+
   const browser = await puppeteer.launch({
     headless: "new",
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -433,22 +724,24 @@ async function run() {
         risk,
         current: live ? Number(live).toFixed(2) : null,
         change: change !== null ? change.toFixed(2) : null,
+        grafikUrl: null,
       });
 
       await sleep(250);
     }
 
-    // KAYIT KISMI BURADA DOĞRU YERDE
     const category = getTimeCategory();
 
     saveLatestJson("signals.json", filtered);
 
     if (category === "onay") {
+      await generateAndUploadCharts(browser, filtered, "onay");
       saveLatestJson("onay.json", filtered);
       saveHistory(filtered);
     }
 
     if (category === "seans") {
+      await generateAndUploadCharts(browser, filtered, "seans");
       saveLatestJson("seans.json", filtered);
     }
 
