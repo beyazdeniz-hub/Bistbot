@@ -1,15 +1,12 @@
 {
   "name": "bistbot",
   "version": "1.0.0",
-  "description": "BIST signal bot with chart screenshots",
   "main": "bot.js",
-  "scripts": {
-    "start": "node bot.js"
-  },
+  "license": "MIT",
   "dependencies": {
-    "axios": "^1.7.7",
+    "axios": "^1.6.0",
+    "puppeteer": "^22.0.0",
     "canvas": "^2.11.2",
-    "puppeteer": "^24.7.1",
     "jimp": "^0.22.10"
   }
 }
