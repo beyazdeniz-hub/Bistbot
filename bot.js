@@ -180,12 +180,126 @@ async function uploadFileToGithub(localPath, remotePath) {
   return `https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${GITHUB_BRANCH}/${remotePath}`;
 }
 
+function clamp(val, min, max) {
+  return Math.max(min, Math.min(max, val));
+}
+
+function seeded(seed) {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
+
+function rgba(r, g, b, a = 255) {
+  return Jimp.rgbaToInt(r, g, b, a);
+}
+
+function fillRect(img, x, y, w, h, color) {
+  const W = img.bitmap.width;
+  const H = img.bitmap.height;
+  const x1 = clamp(Math.round(x), 0, W - 1);
+  const y1 = clamp(Math.round(y), 0, H - 1);
+  const x2 = clamp(Math.round(x + w), 0, W);
+  const y2 = clamp(Math.round(y + h), 0, H);
+
+  for (let yy = y1; yy < y2; yy++) {
+    for (let xx = x1; xx < x2; xx++) {
+      img.setPixelColor(color, xx, yy);
+    }
+  }
+}
+
+function strokeRect(img, x, y, w, h, color, thickness = 1) {
+  fillRect(img, x, y, w, thickness, color);
+  fillRect(img, x, y + h - thickness, w, thickness, color);
+  fillRect(img, x, y, thickness, h, color);
+  fillRect(img, x + w - thickness, y, thickness, h, color);
+}
+
+function drawVerticalLine(img, x, y1, y2, color, thickness = 1) {
+  const top = Math.min(y1, y2);
+  const bot = Math.max(y1, y2);
+  fillRect(img, x - Math.floor(thickness / 2), top, thickness, bot - top + 1, color);
+}
+
+function drawHorizontalLine(img, y, x1, x2, color, thickness = 2, dashed = false) {
+  const left = Math.min(x1, x2);
+  const right = Math.max(x1, x2);
+  const yy = Math.round(y);
+
+  for (let t = 0; t < thickness; t++) {
+    for (let x = left; x <= right; x++) {
+      if (dashed && Math.floor((x - left) / 12) % 2 === 1) continue;
+      const px = clamp(x, 0, img.bitmap.width - 1);
+      const py = clamp(yy + t, 0, img.bitmap.height - 1);
+      img.setPixelColor(color, px, py);
+    }
+  }
+}
+
+async function drawTextBox(img, text, x, y, accentColor, opts = {}) {
+  const font = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE);
+  const padX = opts.padX ?? 10;
+  const padY = opts.padY ?? 6;
+  const boxW = opts.width ?? Math.max(138, text.length * 9 + 16);
+  const boxH = opts.height ?? 30;
+  const bg = opts.bg ?? rgba(5, 10, 20, 215);
+
+  fillRect(img, x, y, boxW, boxH, bg);
+  strokeRect(img, x, y, boxW, boxH, accentColor, 2);
+  img.print(font, x + padX, y + padY, text);
+}
+
+function buildCandles(alis, stop, target, count = 28) {
+  const a = toNumber(alis);
+  const s = toNumber(stop);
+  const h = toNumber(target);
+
+  const range = Math.max(Math.abs(h - s), Math.abs(a - s), 1);
+  const start = a * 0.985;
+  const candles = [];
+  let prevClose = start;
+
+  for (let i = 0; i < count; i++) {
+    const phase = i / (count - 1);
+    const drift = start + (a - start) * Math.min(phase * 1.35, 1);
+    const noise = (seeded(i + a) - 0.5) * range * 0.22;
+    const open = prevClose + (seeded(i + s) - 0.5) * range * 0.08;
+    let close = drift + noise;
+
+    if (i > count * 0.68) {
+      close += (seeded(i + h) - 0.2) * range * 0.12;
+    }
+
+    let high = Math.max(open, close) + seeded(i + 11) * range * 0.08;
+    let low = Math.min(open, close) - seeded(i + 17) * range * 0.08;
+
+    if (i === count - 1) {
+      close = a;
+      high = Math.max(high, a + range * 0.03);
+      low = Math.min(low, a - range * 0.03);
+    }
+
+    candles.push({ open, close, high, low });
+    prevClose = close;
+  }
+
+  return candles;
+}
+
 async function generateChart(row, folder) {
   ensureDir(TEMP_DIR);
 
-  const width = 900;
-  const height = 500;
-  const img = new Jimp(width, height, 0x081220ff);
+  const width = 1100;
+  const height = 680;
+  const img = new Jimp(width, height, rgba(3, 10, 24, 255));
+
+  for (let y = 0; y < height; y++) {
+    const t = y / height;
+    const r = Math.round(6 + (2 - 6) * t);
+    const g = Math.round(18 + (9 - 18) * t);
+    const b = Math.round(40 + (24 - 40) * t);
+    fillRect(img, 0, y, width, 1, rgba(r, g, b, 255));
+  }
 
   const titleFont = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE);
   const font = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE);
@@ -193,78 +307,162 @@ async function generateChart(row, folder) {
   const a = toNumber(row.alis);
   const s = toNumber(row.stop);
   const h = a + (a - s) * 2;
+  const current = row.current ? toNumber(row.current) : NaN;
 
-  const min = Math.min(a, s, h) * 0.95;
-  const max = Math.max(a, s, h) * 1.05;
+  const panelColor = rgba(8, 20, 46, 225);
+  const borderColor = rgba(25, 60, 110, 255);
 
-  function y(v) {
-    return 400 - ((v - min) / (max - min)) * 300;
+  fillRect(img, 30, 24, width - 60, 76, panelColor);
+  strokeRect(img, 30, 24, width - 60, 76, borderColor, 2);
+
+  img.print(titleFont, 55, 38, row.ticker);
+  img.print(font, 240, 52, "Premium Sinyal Grafik Görünümü");
+
+  const chartX = 56;
+  const chartY = 128;
+  const chartW = 820;
+  const chartH = 450;
+
+  fillRect(img, chartX, chartY, chartW, chartH, rgba(4, 13, 30, 255));
+  strokeRect(img, chartX, chartY, chartW, chartH, rgba(23, 48, 84, 255), 2);
+
+  const rightPanelX = 900;
+  const rightPanelY = 128;
+  const rightPanelW = 150;
+  const rightPanelH = 450;
+
+  fillRect(img, rightPanelX, rightPanelY, rightPanelW, rightPanelH, rgba(8, 20, 44, 245));
+  strokeRect(img, rightPanelX, rightPanelY, rightPanelW, rightPanelH, rgba(23, 48, 84, 255), 2);
+
+  const candles = buildCandles(row.alis, row.stop, h, 30);
+
+  const allVals = [];
+  candles.forEach((c) => {
+    allVals.push(c.high, c.low, c.open, c.close);
+  });
+  allVals.push(a, s, h);
+  if (!isNaN(current)) allVals.push(current);
+
+  const minVal = Math.min(...allVals) * 0.985;
+  const maxVal = Math.max(...allVals) * 1.015;
+
+  function getY(price) {
+    const ratio = (price - minVal) / (maxVal - minVal);
+    return chartY + chartH - ratio * chartH;
   }
 
-  function drawHLine(val, color, dashed = false) {
-    const yy = Math.round(y(val));
-    for (let x = 50; x < 850; x++) {
-      if (dashed && Math.floor((x - 50) / 10) % 2 === 1) continue;
-      for (let t = 0; t < 3; t++) {
-        if (yy + t >= 0 && yy + t < height) {
-          img.setPixelColor(color, x, yy + t);
-        }
-      }
-    }
+  const gridColor = rgba(22, 40, 68, 255);
+
+  for (let i = 0; i < 6; i++) {
+    const yy = chartY + Math.round((chartH / 5) * i);
+    drawHorizontalLine(img, yy, chartX, chartX + chartW, gridColor, 1, false);
   }
 
-  function fillRect(x, y0, w, h0, color) {
-    for (let yy = y0; yy < y0 + h0; yy++) {
-      for (let xx = x; xx < x + w; xx++) {
-        if (xx >= 0 && xx < width && yy >= 0 && yy < height) {
-          img.setPixelColor(color, xx, yy);
-        }
-      }
-    }
+  for (let i = 0; i < 7; i++) {
+    const xx = chartX + Math.round((chartW / 6) * i);
+    drawVerticalLine(img, xx, chartY, chartY + chartH, gridColor, 1);
   }
 
-  for (let gy = 100; gy <= 400; gy += 60) {
-    for (let x = 50; x < 850; x++) {
-      img.setPixelColor(Jimp.rgbaToInt(25, 40, 70, 255), x, gy);
-    }
+  const bullish = rgba(42, 214, 117, 255);
+  const bearish = rgba(255, 82, 82, 255);
+  const wick = rgba(156, 173, 210, 255);
+
+  const candleGap = 8;
+  const candleBodyW = Math.floor((chartW - candleGap * 31) / 30);
+
+  candles.forEach((c, i) => {
+    const x = chartX + candleGap + i * (candleBodyW + candleGap);
+    const yOpen = getY(c.open);
+    const yClose = getY(c.close);
+    const yHigh = getY(c.high);
+    const yLow = getY(c.low);
+
+    const color = c.close >= c.open ? bullish : bearish;
+    const bodyTop = Math.min(yOpen, yClose);
+    const bodyHeight = Math.max(4, Math.abs(yClose - yOpen));
+
+    drawVerticalLine(img, x + Math.floor(candleBodyW / 2), yHigh, yLow, wick, 2);
+    fillRect(img, x, bodyTop, candleBodyW, bodyHeight, color);
+    strokeRect(img, x, bodyTop, candleBodyW, bodyHeight, rgba(220, 230, 245, 80), 1);
+  });
+
+  for (let i = 0; i < 30; i++) {
+    const barX = chartX + candleGap + i * (candleBodyW + candleGap);
+    const volH = 30 + Math.floor(seeded(i + a + s) * 70);
+    fillRect(img, barX, chartY + chartH - volH, candleBodyW, volH, rgba(10, 50, 95, 180));
   }
 
-  for (let gx = 50; gx <= 850; gx += 100) {
-    for (let yy = 100; yy < 430; yy++) {
-      img.setPixelColor(Jimp.rgbaToInt(18, 32, 58, 255), gx, yy);
-    }
+  const alisColor = rgba(41, 211, 255, 255);
+  const stopColor = rgba(255, 82, 82, 255);
+  const hedefColor = rgba(245, 158, 11, 255);
+  const currentColor = rgba(34, 197, 94, 255);
+
+  const yAlis = getY(a);
+  const yStop = getY(s);
+  const yHedef = getY(h);
+
+  drawHorizontalLine(img, yAlis, chartX, chartX + chartW, alisColor, 3, false);
+  drawHorizontalLine(img, yStop, chartX, chartX + chartW, stopColor, 3, false);
+  drawHorizontalLine(img, yHedef, chartX, chartX + chartW, hedefColor, 3, true);
+
+  if (!isNaN(current)) {
+    drawHorizontalLine(img, getY(current), chartX, chartX + chartW, currentColor, 3, true);
   }
 
-  const cAlis = Jimp.rgbaToInt(34, 211, 238, 255);
-  const cStop = Jimp.rgbaToInt(239, 68, 68, 255);
-  const cHedef = Jimp.rgbaToInt(245, 158, 11, 255);
-  const cCurrent = Jimp.rgbaToInt(34, 197, 94, 255);
+  await drawTextBox(
+    img,
+    `ALIŞ ${a.toFixed(2)}`,
+    chartX + chartW - 170,
+    Math.max(chartY + 8, yAlis - 16),
+    alisColor,
+    { width: 145 }
+  );
 
-  drawHLine(a, cAlis, false);
-  drawHLine(s, cStop, false);
-  drawHLine(h, cHedef, true);
+  await drawTextBox(
+    img,
+    `STOP ${s.toFixed(2)}`,
+    chartX + chartW - 170,
+    Math.max(chartY + 8, yStop - 16),
+    stopColor,
+    { width: 145 }
+  );
 
-  if (row.current && !isNaN(toNumber(row.current))) {
-    drawHLine(toNumber(row.current), cCurrent, true);
+  await drawTextBox(
+    img,
+    `HEDEF ${h.toFixed(2)}`,
+    chartX + chartW - 185,
+    Math.max(chartY + 8, yHedef - 16),
+    hedefColor,
+    { width: 160 }
+  );
+
+  if (!isNaN(current)) {
+    await drawTextBox(
+      img,
+      `GÜNCEL ${current.toFixed(2)}`,
+      chartX + chartW - 190,
+      Math.max(chartY + 8, getY(current) - 16),
+      currentColor,
+      { width: 165 }
+    );
   }
 
-  fillRect(25, 20, 300, 95, Jimp.rgbaToInt(5, 12, 24, 220));
+  for (let i = 0; i <= 5; i++) {
+    const price = maxVal - ((maxVal - minVal) / 5) * i;
+    const yy = chartY + Math.round((chartH / 5) * i);
+    img.print(font, rightPanelX + 20, yy - 8, price.toFixed(2));
+  }
 
-  img.print(titleFont, 40, 28, row.ticker);
-  img.print(font, 40, 70, `Alış: ${row.alis}`);
-  img.print(font, 170, 70, `Stop: ${row.stop}`);
-  img.print(font, 300, 70, `Risk: %${row.risk.toFixed(2)}`);
+  fillRect(img, 30, 598, width - 60, 54, panelColor);
+  strokeRect(img, 30, 598, width - 60, 54, borderColor, 2);
+
+  img.print(font, 52, 608, `Alış: ${a.toFixed(2)}`);
+  img.print(font, 220, 608, `Stop: ${s.toFixed(2)}`);
+  img.print(font, 390, 608, `Hedef: ${h.toFixed(2)}`);
+  img.print(font, 570, 608, `Risk: %${row.risk.toFixed(2)}`);
 
   if (row.current) {
-    img.print(font, 40, 92, `Güncel: ${row.current}`);
-  }
-
-  img.print(font, 690, Math.round(y(a)) - 10, `ALIŞ ${a.toFixed(2)}`);
-  img.print(font, 690, Math.round(y(s)) - 10, `STOP ${s.toFixed(2)}`);
-  img.print(font, 675, Math.round(y(h)) - 10, `HEDEF ${h.toFixed(2)}`);
-
-  if (row.current && !isNaN(toNumber(row.current))) {
-    img.print(font, 660, Math.round(y(toNumber(row.current))) - 10, `GÜNCEL ${row.current}`);
+    img.print(font, 52, 630, `Güncel: ${row.current}`);
   }
 
   const file = path.join(TEMP_DIR, `${row.ticker}.png`);
