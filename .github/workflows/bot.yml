@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Repo çek
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Node kur
         uses: actions/setup-node@v4
@@ -61,3 +63,11 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_BRANCH: main
         run: node bot.js
+
+      - name: JSON dosyalarını commit et
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add signals.json onay.json seans.json history.json
+          git commit -m "JSON dosyalarını güncelle" || echo "Commit yok"
+          git push
