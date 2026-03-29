@@ -1,5 +1,5 @@
 {
-  "updatedAt": "29.03.2026 00:07:03",
+  "updatedAt": "29.03.2026 05:02:59",
   "signals": [
     {
       "ticker": "ANELE",
@@ -7,7 +7,8 @@
       "stop": "14.00",
       "risk": "1.55",
       "current": null,
-      "change": null
+      "change": null,
+      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/diger/ANELE.png"
     },
     {
       "ticker": "BMSCH",
@@ -15,7 +16,8 @@
       "stop": "16.58",
       "risk": "2.53",
       "current": null,
-      "change": null
+      "change": null,
+      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/diger/BMSCH.png"
     },
     {
       "ticker": "CRFSA",
@@ -23,7 +25,8 @@
       "stop": "116.60",
       "risk": "0.93",
       "current": null,
-      "change": null
+      "change": null,
+      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/diger/CRFSA.png"
     },
     {
       "ticker": "CWENE",
@@ -31,7 +34,8 @@
       "stop": "28.86",
       "risk": "1.30",
       "current": null,
-      "change": null
+      "change": null,
+      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/diger/CWENE.png"
     },
     {
       "ticker": "EGEGY",
@@ -39,7 +43,8 @@
       "stop": "28.20",
       "risk": "0.84",
       "current": null,
-      "change": null
+      "change": null,
+      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/diger/EGEGY.png"
     },
     {
       "ticker": "KRDMB",
@@ -47,7 +52,8 @@
       "stop": "55.00",
       "risk": "2.79",
       "current": null,
-      "change": null
+      "change": null,
+      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/diger/KRDMB.png"
     },
     {
       "ticker": "MACKO",
@@ -55,7 +61,8 @@
       "stop": "31.70",
       "risk": "2.34",
       "current": null,
-      "change": null
+      "change": null,
+      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/diger/MACKO.png"
     },
     {
       "ticker": "PCILT",
@@ -63,7 +70,8 @@
       "stop": "28.34",
       "risk": "2.81",
       "current": null,
-      "change": null
+      "change": null,
+      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/diger/PCILT.png"
     },
     {
       "ticker": "POLHO",
@@ -71,7 +79,8 @@
       "stop": "20.18",
       "risk": "2.98",
       "current": null,
-      "change": null
+      "change": null,
+      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/diger/POLHO.png"
     },
     {
       "ticker": "RGYAS",
@@ -79,7 +88,8 @@
       "stop": "151.30",
       "risk": "2.45",
       "current": null,
-      "change": null
+      "change": null,
+      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/diger/RGYAS.png"
     },
     {
       "ticker": "SELEC",
@@ -87,7 +97,8 @@
       "stop": "78.85",
       "risk": "2.65",
       "current": null,
-      "change": null
+      "change": null,
+      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/diger/SELEC.png"
     },
     {
       "ticker": "SKYMD",
@@ -95,7 +106,8 @@
       "stop": "11.80",
       "risk": "1.50",
       "current": null,
-      "change": null
+      "change": null,
+      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/diger/SKYMD.png"
     },
     {
       "ticker": "ULKER",
@@ -103,7 +115,8 @@
       "stop": "108.80",
       "risk": "2.29",
       "current": null,
-      "change": null
+      "change": null,
+      "grafikUrl": null
     }
   ]
 }
