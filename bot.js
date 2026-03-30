@@ -16,6 +16,7 @@ const URL = "https://www.turkishbulls.com/SignalList.aspx?lang=tr&MarketSymbol=I
 const DETAIL_URL = "https://www.turkishbulls.com/SignalPage.aspx?lang=tr&Ticker=";
 
 const TEMP_DIR = "tmp_charts";
+const TV_BASE_URL = "https://tr.tradingview.com/chart/Ui8NJlOz/";
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -55,14 +56,12 @@ async function sendTelegram(text) {
 async function sendTelegramPhoto(filePath, caption) {
   if (!TOKEN || !CHAT_ID) throw new Error("TELEGRAM_BOT_TOKEN veya TELEGRAM_CHAT_ID eksik");
 
-  const url = `https://api.telegram.org/bot${TOKEN}/sendPhoto`;
   const form = new FormData();
-
   form.append("chat_id", CHAT_ID);
   form.append("photo", fs.createReadStream(filePath));
   form.append("caption", caption);
 
-  await axios.post(url, form, {
+  await axios.post(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, form, {
     headers: form.getHeaders(),
     maxBodyLength: Infinity,
   });
@@ -286,9 +285,7 @@ function buildCandles(alis, stop, target, count = 28) {
   return candles;
 }
 
-async function generateChart(row, folder) {
-  ensureDir(TEMP_DIR);
-
+async function createPremiumFallbackChart(row, outFile) {
   const width = 1100;
   const height = 680;
   const img = new Jimp(width, height, rgba(3, 10, 24, 255));
@@ -409,42 +406,12 @@ async function generateChart(row, folder) {
     drawHorizontalLine(img, getY(current), chartX, chartX + chartW, currentColor, 3, true);
   }
 
-  await drawTextBox(
-    img,
-    `ALIŞ ${a.toFixed(2)}`,
-    chartX + chartW - 170,
-    Math.max(chartY + 8, yAlis - 16),
-    alisColor,
-    { width: 145 }
-  );
-
-  await drawTextBox(
-    img,
-    `STOP ${s.toFixed(2)}`,
-    chartX + chartW - 170,
-    Math.max(chartY + 8, yStop - 16),
-    stopColor,
-    { width: 145 }
-  );
-
-  await drawTextBox(
-    img,
-    `HEDEF ${h.toFixed(2)}`,
-    chartX + chartW - 185,
-    Math.max(chartY + 8, yHedef - 16),
-    hedefColor,
-    { width: 160 }
-  );
+  await drawTextBox(img, `ALIŞ ${a.toFixed(2)}`, chartX + chartW - 170, Math.max(chartY + 8, yAlis - 16), alisColor, { width: 145 });
+  await drawTextBox(img, `STOP ${s.toFixed(2)}`, chartX + chartW - 170, Math.max(chartY + 8, yStop - 16), stopColor, { width: 145 });
+  await drawTextBox(img, `HEDEF ${h.toFixed(2)}`, chartX + chartW - 185, Math.max(chartY + 8, yHedef - 16), hedefColor, { width: 160 });
 
   if (!isNaN(current)) {
-    await drawTextBox(
-      img,
-      `GÜNCEL ${current.toFixed(2)}`,
-      chartX + chartW - 190,
-      Math.max(chartY + 8, getY(current) - 16),
-      currentColor,
-      { width: 165 }
-    );
+    await drawTextBox(img, `GÜNCEL ${current.toFixed(2)}`, chartX + chartW - 190, Math.max(chartY + 8, getY(current) - 16), currentColor, { width: 165 });
   }
 
   for (let i = 0; i <= 5; i++) {
@@ -465,16 +432,159 @@ async function generateChart(row, folder) {
     img.print(font, 52, 630, `Güncel: ${row.current}`);
   }
 
-  const file = path.join(TEMP_DIR, `${row.ticker}.png`);
-  await img.writeAsync(file);
-
-  const remote = `charts/${folder}/${row.ticker}.png`;
-  const grafikUrl = await uploadFileToGithub(file, remote);
-
-  return { file, grafikUrl };
+  await img.writeAsync(outFile);
 }
 
-function buildCaption(row) {
+async function addOverlayToTradingView(basePath, outFile, row) {
+  const img = await Jimp.read(basePath);
+  const font = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE);
+  const titleFont = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE);
+
+  const a = toNumber(row.alis);
+  const s = toNumber(row.stop);
+  const h = a + (a - s) * 2;
+  const current = row.current ? toNumber(row.current) : NaN;
+
+  const values = [a, s, h];
+  if (!isNaN(current)) values.push(current);
+
+  const minVal = Math.min(...values) * 0.96;
+  const maxVal = Math.max(...values) * 1.04;
+
+  const leftX = 26;
+  const rightX = img.bitmap.width - 28;
+  const topY = 80;
+  const bottomY = img.bitmap.height - 40;
+
+  function yPos(value) {
+    const ratio = (value - minVal) / (maxVal - minVal);
+    return bottomY - ratio * (bottomY - topY);
+  }
+
+  fillRect(img, 18, 18, 290, 96, rgba(7, 16, 30, 220));
+  strokeRect(img, 18, 18, 290, 96, rgba(34, 90, 160, 255), 2);
+
+  img.print(titleFont, 34, 30, row.ticker);
+  img.print(font, 34, 72, `Alış: ${row.alis}   Stop: ${row.stop}`);
+  img.print(font, 34, 92, `Risk: %${row.risk.toFixed(2)}${row.current ? `   Güncel: ${row.current}` : ""}`);
+
+  drawHorizontalLine(img, yPos(s), leftX, rightX, rgba(255, 82, 82, 255), 3, false);
+  drawHorizontalLine(img, yPos(a), leftX, rightX, rgba(41, 211, 255, 255), 3, false);
+  drawHorizontalLine(img, yPos(h), leftX, rightX, rgba(245, 158, 11, 255), 3, true);
+
+  if (!isNaN(current)) {
+    drawHorizontalLine(img, yPos(current), leftX, rightX, rgba(34, 197, 94, 255), 3, true);
+  }
+
+  await drawTextBox(img, `STOP ${s.toFixed(2)}`, img.bitmap.width - 180, Math.max(12, yPos(s) - 16), rgba(255, 82, 82, 255), { width: 150 });
+  await drawTextBox(img, `ALIŞ ${a.toFixed(2)}`, img.bitmap.width - 180, Math.max(12, yPos(a) - 16), rgba(41, 211, 255, 255), { width: 150 });
+  await drawTextBox(img, `HEDEF ${h.toFixed(2)}`, img.bitmap.width - 195, Math.max(12, yPos(h) - 16), rgba(245, 158, 11, 255), { width: 165 });
+
+  if (!isNaN(current)) {
+    await drawTextBox(img, `GÜNCEL ${current.toFixed(2)}`, img.bitmap.width - 205, Math.max(12, yPos(current) - 16), rgba(34, 197, 94, 255), { width: 175 });
+  }
+
+  await img.writeAsync(outFile);
+}
+
+async function dismissTradingViewPopups(page) {
+  try {
+    await page.evaluate(() => {
+      const buttons = Array.from(document.querySelectorAll("button, [role='button']"));
+      for (const b of buttons) {
+        const t = ((b.innerText || "") + " " + (b.getAttribute("aria-label") || "")).toLowerCase();
+        if (
+          t.includes("tamam") ||
+          t.includes("close") ||
+          t.includes("kapat") ||
+          t.includes("ok") ||
+          t.includes("anladım")
+        ) {
+          try { b.click(); } catch (e) {}
+        }
+      }
+    });
+  } catch {}
+}
+
+async function isTradingViewInvalid(page) {
+  try {
+    return await page.evaluate(() => {
+      const txt = (document.body.innerText || "").toLowerCase();
+      return (
+        txt.includes("sembol sadece tradingview'de bulunabilir") ||
+        txt.includes("symbol is only available on tradingview") ||
+        txt.includes("geçersiz sembol") ||
+        txt.includes("invalid symbol")
+      );
+    });
+  } catch {
+    return true;
+  }
+}
+
+async function captureTradingViewImage(browser, ticker, outBaseFile) {
+  const page = await browser.newPage();
+  try {
+    await page.setViewport({ width: 1280, height: 720 });
+
+    const tvUrl = `${TV_BASE_URL}?symbol=${encodeURIComponent(`BIST:${ticker}`)}`;
+
+    await page.goto(tvUrl, {
+      waitUntil: "domcontentloaded",
+      timeout: 60000,
+    });
+
+    await sleep(9000);
+    await dismissTradingViewPopups(page);
+    await sleep(2000);
+
+    const invalid = await isTradingViewInvalid(page);
+    if (invalid) {
+      return false;
+    }
+
+    await page.screenshot({
+      path: outBaseFile,
+      type: "png",
+      fullPage: false,
+    });
+
+    return true;
+  } catch (e) {
+    return false;
+  } finally {
+    await page.close();
+  }
+}
+
+async function generateChart(row, folder, browser) {
+  ensureDir(TEMP_DIR);
+
+  const finalFile = path.join(TEMP_DIR, `${row.ticker}.png`);
+  const tvBaseFile = path.join(TEMP_DIR, `${row.ticker}_tv_base.png`);
+
+  let usedReal = false;
+
+  try {
+    const ok = await captureTradingViewImage(browser, row.ticker, tvBaseFile);
+    if (ok && fs.existsSync(tvBaseFile)) {
+      await addOverlayToTradingView(tvBaseFile, finalFile, row);
+      usedReal = true;
+    } else {
+      await createPremiumFallbackChart(row, finalFile);
+    }
+  } catch {
+    await createPremiumFallbackChart(row, finalFile);
+  }
+
+  const remote = `charts/${folder}/${row.ticker}.png`;
+  const grafikUrl = await uploadFileToGithub(finalFile, remote);
+
+  return { file: finalFile, grafikUrl, usedReal };
+}
+
+function buildCaption(row, usedReal) {
   let caption =
 `${row.ticker}
 Alış: ${row.alis}
@@ -488,6 +598,8 @@ Risk: %${row.risk.toFixed(2)}`;
   if (row.change) {
     caption += `\nFark: %${row.change}`;
   }
+
+  caption += usedReal ? "\nGrafik: gerçek taban + overlay" : "\nGrafik: premium çizim";
 
   return caption;
 }
@@ -575,10 +687,10 @@ async function run() {
 
     for (const row of results) {
       try {
-        const { file, grafikUrl } = await generateChart(row, category);
+        const { file, grafikUrl, usedReal } = await generateChart(row, category, browser);
         row.grafikUrl = grafikUrl || null;
 
-        const caption = buildCaption(row);
+        const caption = buildCaption(row, usedReal);
         await sendTelegramPhoto(file, caption);
 
         await sleep(1500);
