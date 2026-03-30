@@ -2,7 +2,6 @@ const puppeteer = require("puppeteer");
 const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
-const Jimp = require("jimp");
 const FormData = require("form-data");
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -45,7 +44,9 @@ function getTimeCategory() {
 }
 
 async function sendTelegram(text) {
-  if (!TOKEN || !CHAT_ID) throw new Error("TELEGRAM_BOT_TOKEN veya TELEGRAM_CHAT_ID eksik");
+  if (!TOKEN || !CHAT_ID) {
+    throw new Error("TELEGRAM_BOT_TOKEN veya TELEGRAM_CHAT_ID eksik");
+  }
 
   await axios.post(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
     chat_id: CHAT_ID,
@@ -54,7 +55,9 @@ async function sendTelegram(text) {
 }
 
 async function sendTelegramPhoto(filePath, caption) {
-  if (!TOKEN || !CHAT_ID) throw new Error("TELEGRAM_BOT_TOKEN veya TELEGRAM_CHAT_ID eksik");
+  if (!TOKEN || !CHAT_ID) {
+    throw new Error("TELEGRAM_BOT_TOKEN veya TELEGRAM_CHAT_ID eksik");
+  }
 
   const form = new FormData();
   form.append("chat_id", CHAT_ID);
@@ -179,314 +182,6 @@ async function uploadFileToGithub(localPath, remotePath) {
   return `https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${GITHUB_BRANCH}/${remotePath}`;
 }
 
-function clamp(val, min, max) {
-  return Math.max(min, Math.min(max, val));
-}
-
-function seeded(seed) {
-  const x = Math.sin(seed) * 10000;
-  return x - Math.floor(x);
-}
-
-function rgba(r, g, b, a = 255) {
-  return Jimp.rgbaToInt(r, g, b, a);
-}
-
-function fillRect(img, x, y, w, h, color) {
-  const W = img.bitmap.width;
-  const H = img.bitmap.height;
-  const x1 = clamp(Math.round(x), 0, W - 1);
-  const y1 = clamp(Math.round(y), 0, H - 1);
-  const x2 = clamp(Math.round(x + w), 0, W);
-  const y2 = clamp(Math.round(y + h), 0, H);
-
-  for (let yy = y1; yy < y2; yy++) {
-    for (let xx = x1; xx < x2; xx++) {
-      img.setPixelColor(color, xx, yy);
-    }
-  }
-}
-
-function strokeRect(img, x, y, w, h, color, thickness = 1) {
-  fillRect(img, x, y, w, thickness, color);
-  fillRect(img, x, y + h - thickness, w, thickness, color);
-  fillRect(img, x, y, thickness, h, color);
-  fillRect(img, x + w - thickness, y, thickness, h, color);
-}
-
-function drawVerticalLine(img, x, y1, y2, color, thickness = 1) {
-  const top = Math.min(y1, y2);
-  const bot = Math.max(y1, y2);
-  fillRect(img, x - Math.floor(thickness / 2), top, thickness, bot - top + 1, color);
-}
-
-function drawHorizontalLine(img, y, x1, x2, color, thickness = 2, dashed = false) {
-  const left = Math.min(x1, x2);
-  const right = Math.max(x1, x2);
-  const yy = Math.round(y);
-
-  for (let t = 0; t < thickness; t++) {
-    for (let x = left; x <= right; x++) {
-      if (dashed && Math.floor((x - left) / 12) % 2 === 1) continue;
-      const px = clamp(x, 0, img.bitmap.width - 1);
-      const py = clamp(yy + t, 0, img.bitmap.height - 1);
-      img.setPixelColor(color, px, py);
-    }
-  }
-}
-
-async function drawTextBox(img, text, x, y, accentColor, opts = {}) {
-  const font = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE);
-  const padX = opts.padX ?? 10;
-  const padY = opts.padY ?? 6;
-  const boxW = opts.width ?? Math.max(138, text.length * 9 + 16);
-  const boxH = opts.height ?? 30;
-  const bg = opts.bg ?? rgba(5, 10, 20, 215);
-
-  fillRect(img, x, y, boxW, boxH, bg);
-  strokeRect(img, x, y, boxW, boxH, accentColor, 2);
-  img.print(font, x + padX, y + padY, text);
-}
-
-function buildCandles(alis, stop, target, count = 28) {
-  const a = toNumber(alis);
-  const s = toNumber(stop);
-  const h = toNumber(target);
-
-  const range = Math.max(Math.abs(h - s), Math.abs(a - s), 1);
-  const start = a * 0.985;
-  const candles = [];
-  let prevClose = start;
-
-  for (let i = 0; i < count; i++) {
-    const phase = i / (count - 1);
-    const drift = start + (a - start) * Math.min(phase * 1.35, 1);
-    const noise = (seeded(i + a) - 0.5) * range * 0.22;
-    const open = prevClose + (seeded(i + s) - 0.5) * range * 0.08;
-    let close = drift + noise;
-
-    if (i > count * 0.68) {
-      close += (seeded(i + h) - 0.2) * range * 0.12;
-    }
-
-    let high = Math.max(open, close) + seeded(i + 11) * range * 0.08;
-    let low = Math.min(open, close) - seeded(i + 17) * range * 0.08;
-
-    if (i === count - 1) {
-      close = a;
-      high = Math.max(high, a + range * 0.03);
-      low = Math.min(low, a - range * 0.03);
-    }
-
-    candles.push({ open, close, high, low });
-    prevClose = close;
-  }
-
-  return candles;
-}
-
-async function createPremiumFallbackChart(row, outFile) {
-  const width = 1100;
-  const height = 680;
-  const img = new Jimp(width, height, rgba(3, 10, 24, 255));
-
-  for (let y = 0; y < height; y++) {
-    const t = y / height;
-    const r = Math.round(6 + (2 - 6) * t);
-    const g = Math.round(18 + (9 - 18) * t);
-    const b = Math.round(40 + (24 - 40) * t);
-    fillRect(img, 0, y, width, 1, rgba(r, g, b, 255));
-  }
-
-  const titleFont = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE);
-  const font = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE);
-
-  const a = toNumber(row.alis);
-  const s = toNumber(row.stop);
-  const h = a + (a - s) * 2;
-  const current = row.current ? toNumber(row.current) : NaN;
-
-  const panelColor = rgba(8, 20, 46, 225);
-  const borderColor = rgba(25, 60, 110, 255);
-
-  fillRect(img, 30, 24, width - 60, 76, panelColor);
-  strokeRect(img, 30, 24, width - 60, 76, borderColor, 2);
-
-  img.print(titleFont, 55, 38, row.ticker);
-  img.print(font, 240, 52, "Premium Sinyal Grafik Görünümü");
-
-  const chartX = 56;
-  const chartY = 128;
-  const chartW = 820;
-  const chartH = 450;
-
-  fillRect(img, chartX, chartY, chartW, chartH, rgba(4, 13, 30, 255));
-  strokeRect(img, chartX, chartY, chartW, chartH, rgba(23, 48, 84, 255), 2);
-
-  const rightPanelX = 900;
-  const rightPanelY = 128;
-  const rightPanelW = 150;
-  const rightPanelH = 450;
-
-  fillRect(img, rightPanelX, rightPanelY, rightPanelW, rightPanelH, rgba(8, 20, 44, 245));
-  strokeRect(img, rightPanelX, rightPanelY, rightPanelW, rightPanelH, rgba(23, 48, 84, 255), 2);
-
-  const candles = buildCandles(row.alis, row.stop, h, 30);
-
-  const allVals = [];
-  candles.forEach((c) => {
-    allVals.push(c.high, c.low, c.open, c.close);
-  });
-  allVals.push(a, s, h);
-  if (!isNaN(current)) allVals.push(current);
-
-  const minVal = Math.min(...allVals) * 0.985;
-  const maxVal = Math.max(...allVals) * 1.015;
-
-  function getY(price) {
-    const ratio = (price - minVal) / (maxVal - minVal);
-    return chartY + chartH - ratio * chartH;
-  }
-
-  const gridColor = rgba(22, 40, 68, 255);
-
-  for (let i = 0; i < 6; i++) {
-    const yy = chartY + Math.round((chartH / 5) * i);
-    drawHorizontalLine(img, yy, chartX, chartX + chartW, gridColor, 1, false);
-  }
-
-  for (let i = 0; i < 7; i++) {
-    const xx = chartX + Math.round((chartW / 6) * i);
-    drawVerticalLine(img, xx, chartY, chartY + chartH, gridColor, 1);
-  }
-
-  const bullish = rgba(42, 214, 117, 255);
-  const bearish = rgba(255, 82, 82, 255);
-  const wick = rgba(156, 173, 210, 255);
-
-  const candleGap = 8;
-  const candleBodyW = Math.floor((chartW - candleGap * 31) / 30);
-
-  candles.forEach((c, i) => {
-    const x = chartX + candleGap + i * (candleBodyW + candleGap);
-    const yOpen = getY(c.open);
-    const yClose = getY(c.close);
-    const yHigh = getY(c.high);
-    const yLow = getY(c.low);
-
-    const color = c.close >= c.open ? bullish : bearish;
-    const bodyTop = Math.min(yOpen, yClose);
-    const bodyHeight = Math.max(4, Math.abs(yClose - yOpen));
-
-    drawVerticalLine(img, x + Math.floor(candleBodyW / 2), yHigh, yLow, wick, 2);
-    fillRect(img, x, bodyTop, candleBodyW, bodyHeight, color);
-    strokeRect(img, x, bodyTop, candleBodyW, bodyHeight, rgba(220, 230, 245, 80), 1);
-  });
-
-  for (let i = 0; i < 30; i++) {
-    const barX = chartX + candleGap + i * (candleBodyW + candleGap);
-    const volH = 30 + Math.floor(seeded(i + a + s) * 70);
-    fillRect(img, barX, chartY + chartH - volH, candleBodyW, volH, rgba(10, 50, 95, 180));
-  }
-
-  const alisColor = rgba(41, 211, 255, 255);
-  const stopColor = rgba(255, 82, 82, 255);
-  const hedefColor = rgba(245, 158, 11, 255);
-  const currentColor = rgba(34, 197, 94, 255);
-
-  const yAlis = getY(a);
-  const yStop = getY(s);
-  const yHedef = getY(h);
-
-  drawHorizontalLine(img, yAlis, chartX, chartX + chartW, alisColor, 3, false);
-  drawHorizontalLine(img, yStop, chartX, chartX + chartW, stopColor, 3, false);
-  drawHorizontalLine(img, yHedef, chartX, chartX + chartW, hedefColor, 3, true);
-
-  if (!isNaN(current)) {
-    drawHorizontalLine(img, getY(current), chartX, chartX + chartW, currentColor, 3, true);
-  }
-
-  await drawTextBox(img, `ALIŞ ${a.toFixed(2)}`, chartX + chartW - 170, Math.max(chartY + 8, yAlis - 16), alisColor, { width: 145 });
-  await drawTextBox(img, `STOP ${s.toFixed(2)}`, chartX + chartW - 170, Math.max(chartY + 8, yStop - 16), stopColor, { width: 145 });
-  await drawTextBox(img, `HEDEF ${h.toFixed(2)}`, chartX + chartW - 185, Math.max(chartY + 8, yHedef - 16), hedefColor, { width: 160 });
-
-  if (!isNaN(current)) {
-    await drawTextBox(img, `GÜNCEL ${current.toFixed(2)}`, chartX + chartW - 190, Math.max(chartY + 8, getY(current) - 16), currentColor, { width: 165 });
-  }
-
-  for (let i = 0; i <= 5; i++) {
-    const price = maxVal - ((maxVal - minVal) / 5) * i;
-    const yy = chartY + Math.round((chartH / 5) * i);
-    img.print(font, rightPanelX + 20, yy - 8, price.toFixed(2));
-  }
-
-  fillRect(img, 30, 598, width - 60, 54, panelColor);
-  strokeRect(img, 30, 598, width - 60, 54, borderColor, 2);
-
-  img.print(font, 52, 608, `Alış: ${a.toFixed(2)}`);
-  img.print(font, 220, 608, `Stop: ${s.toFixed(2)}`);
-  img.print(font, 390, 608, `Hedef: ${h.toFixed(2)}`);
-  img.print(font, 570, 608, `Risk: %${row.risk.toFixed(2)}`);
-
-  if (row.current) {
-    img.print(font, 52, 630, `Güncel: ${row.current}`);
-  }
-
-  await img.writeAsync(outFile);
-}
-
-async function addOverlayToTradingView(basePath, outFile, row) {
-  const img = await Jimp.read(basePath);
-  const font = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE);
-  const titleFont = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE);
-
-  const a = toNumber(row.alis);
-  const s = toNumber(row.stop);
-  const h = a + (a - s) * 2;
-  const current = row.current ? toNumber(row.current) : NaN;
-
-  const values = [a, s, h];
-  if (!isNaN(current)) values.push(current);
-
-  const minVal = Math.min(...values) * 0.96;
-  const maxVal = Math.max(...values) * 1.04;
-
-  const leftX = 26;
-  const rightX = img.bitmap.width - 28;
-  const topY = 80;
-  const bottomY = img.bitmap.height - 40;
-
-  function yPos(value) {
-    const ratio = (value - minVal) / (maxVal - minVal);
-    return bottomY - ratio * (bottomY - topY);
-  }
-
-  fillRect(img, 18, 18, 290, 96, rgba(7, 16, 30, 220));
-  strokeRect(img, 18, 18, 290, 96, rgba(34, 90, 160, 255), 2);
-
-  img.print(titleFont, 34, 30, row.ticker);
-  img.print(font, 34, 72, `Alış: ${row.alis}   Stop: ${row.stop}`);
-  img.print(font, 34, 92, `Risk: %${row.risk.toFixed(2)}${row.current ? `   Güncel: ${row.current}` : ""}`);
-
-  drawHorizontalLine(img, yPos(s), leftX, rightX, rgba(255, 82, 82, 255), 3, false);
-  drawHorizontalLine(img, yPos(a), leftX, rightX, rgba(41, 211, 255, 255), 3, false);
-  drawHorizontalLine(img, yPos(h), leftX, rightX, rgba(245, 158, 11, 255), 3, true);
-
-  if (!isNaN(current)) {
-    drawHorizontalLine(img, yPos(current), leftX, rightX, rgba(34, 197, 94, 255), 3, true);
-  }
-
-  await drawTextBox(img, `STOP ${s.toFixed(2)}`, img.bitmap.width - 180, Math.max(12, yPos(s) - 16), rgba(255, 82, 82, 255), { width: 150 });
-  await drawTextBox(img, `ALIŞ ${a.toFixed(2)}`, img.bitmap.width - 180, Math.max(12, yPos(a) - 16), rgba(41, 211, 255, 255), { width: 150 });
-  await drawTextBox(img, `HEDEF ${h.toFixed(2)}`, img.bitmap.width - 195, Math.max(12, yPos(h) - 16), rgba(245, 158, 11, 255), { width: 165 });
-
-  if (!isNaN(current)) {
-    await drawTextBox(img, `GÜNCEL ${current.toFixed(2)}`, img.bitmap.width - 205, Math.max(12, yPos(current) - 16), rgba(34, 197, 94, 255), { width: 175 });
-  }
-
-  await img.writeAsync(outFile);
-}
-
 async function dismissTradingViewPopups(page) {
   try {
     await page.evaluate(() => {
@@ -498,9 +193,12 @@ async function dismissTradingViewPopups(page) {
           t.includes("close") ||
           t.includes("kapat") ||
           t.includes("ok") ||
-          t.includes("anladım")
+          t.includes("anladım") ||
+          t.includes("got it")
         ) {
-          try { b.click(); } catch (e) {}
+          try {
+            b.click();
+          } catch (e) {}
         }
       }
     });
@@ -515,7 +213,8 @@ async function isTradingViewInvalid(page) {
         txt.includes("sembol sadece tradingview'de bulunabilir") ||
         txt.includes("symbol is only available on tradingview") ||
         txt.includes("geçersiz sembol") ||
-        txt.includes("invalid symbol")
+        txt.includes("invalid symbol") ||
+        txt.includes("bulunamadı")
       );
     });
   } catch {
@@ -523,10 +222,11 @@ async function isTradingViewInvalid(page) {
   }
 }
 
-async function captureTradingViewImage(browser, ticker, outBaseFile) {
+async function captureTradingViewImage(browser, ticker, outFile) {
   const page = await browser.newPage();
+
   try {
-    await page.setViewport({ width: 1280, height: 720 });
+    await page.setViewport({ width: 1400, height: 900 });
 
     const tvUrl = `${TV_BASE_URL}?symbol=${encodeURIComponent(`BIST:${ticker}`)}`;
 
@@ -535,7 +235,7 @@ async function captureTradingViewImage(browser, ticker, outBaseFile) {
       timeout: 60000,
     });
 
-    await sleep(9000);
+    await sleep(8000);
     await dismissTradingViewPopups(page);
     await sleep(2000);
 
@@ -545,7 +245,7 @@ async function captureTradingViewImage(browser, ticker, outBaseFile) {
     }
 
     await page.screenshot({
-      path: outBaseFile,
+      path: outFile,
       type: "png",
       fullPage: false,
     });
@@ -562,29 +262,19 @@ async function generateChart(row, folder, browser) {
   ensureDir(TEMP_DIR);
 
   const finalFile = path.join(TEMP_DIR, `${row.ticker}.png`);
-  const tvBaseFile = path.join(TEMP_DIR, `${row.ticker}_tv_base.png`);
+  const ok = await captureTradingViewImage(browser, row.ticker, finalFile);
 
-  let usedReal = false;
-
-  try {
-    const ok = await captureTradingViewImage(browser, row.ticker, tvBaseFile);
-    if (ok && fs.existsSync(tvBaseFile)) {
-      await addOverlayToTradingView(tvBaseFile, finalFile, row);
-      usedReal = true;
-    } else {
-      await createPremiumFallbackChart(row, finalFile);
-    }
-  } catch {
-    await createPremiumFallbackChart(row, finalFile);
+  if (!ok || !fs.existsSync(finalFile)) {
+    return { file: null, grafikUrl: null, usedReal: false };
   }
 
   const remote = `charts/${folder}/${row.ticker}.png`;
   const grafikUrl = await uploadFileToGithub(finalFile, remote);
 
-  return { file: finalFile, grafikUrl, usedReal };
+  return { file: finalFile, grafikUrl, usedReal: true };
 }
 
-function buildCaption(row, usedReal) {
+function buildCaption(row) {
   let caption =
 `${row.ticker}
 Alış: ${row.alis}
@@ -598,8 +288,6 @@ Risk: %${row.risk.toFixed(2)}`;
   if (row.change) {
     caption += `\nFark: %${row.change}`;
   }
-
-  caption += usedReal ? "\nGrafik: gerçek taban + overlay" : "\nGrafik: premium çizim";
 
   return caption;
 }
@@ -690,8 +378,17 @@ async function run() {
         const { file, grafikUrl, usedReal } = await generateChart(row, category, browser);
         row.grafikUrl = grafikUrl || null;
 
-        const caption = buildCaption(row, usedReal);
-        await sendTelegramPhoto(file, caption);
+        if (usedReal && file) {
+          const caption = buildCaption(row);
+          await sendTelegramPhoto(file, caption);
+        } else {
+          const text =
+`${row.ticker}
+Alış: ${row.alis}
+Stop: ${row.stop}
+Risk: %${row.risk.toFixed(2)}${row.current ? `\nGüncel: ${row.current}` : ""}${row.change ? `\nFark: %${row.change}` : ""}`;
+          await sendTelegram(text);
+        }
 
         await sleep(1500);
       } catch (e) {
