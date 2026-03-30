@@ -15,7 +15,7 @@ const URL = "https://www.turkishbulls.com/SignalList.aspx?lang=tr&MarketSymbol=I
 const DETAIL_URL = "https://www.turkishbulls.com/SignalPage.aspx?lang=tr&Ticker=";
 
 const TEMP_DIR = "tmp_charts";
-const TV_BASE_URL = "https://tr.tradingview.com/chart/Ui8NJlOz/";
+const TV_HOME_URL = "https://tr.tradingview.com/";
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -185,20 +185,31 @@ async function uploadFileToGithub(localPath, remotePath) {
 async function dismissTradingViewPopups(page) {
   try {
     await page.evaluate(() => {
-      const buttons = Array.from(document.querySelectorAll("button, [role='button']"));
-      for (const b of buttons) {
-        const t = ((b.innerText || "") + " " + (b.getAttribute("aria-label") || "")).toLowerCase();
+      const nodes = Array.from(
+        document.querySelectorAll("button, [role='button'], a, span, div")
+      );
+
+      for (const el of nodes) {
+        const txt = (
+          (el.innerText || "") +
+          " " +
+          (el.getAttribute?.("aria-label") || "")
+        )
+          .toLowerCase()
+          .trim();
+
         if (
-          t.includes("tamam") ||
-          t.includes("close") ||
-          t.includes("kapat") ||
-          t.includes("ok") ||
-          t.includes("anladım") ||
-          t.includes("got it")
+          txt.includes("tamam") ||
+          txt.includes("kapat") ||
+          txt.includes("anladım") ||
+          txt.includes("got it") ||
+          txt.includes("close") ||
+          txt.includes("ok") ||
+          txt.includes("accept")
         ) {
           try {
-            b.click();
-          } catch (e) {}
+            el.click();
+          } catch {}
         }
       }
     });
@@ -210,11 +221,12 @@ async function isTradingViewInvalid(page) {
     return await page.evaluate(() => {
       const txt = (document.body.innerText || "").toLowerCase();
       return (
-        txt.includes("sembol sadece tradingview'de bulunabilir") ||
-        txt.includes("symbol is only available on tradingview") ||
         txt.includes("geçersiz sembol") ||
         txt.includes("invalid symbol") ||
-        txt.includes("bulunamadı")
+        txt.includes("bulunamadı") ||
+        txt.includes("not found") ||
+        txt.includes("sembol sadece tradingview'de bulunabilir") ||
+        txt.includes("symbol is only available on tradingview")
       );
     });
   } catch {
@@ -222,22 +234,176 @@ async function isTradingViewInvalid(page) {
   }
 }
 
+async function clickByText(page, textList) {
+  return await page.evaluate((textList) => {
+    const normalize = (s) =>
+      String(s || "")
+        .toLowerCase()
+        .replace(/\s+/g, " ")
+        .trim();
+
+    const targets = textList.map(normalize);
+    const nodes = Array.from(
+      document.querySelectorAll("a, button, [role='button'], span, div")
+    );
+
+    for (const node of nodes) {
+      const txt = normalize(node.innerText || node.getAttribute?.("aria-label") || "");
+      if (!txt) continue;
+
+      if (targets.some((t) => txt === t || txt.includes(t))) {
+        try {
+          node.click();
+          return true;
+        } catch {}
+      }
+    }
+
+    return false;
+  }, textList);
+}
+
+async function typeTickerIntoSearch(page, ticker) {
+  const candidates = [
+    'input[type="text"]',
+    'input[placeholder*="Ara"]',
+    'input[placeholder*="ara"]',
+    'input[placeholder*="Search"]',
+    'input[data-role="search"]',
+    'input',
+  ];
+
+  for (const sel of candidates) {
+    const el = await page.$(sel);
+    if (!el) continue;
+
+    try {
+      await el.click({ clickCount: 3 });
+      await page.keyboard.press("Backspace");
+      await el.type(`BIST:${ticker}`, { delay: 80 });
+      return true;
+    } catch {}
+  }
+
+  return false;
+}
+
+async function chooseTickerFromResults(page, ticker) {
+  const ok = await page.evaluate((ticker) => {
+    const normalize = (s) =>
+      String(s || "")
+        .toLowerCase()
+        .replace(/\s+/g, " ")
+        .trim();
+
+    const want1 = normalize(`BIST:${ticker}`);
+    const want2 = normalize(ticker);
+
+    const nodes = Array.from(
+      document.querySelectorAll("a, button, [role='button'], div, span")
+    );
+
+    for (const node of nodes) {
+      const txt = normalize(node.innerText || "");
+      if (!txt) continue;
+
+      if (
+        txt.includes(want1) ||
+        txt === want2 ||
+        txt.startsWith(`${want2} `) ||
+        txt.includes(` ${want2} `)
+      ) {
+        try {
+          node.click();
+          return true;
+        } catch {}
+      }
+    }
+
+    return false;
+  }, ticker);
+
+  if (ok) return true;
+
+  try {
+    await page.keyboard.press("ArrowDown");
+    await sleep(600);
+    await page.keyboard.press("Enter");
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function openSuperchartsAndSearch(page, ticker) {
+  await page.goto(TV_HOME_URL, {
+    waitUntil: "domcontentloaded",
+    timeout: 60000,
+  });
+
+  await sleep(5000);
+  await dismissTradingViewPopups(page);
+  await sleep(1500);
+
+  const clickedProducts = await clickByText(page, ["Ürünler", "Urunler", "Products"]);
+  if (!clickedProducts) {
+    return false;
+  }
+
+  await sleep(1500);
+
+  const clickedSupercharts = await clickByText(page, [
+    "Süpergrafikler",
+    "Supercharts",
+    "Süper Grafikler",
+  ]);
+  if (!clickedSupercharts) {
+    return false;
+  }
+
+  await sleep(5000);
+  await dismissTradingViewPopups(page);
+  await sleep(1500);
+
+  const typed = await typeTickerIntoSearch(page, ticker);
+  if (!typed) {
+    return false;
+  }
+
+  await sleep(2500);
+
+  const chosen = await chooseTickerFromResults(page, ticker);
+  if (!chosen) {
+    return false;
+  }
+
+  await sleep(7000);
+  await dismissTradingViewPopups(page);
+  await sleep(2000);
+
+  return true;
+}
+
 async function captureTradingViewImage(browser, ticker, outFile) {
   const page = await browser.newPage();
 
   try {
-    await page.setViewport({ width: 1400, height: 900 });
+    await page.setViewport({ width: 1440, height: 900 });
 
-    const tvUrl = `${TV_BASE_URL}?symbol=${encodeURIComponent(`BIST:${ticker}`)}`;
+    let opened = await openSuperchartsAndSearch(page, ticker);
 
-    await page.goto(tvUrl, {
-      waitUntil: "domcontentloaded",
-      timeout: 60000,
-    });
+    if (!opened) {
+      const fallbackUrl = `https://tr.tradingview.com/chart/?symbol=${encodeURIComponent(`BIST:${ticker}`)}`;
 
-    await sleep(8000);
-    await dismissTradingViewPopups(page);
-    await sleep(2000);
+      await page.goto(fallbackUrl, {
+        waitUntil: "domcontentloaded",
+        timeout: 60000,
+      });
+
+      await sleep(7000);
+      await dismissTradingViewPopups(page);
+      await sleep(1500);
+    }
 
     const invalid = await isTradingViewInvalid(page);
     if (invalid) {
