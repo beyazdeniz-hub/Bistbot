@@ -12,7 +12,7 @@ const URL = "https://www.turkishbulls.com/SignalList.aspx?lang=tr&MarketSymbol=I
 const DETAIL_URL = "https://www.turkishbulls.com/SignalPage.aspx?lang=tr&Ticker=";
 
 const TELEGRAM_CHUNK_SIZE = 25;
-const MAX_ROWS = 400;
+const MAX_ROWS = 500;
 const RISK_LIMIT = 3;
 
 const APPROVED_FILE = "approved_signals.json";
@@ -171,9 +171,12 @@ async function extractTickersFromPage(page) {
       "SINYAL",
       "SAYFA",
       "FX",
-      "AY",
-      "BOGA",
-      "AYI"
+      "DESTEK",
+      "HAKKIMIZDA",
+      "GIZLILIK",
+      "KOSULLAR",
+      "LINKLER",
+      "NAMEHEADER"
     ]);
 
     const addTicker = (value) => {
@@ -204,105 +207,110 @@ async function extractTickersFromPage(page) {
     return Array.from(result);
   });
 
-  return [...new Set(tickers.map(normalizeTicker).filter((x) => /^[A-ZÇĞİÖŞÜ]{2,6}$/.test(x)))];
+  return [...new Set(
+    tickers
+      .map(normalizeTicker)
+      .filter((x) => /^[A-ZÇĞİÖŞÜ]{2,6}$/.test(x))
+  )];
 }
 
-async function autoScrollToBottom(page) {
-  let sameCountRounds = 0;
-  let lastTickerCount = 0;
-  let lastHeight = 0;
+async function progressiveScrollAndCollect(page) {
+  let round = 0;
+  let stableRounds = 0;
+  let previousTickerCount = 0;
+  let previousHeight = 0;
 
-  for (let round = 0; round < 80; round++) {
-    const pageInfo = await page.evaluate(() => {
-      return {
-        innerHeight: window.innerHeight,
-        scrollY: window.scrollY,
-        scrollHeight: document.body.scrollHeight
-      };
-    });
+  while (round < 120) {
+    round++;
 
-    const step = Math.max(700, Math.floor(pageInfo.innerHeight * 0.9));
+    const before = await page.evaluate(() => ({
+      scrollY: window.scrollY,
+      innerHeight: window.innerHeight,
+      scrollHeight: document.body.scrollHeight
+    }));
+
+    const step = Math.max(500, Math.floor(before.innerHeight * 0.75));
     const targetY = Math.min(
-      pageInfo.scrollY + step,
-      Math.max(0, pageInfo.scrollHeight - pageInfo.innerHeight)
+      before.scrollY + step,
+      Math.max(0, before.scrollHeight - before.innerHeight)
     );
 
     await page.evaluate((y) => {
-      window.scrollTo({ top: y, behavior: "instant" });
+      window.scrollTo(0, y);
     }, targetY);
 
-    await sleep(900);
+    await sleep(1200);
 
     const tickersNow = await extractTickersFromPage(page);
-    const afterInfo = await page.evaluate(() => {
-      return {
-        scrollY: window.scrollY,
-        innerHeight: window.innerHeight,
-        scrollHeight: document.body.scrollHeight
-      };
-    });
+
+    const after = await page.evaluate(() => ({
+      scrollY: window.scrollY,
+      innerHeight: window.innerHeight,
+      scrollHeight: document.body.scrollHeight
+    }));
 
     const atBottom =
-      afterInfo.scrollY + afterInfo.innerHeight >= afterInfo.scrollHeight - 20;
+      after.scrollY + after.innerHeight >= after.scrollHeight - 30;
 
-    const noGrowth =
-      tickersNow.length === lastTickerCount &&
-      afterInfo.scrollHeight === lastHeight;
+    const tickerCount = tickersNow.length;
+    const noTickerGrowth = tickerCount === previousTickerCount;
+    const noHeightGrowth = after.scrollHeight === previousHeight;
 
-    if (noGrowth) {
-      sameCountRounds++;
+    if (noTickerGrowth && noHeightGrowth) {
+      stableRounds++;
     } else {
-      sameCountRounds = 0;
+      stableRounds = 0;
     }
 
-    lastTickerCount = tickersNow.length;
-    lastHeight = afterInfo.scrollHeight;
+    previousTickerCount = tickerCount;
+    previousHeight = after.scrollHeight;
 
     console.log(
-      `Scroll turu ${round + 1} | ticker=${tickersNow.length} | y=${afterInfo.scrollY} | h=${afterInfo.scrollHeight} | bottom=${atBottom}`
+      `[SCROLL] tur=${round} ticker=${tickerCount} y=${after.scrollY} height=${after.scrollHeight} bottom=${atBottom} stable=${stableRounds}`
     );
 
     if (atBottom) {
-      await sleep(1800);
+      await sleep(2200);
 
-      const finalTickers = await extractTickersFromPage(page);
-      const finalInfo = await page.evaluate(() => {
-        return {
-          scrollY: window.scrollY,
-          innerHeight: window.innerHeight,
-          scrollHeight: document.body.scrollHeight
-        };
-      });
+      const tickersAfterWait = await extractTickersFromPage(page);
+      const finalInfo = await page.evaluate(() => ({
+        scrollY: window.scrollY,
+        innerHeight: window.innerHeight,
+        scrollHeight: document.body.scrollHeight
+      }));
 
-      const stillBottom =
-        finalInfo.scrollY + finalInfo.innerHeight >= finalInfo.scrollHeight - 20;
+      const stillAtBottom =
+        finalInfo.scrollY + finalInfo.innerHeight >= finalInfo.scrollHeight - 30;
 
-      if (stillBottom && finalTickers.length === lastTickerCount) {
-        console.log("Sayfa sonuna ulaşıldı.");
+      console.log(
+        `[SCROLL-BOTTOM] ticker=${tickersAfterWait.length} y=${finalInfo.scrollY} height=${finalInfo.scrollHeight} bottom=${stillAtBottom}`
+      );
+
+      if (stillAtBottom && tickersAfterWait.length === previousTickerCount) {
+        console.log("Sayfa sonuna ulaşıldı ve yeni hisse gelmiyor.");
         break;
       }
     }
 
-    if (sameCountRounds >= 6) {
-      console.log("Yeni ticker gelmiyor, scroll sonlandırıldı.");
+    if (stableRounds >= 8) {
+      console.log("Uzun süredir yeni hisse gelmiyor, scroll durduruldu.");
       break;
     }
   }
 
   await sleep(1000);
+
+  const finalTickers = await extractTickersFromPage(page);
+  console.log("Final ticker sayısı:", finalTickers.length);
+  return finalTickers.slice(0, MAX_ROWS);
 }
 
 async function getTickersFromList(page) {
   await page.goto(URL, { waitUntil: "networkidle2", timeout: 120000 });
   await sleep(4000);
 
-  await autoScrollToBottom(page);
-
-  const tickers = await extractTickersFromPage(page);
-
-  console.log("Toplanan toplam ticker:", tickers.length);
-
-  return tickers.slice(0, MAX_ROWS);
+  const tickers = await progressiveScrollAndCollect(page);
+  return tickers;
 }
 
 async function getDetailData(page, ticker) {
@@ -513,7 +521,12 @@ function saveLastSignals(signals, updatedAt, type) {
   writeJsonFile(LAST_SIGNALS_FILE, {
     updatedAt,
     type,
-    signals: signals.map((x) => normalizeSignalForJson(x, x.firstSeen ? { firstSeen: x.firstSeen } : {}))
+    signals: signals.map((x) =>
+      normalizeSignalForJson(
+        x,
+        x.firstSeen ? { firstSeen: x.firstSeen } : {}
+      )
+    )
   });
 }
 
@@ -539,7 +552,9 @@ async function runApproved(page) {
   writeJsonFile(STATE_FILE, state);
 
   if (!signals.length) {
-    await sendTelegramMessage(`<b>Onay Alanlar</b>\n<b>Saat:</b> ${escapeHtml(updatedAt)}\nUygun hisse bulunamadı.`);
+    await sendTelegramMessage(
+      `<b>Onay Alanlar</b>\n<b>Saat:</b> ${escapeHtml(updatedAt)}\nUygun hisse bulunamadı.`
+    );
     return;
   }
 
@@ -573,11 +588,15 @@ async function runIntraday(page) {
     signals: []
   });
 
-  const existingSignals = Array.isArray(currentJson.signals) ? currentJson.signals : [];
+  const existingSignals = Array.isArray(currentJson.signals)
+    ? currentJson.signals
+    : [];
 
   const mergedSignals = [
     ...existingSignals,
-    ...newSignals.map((x) => normalizeSignalForJson(x, { firstSeen: x.firstSeen }))
+    ...newSignals.map((x) =>
+      normalizeSignalForJson(x, { firstSeen: x.firstSeen })
+    )
   ];
 
   const intradayJson = {
@@ -589,10 +608,12 @@ async function runIntraday(page) {
   writeJsonFile(INTRADAY_FILE, intradayJson);
   saveLastSignals(newSignals, updatedAt, "intraday");
 
-  state.intraday.seenTickers = [...new Set([
-    ...state.intraday.seenTickers,
-    ...allSignals.map((x) => x.ticker)
-  ])];
+  state.intraday.seenTickers = [
+    ...new Set([
+      ...state.intraday.seenTickers,
+      ...allSignals.map((x) => x.ticker)
+    ])
+  ];
   writeJsonFile(STATE_FILE, state);
 
   if (!newSignals.length) {
@@ -600,7 +621,12 @@ async function runIntraday(page) {
     return;
   }
 
-  const chunks = buildTelegramChunks("Seans İçi Yeni Düşenler", newSignals, updatedAt, true);
+  const chunks = buildTelegramChunks(
+    "Seans İçi Yeni Düşenler",
+    newSignals,
+    updatedAt,
+    true
+  );
   await sendChunks(chunks);
 }
 
