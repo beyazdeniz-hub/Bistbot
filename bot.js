@@ -5,23 +5,11 @@ const fs = require("fs");
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
-const MODE = (process.env.BOT_MODE || "intraday").trim().toLowerCase();
-// intraday | approved
-
 const URL = "https://www.turkishbulls.com/SignalList.aspx?lang=tr&MarketSymbol=IMKB";
 const DETAIL_URL = "https://www.turkishbulls.com/SignalPage.aspx?lang=tr&Ticker=";
 
-const TELEGRAM_CHUNK_SIZE = 25;
-const MAX_ROWS = 500;
-const RISK_LIMIT = 3;
-
-const APPROVED_FILE = "approved_signals.json";
-const INTRADAY_FILE = "intraday_signals.json";
-const STATE_FILE = "bot_state.json";
-const LAST_SIGNALS_FILE = "last_signals.json";
-
 function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function pad(value, width, right = false) {
@@ -31,637 +19,383 @@ function pad(value, width, right = false) {
 }
 
 function escapeHtml(text) {
-  return String(text ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  return String(text)
+    .replace(/&/g, "&")
+    .replace(/</g, "<")
+    .replace(/>/g, ">");
 }
 
 function toNumber(value) {
-  if (value === null || value === undefined) return NaN;
-
-  let str = String(value).trim();
-  if (!str) return NaN;
-
-  str = str
+  const normalized = String(value ?? "")
     .replace(/\s+/g, "")
-    .replace(/₺/g, "")
-    .replace(/TL/gi, "")
     .replace(/\./g, "")
-    .replace(/,/g, ".")
+    .replace(",", ".")
     .replace(/[^\d.-]/g, "");
 
-  const num = Number(str);
-  return Number.isFinite(num) ? num : NaN;
+  const num = parseFloat(normalized);
+  return isNaN(num) ? NaN : num;
 }
 
-function formatNumber(value, digits = 2) {
-  if (!Number.isFinite(value)) return "-";
-  return value.toFixed(digits).replace(".", ",");
-}
-
-function formatPercent(value, digits = 2) {
-  if (!Number.isFinite(value)) return "-";
-  return value.toFixed(digits).replace(".", ",") + "%";
-}
-
-function getNow() {
-  return new Date();
-}
-
-function getLocalDateTimeParts(date = new Date()) {
-  const formatter = new Intl.DateTimeFormat("tr-TR", {
-    timeZone: "Europe/Istanbul",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false
-  });
-
-  const parts = formatter.formatToParts(date);
-  const map = {};
-  for (const p of parts) {
-    if (p.type !== "literal") map[p.type] = p.value;
-  }
-
-  return {
-    day: map.day,
-    month: map.month,
-    year: map.year,
-    hour: map.hour,
-    minute: map.minute,
-    second: map.second
-  };
-}
-
-function getLocalTimeString(date = new Date()) {
-  const p = getLocalDateTimeParts(date);
-  return `${p.day}.${p.month}.${p.year} ${p.hour}:${p.minute}:${p.second}`;
-}
-
-function getLocalDateString(date = new Date()) {
-  const p = getLocalDateTimeParts(date);
-  return `${p.day}.${p.month}.${p.year}`;
-}
-
-function getLocalHourMinute(date = new Date()) {
-  const p = getLocalDateTimeParts(date);
-  return `${p.hour}:${p.minute}`;
-}
-
-function readJsonFile(path, fallback) {
-  try {
-    if (!fs.existsSync(path)) return fallback;
-    const raw = fs.readFileSync(path, "utf8");
-    return JSON.parse(raw);
-  } catch (err) {
-    console.error(`${path} okunamadı, varsayılan kullanılacak:`, err.message);
-    return fallback;
-  }
-}
-
-function writeJsonFile(path, data) {
-  fs.writeFileSync(path, JSON.stringify(data, null, 2), "utf8");
-}
-
-async function sendTelegramMessage(message) {
+async function sendTelegram(text) {
   if (!TOKEN || !CHAT_ID) {
-    console.log("Telegram bilgileri eksik, mesaj atlanıyor.");
-    return;
+    throw new Error("TOKEN veya CHAT_ID eksik");
   }
 
-  const tgUrl = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
+  const api = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
 
-  await axios.post(tgUrl, {
+  await axios.post(api, {
     chat_id: CHAT_ID,
-    text: message,
+    text: `<pre>${escapeHtml(text)}</pre>`,
     parse_mode: "HTML",
     disable_web_page_preview: true
   });
 }
 
-function normalizeTicker(value) {
-  return String(value ?? "")
-    .trim()
-    .toUpperCase()
-    .replace(/[^A-ZÇĞİÖŞÜ]/g, "");
+function saveJson(rows) {
+  const payload = {
+    updatedAt: new Date().toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" }),
+    signals: rows.map(row => ({
+      ticker: row.ticker,
+      buy: row.alis,
+      stop: row.son,
+      riskPct: row.risk.toFixed(2)
+    })),
+    earlySignals: []
+  };
+
+  fs.writeFileSync("signals.json", JSON.stringify(payload, null, 2), "utf8");
+  console.log("signals.json oluşturuldu");
 }
 
-async function extractTickersFromPage(page) {
-  const tickers = await page.evaluate(() => {
-    const result = new Set();
-
-    const blacklist = new Set([
-      "IMKB",
-      "BIST",
-      "BORSA",
-      "TURKISH",
-      "BULLS",
-      "AL",
-      "SAT",
-      "TR",
-      "EN",
-      "HOME",
-      "PAGE",
-      "SIGNAL",
-      "LIST",
-      "SINYAL",
-      "SAYFA",
-      "FX",
-      "DESTEK",
-      "HAKKIMIZDA",
-      "GIZLILIK",
-      "KOSULLAR",
-      "LINKLER",
-      "NAMEHEADER",
-      "AY",
-      "BOGA",
-      "AYI"
-    ]);
-
-    const addTicker = (value) => {
-      const t = String(value || "").trim().toUpperCase();
-      if (/^[A-ZÇĞİÖŞÜ]{2,6}$/.test(t) && !blacklist.has(t)) {
-        result.add(t);
-      }
-    };
-
-    const links = Array.from(document.querySelectorAll("a"));
-    for (const a of links) {
-      const txt = (a.textContent || a.innerText || "").trim().toUpperCase();
-      addTicker(txt);
-
-      const href = a.href || "";
-      const m = href.match(/Ticker=([A-ZÇĞİÖŞÜ]{2,10})/i);
-      if (m && m[1]) {
-        addTicker(m[1]);
-      }
+async function getVisibleTickerCount(page) {
+  return await page.evaluate(() => {
+    function getTickerFromHref(href) {
+      const m = String(href || "").match(/Ticker=([A-Z]+)/i);
+      return m ? m[1].toUpperCase() : null;
     }
 
-    const text = document.body.innerText || "";
-    const matches = text.match(/\b[A-ZÇĞİÖŞÜ]{2,6}\b/g) || [];
-    for (const m of matches) {
-      addTicker(m);
-    }
-
-    return Array.from(result);
-  });
-
-  return [...new Set(
-    tickers
-      .map(normalizeTicker)
-      .filter((x) => /^[A-ZÇĞİÖŞÜ]{2,6}$/.test(x))
-  )];
-}
-
-async function progressiveScrollAndCollect(page) {
-  let round = 0;
-  let stableRounds = 0;
-  let previousTickerCount = 0;
-  let previousHeight = 0;
-
-  while (round < 120) {
-    round++;
-
-    const before = await page.evaluate(() => ({
-      scrollY: window.scrollY,
-      innerHeight: window.innerHeight,
-      scrollHeight: document.body.scrollHeight
-    }));
-
-    const step = Math.max(500, Math.floor(before.innerHeight * 0.75));
-    const targetY = Math.min(
-      before.scrollY + step,
-      Math.max(0, before.scrollHeight - before.innerHeight)
+    const links = Array.from(
+      document.querySelectorAll('a[href*="SignalPage"]')
     );
 
-    await page.evaluate((y) => {
-      window.scrollTo(0, y);
-    }, targetY);
+    const tickers = new Set();
+    for (const link of links) {
+      const ticker = getTickerFromHref(link.getAttribute("href"));
+      if (ticker) tickers.add(ticker);
+    }
 
-    await sleep(1200);
+    return tickers.size;
+  });
+}
 
-    const tickersNow = await extractTickersFromPage(page);
+async function autoScroll(page) {
+  let stableRounds = 0;
+  let lastCount = 0;
+  let lastHeight = 0;
 
-    const after = await page.evaluate(() => ({
-      scrollY: window.scrollY,
-      innerHeight: window.innerHeight,
-      scrollHeight: document.body.scrollHeight
-    }));
+  for (let round = 0; round < 80; round++) {
+    const before = await page.evaluate(() => {
+      const doc = document.scrollingElement || document.documentElement || document.body;
+      return {
+        scrollTop: doc.scrollTop,
+        scrollHeight: doc.scrollHeight,
+        clientHeight: doc.clientHeight
+      };
+    });
 
-    const atBottom =
-      after.scrollY + after.innerHeight >= after.scrollHeight - 30;
+    await page.evaluate(async () => {
+      const doc = document.scrollingElement || document.documentElement || document.body;
+      const distance = Math.max(500, Math.floor(window.innerHeight * 0.8));
+      const steps = 6;
 
-    const tickerCount = tickersNow.length;
-    const noTickerGrowth = tickerCount === previousTickerCount;
-    const noHeightGrowth = after.scrollHeight === previousHeight;
+      for (let i = 0; i < steps; i++) {
+        window.scrollBy(0, distance);
+        doc.scrollTop = doc.scrollTop + distance;
 
-    if (noTickerGrowth && noHeightGrowth) {
+        const allEls = Array.from(document.querySelectorAll("*")).filter(el => {
+          const style = window.getComputedStyle(el);
+          const canScroll =
+            /(auto|scroll)/i.test(style.overflowY) &&
+            el.scrollHeight > el.clientHeight + 50;
+          return canScroll;
+        });
+
+        for (const el of allEls) {
+          el.scrollTop = el.scrollHeight;
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 700));
+      }
+    });
+
+    await sleep(2000);
+
+    const currentCount = await getVisibleTickerCount(page);
+    const after = await page.evaluate(() => {
+      const doc = document.scrollingElement || document.documentElement || document.body;
+      return {
+        scrollTop: doc.scrollTop,
+        scrollHeight: doc.scrollHeight,
+        clientHeight: doc.clientHeight
+      };
+    });
+
+    const reachedBottom =
+      after.scrollTop + after.clientHeight >= after.scrollHeight - 5;
+
+    const countUnchanged = currentCount === lastCount;
+    const heightUnchanged = after.scrollHeight === lastHeight;
+
+    if (countUnchanged && heightUnchanged && reachedBottom) {
       stableRounds++;
     } else {
       stableRounds = 0;
     }
 
-    previousTickerCount = tickerCount;
-    previousHeight = after.scrollHeight;
+    lastCount = currentCount;
+    lastHeight = after.scrollHeight;
 
-    console.log(
-      `[SCROLL] tur=${round} ticker=${tickerCount} y=${after.scrollY} height=${after.scrollHeight} bottom=${atBottom} stable=${stableRounds}`
-    );
-
-    if (atBottom) {
-      await sleep(2200);
-
-      const tickersAfterWait = await extractTickersFromPage(page);
-      const finalInfo = await page.evaluate(() => ({
-        scrollY: window.scrollY,
-        innerHeight: window.innerHeight,
-        scrollHeight: document.body.scrollHeight
-      }));
-
-      const stillAtBottom =
-        finalInfo.scrollY + finalInfo.innerHeight >= finalInfo.scrollHeight - 30;
-
-      console.log(
-        `[SCROLL-BOTTOM] ticker=${tickersAfterWait.length} y=${finalInfo.scrollY} height=${finalInfo.scrollHeight} bottom=${stillAtBottom}`
-      );
-
-      if (stillAtBottom && tickersAfterWait.length === previousTickerCount) {
-        console.log("Sayfa sonuna ulaşıldı ve yeni hisse gelmiyor.");
-        break;
-      }
-    }
-
-    if (stableRounds >= 8) {
-      console.log("Uzun süredir yeni hisse gelmiyor, scroll durduruldu.");
+    if (stableRounds >= 3) {
       break;
     }
+
+    if (after.scrollTop === before.scrollTop && reachedBottom) {
+      stableRounds++;
+    }
   }
 
-  await sleep(1000);
-
-  const finalTickers = await extractTickersFromPage(page);
-  console.log("Final ticker sayısı:", finalTickers.length);
-  return finalTickers.slice(0, MAX_ROWS);
+  await sleep(2000);
 }
 
-async function getTickersFromList(page) {
-  await page.goto(URL, { waitUntil: "networkidle2", timeout: 120000 });
-  await sleep(4000);
+async function extractRows(page) {
+  return await page.evaluate(() => {
+    function clean(text) {
+      return String(text || "").replace(/\s+/g, " ").trim();
+    }
 
-  const tickers = await progressiveScrollAndCollect(page);
-  return tickers;
-}
+    function getTickerFromHref(href) {
+      const m = String(href || "").match(/Ticker=([A-Z]+)/i);
+      return m ? m[1].toUpperCase() : null;
+    }
 
-async function getDetailData(page, ticker) {
-  const url = `${DETAIL_URL}${encodeURIComponent(ticker)}`;
+    function looksNumeric(text) {
+      return /^[+\-]?\d[\d.,]*%?$/.test(clean(text));
+    }
 
-  try {
-    await page.goto(url, { waitUntil: "networkidle2", timeout: 120000 });
-    await sleep(1800);
+    const rows = [];
+    const trList = Array.from(document.querySelectorAll("tr"))
+      .filter(tr => tr.querySelector('a[href*="SignalPage"]'));
 
-    const text = await page.evaluate(() => {
-      return (document.body.innerText || "")
-        .replace(/\r/g, "\n")
-        .replace(/\t/g, " ")
-        .replace(/[ ]+/g, " ");
+    for (const tr of trList) {
+      const link = tr.querySelector('a[href*="SignalPage"]');
+      const ticker = getTickerFromHref(link?.getAttribute("href"));
+
+      if (!ticker) continue;
+
+      const cells = Array.from(tr.querySelectorAll("td, th"))
+        .map(el => clean(el.innerText || el.textContent))
+        .filter(Boolean);
+
+      let alis = "-";
+      let son = "-";
+      let yuzde = "-";
+
+      if (cells.length >= 4) {
+        const nonTickerCells = cells.filter(cell => !cell.includes(ticker));
+
+        if (nonTickerCells.length >= 3) {
+          alis = nonTickerCells[0] || "-";
+          son = nonTickerCells[1] || "-";
+          yuzde = nonTickerCells[2] || "-";
+        }
+      }
+
+      if (alis === "-" && son === "-" && yuzde === "-") {
+        const tokens = cells
+          .flatMap(cell => cell.split(/\s+/))
+          .map(clean)
+          .filter(Boolean)
+          .filter(token => !token.includes(ticker))
+          .filter(token => looksNumeric(token));
+
+        if (tokens.length >= 1) alis = tokens[0];
+        if (tokens.length >= 2) son = tokens[1];
+        if (tokens.length >= 3) yuzde = tokens[2];
+      }
+
+      rows.push({
+        ticker,
+        alis,
+        son,
+        yuzde
+      });
+    }
+
+    const seen = new Set();
+    return rows.filter(row => {
+      if (seen.has(row.ticker)) return false;
+      seen.add(row.ticker);
+      return true;
     });
+  });
+}
 
-    let alis = NaN;
-    let stop = NaN;
-    let hedef = NaN;
+async function extractDetailLevels(detailPage, ticker) {
+  await detailPage.goto(`${DETAIL_URL}${ticker}`, {
+    waitUntil: "networkidle2",
+    timeout: 60000
+  });
 
-    const alisPatterns = [
-      /Alış Seviyesi[:\s]*([0-9.,]+)/i,
-      /Alis Seviyesi[:\s]*([0-9.,]+)/i,
-      /Alış[:\s]*([0-9.,]+)/i,
-      /Alis[:\s]*([0-9.,]+)/i
-    ];
+  await sleep(2500);
 
-    const stopPatterns = [
-      /Stop Seviyesi[:\s]*([0-9.,]+)/i,
-      /Stop[:\s]*([0-9.,]+)/i
-    ];
+  return await detailPage.evaluate(() => {
+    function clean(text) {
+      return String(text || "").replace(/\s+/g, " ").trim();
+    }
 
-    const hedefPatterns = [
-      /Hedef Fiyat[:\s]*([0-9.,]+)/i,
-      /Hedef[:\s]*([0-9.,]+)/i,
-      /Direnç[:\s]*([0-9.,]+)/i
-    ];
+    const bodyText = clean(document.body.innerText || "");
 
-    for (const p of alisPatterns) {
-      const m = text.match(p);
-      if (m?.[1]) {
-        alis = toNumber(m[1]);
-        if (Number.isFinite(alis)) break;
+    function pick(regexList) {
+      for (const regex of regexList) {
+        const m = bodyText.match(regex);
+        if (m && m[1]) {
+          return m[1].trim();
+        }
       }
+      return "-";
     }
 
-    for (const p of stopPatterns) {
-      const m = text.match(p);
-      if (m?.[1]) {
-        stop = toNumber(m[1]);
-        if (Number.isFinite(stop)) break;
-      }
-    }
+    const alSeviyesi = pick([
+      /Al Seviyesi[:\s]*([0-9.,]+)/i,
+      /AL Seviyesi[:\s]*([0-9.,]+)/i
+    ]);
 
-    for (const p of hedefPatterns) {
-      const m = text.match(p);
-      if (m?.[1]) {
-        hedef = toNumber(m[1]);
-        if (Number.isFinite(hedef)) break;
-      }
-    }
-
-    if (!Number.isFinite(alis) || !Number.isFinite(stop)) {
-      const nums = [...text.matchAll(/\b\d{1,4}[.,]\d{1,4}\b/g)]
-        .map((x) => x[0])
-        .map(toNumber)
-        .filter(Number.isFinite);
-
-      if (!Number.isFinite(alis) && nums.length >= 1) alis = nums[0];
-      if (!Number.isFinite(stop) && nums.length >= 2) stop = nums[1];
-      if (!Number.isFinite(hedef) && nums.length >= 3) hedef = nums[2];
-    }
+    const stoploss = pick([
+      /Stoploss[:\s]*([0-9.,]+)/i,
+      /Stop Loss[:\s]*([0-9.,]+)/i
+    ]);
 
     return {
-      ticker,
-      alis,
-      stop,
-      hedef: Number.isFinite(hedef) ? hedef : null
+      alSeviyesi,
+      stoploss
     };
-  } catch (err) {
-    console.error(`Detay okunamadı: ${ticker}`, err.message);
-    return null;
-  }
-}
-
-function calculateSignal(detail) {
-  if (!detail) return null;
-
-  const alis = toNumber(detail.alis);
-  const stop = toNumber(detail.stop);
-  const hedef = toNumber(detail.hedef);
-
-  if (!Number.isFinite(alis) || !Number.isFinite(stop)) return null;
-  if (alis <= 0 || stop <= 0) return null;
-  if (stop >= alis) return null;
-
-  const risk = ((alis - stop) / alis) * 100;
-  if (!Number.isFinite(risk) || risk <= 0 || risk > RISK_LIMIT) return null;
-
-  let kar = null;
-  if (Number.isFinite(hedef) && hedef > alis) {
-    kar = ((hedef - alis) / alis) * 100;
-  }
-
-  return {
-    ticker: detail.ticker,
-    alis,
-    stop,
-    hedef: Number.isFinite(hedef) ? hedef : null,
-    risk,
-    kar
-  };
-}
-
-function normalizeSignalForJson(item, extra = {}) {
-  return {
-    ticker: item.ticker,
-    alis: formatNumber(item.alis),
-    stop: formatNumber(item.stop),
-    hedef: item.hedef != null ? formatNumber(item.hedef) : null,
-    risk: formatPercent(item.risk),
-    kar: item.kar != null ? formatPercent(item.kar) : null,
-    ...extra
-  };
-}
-
-function buildTelegramChunks(title, signals, updatedAt, showFirstSeen = false) {
-  const chunks = [];
-
-  for (let i = 0; i < signals.length; i += TELEGRAM_CHUNK_SIZE) {
-    const part = signals.slice(i, i + TELEGRAM_CHUNK_SIZE);
-
-    let text = "";
-    text += `<b>${escapeHtml(title)}</b>\n`;
-    text += `<b>Saat:</b> ${escapeHtml(updatedAt)}\n`;
-    text += `<pre>`;
-
-    if (showFirstSeen) {
-      text += `${pad("Hisse", 8)} ${pad("Alış", 10, true)} ${pad("Stop", 10, true)} ${pad("Risk%", 8, true)} ${pad("Saat", 6, true)}\n`;
-      text += `${"-".repeat(52)}\n`;
-      for (const item of part) {
-        text += `${pad(item.ticker, 8)} ${pad(formatNumber(item.alis), 10, true)} ${pad(formatNumber(item.stop), 10, true)} ${pad(formatNumber(item.risk), 8, true)} ${pad(item.firstSeen || "-", 6, true)}\n`;
-      }
-    } else {
-      text += `${pad("Hisse", 8)} ${pad("Alış", 10, true)} ${pad("Stop", 10, true)} ${pad("Risk%", 8, true)} ${pad("Kar%", 8, true)}\n`;
-      text += `${"-".repeat(50)}\n`;
-      for (const item of part) {
-        text += `${pad(item.ticker, 8)} ${pad(formatNumber(item.alis), 10, true)} ${pad(formatNumber(item.stop), 10, true)} ${pad(formatNumber(item.risk), 8, true)} ${pad(item.kar != null ? formatNumber(item.kar) : "-", 8, true)}\n`;
-      }
-    }
-
-    text += `</pre>`;
-    chunks.push(text);
-  }
-
-  return chunks;
-}
-
-async function sendChunks(chunks) {
-  for (const chunk of chunks) {
-    await sendTelegramMessage(chunk);
-    await sleep(1500);
-  }
-}
-
-function sortSignals(signals) {
-  return [...signals].sort((a, b) => {
-    if (a.risk !== b.risk) return a.risk - b.risk;
-    return a.ticker.localeCompare(b.ticker, "tr");
   });
 }
 
-async function collectSignals(page) {
-  console.log("Liste sayfası açılıyor...");
-  const tickers = await getTickersFromList(page);
-  console.log("Bulunan ticker sayısı:", tickers.length);
+function buildTable(title, rows) {
+  let text = `${title}\n\n`;
+  text += `${pad("No", 3, true)} ${pad("Hisse", 6)} ${pad("Alis", 9, true)} ${pad("STOP", 9, true)} ${pad("Risk%", 6, true)}\n`;
+  text += `${pad("---", 3)} ${pad("------", 6)} ${pad("---------", 9)} ${pad("---------", 9)} ${pad("------", 6)}\n`;
 
-  const details = [];
-  for (const ticker of tickers) {
-    console.log("Detay okunuyor:", ticker);
-    const detail = await getDetailData(page, ticker);
-    if (detail) details.push(detail);
-    await sleep(450);
-  }
-
-  const signals = sortSignals(
-    details.map(calculateSignal).filter(Boolean)
-  );
-
-  console.log("Filtre sonrası sinyal sayısı:", signals.length);
-  return signals;
-}
-
-function ensureStateShape(state) {
-  return {
-    approved: {
-      lastDate: state?.approved?.lastDate || null,
-      tickers: Array.isArray(state?.approved?.tickers) ? state.approved.tickers : []
-    },
-    intraday: {
-      lastDate: state?.intraday?.lastDate || null,
-      seenTickers: Array.isArray(state?.intraday?.seenTickers) ? state.intraday.seenTickers : []
-    }
-  };
-}
-
-function saveLastSignals(signals, updatedAt, type) {
-  writeJsonFile(LAST_SIGNALS_FILE, {
-    updatedAt,
-    type,
-    signals: signals.map((x) =>
-      normalizeSignalForJson(
-        x,
-        x.firstSeen ? { firstSeen: x.firstSeen } : {}
-      )
-    )
-  });
-}
-
-async function runApproved(page) {
-  const now = getNow();
-  const updatedAt = getLocalTimeString(now);
-  const today = getLocalDateString(now);
-
-  const state = ensureStateShape(readJsonFile(STATE_FILE, {}));
-  const signals = await collectSignals(page);
-
-  const approvedJson = {
-    updatedAt,
-    type: "approved",
-    signals: signals.map((x) => normalizeSignalForJson(x))
-  };
-
-  writeJsonFile(APPROVED_FILE, approvedJson);
-  saveLastSignals(signals, updatedAt, "approved");
-
-  state.approved.lastDate = today;
-  state.approved.tickers = signals.map((x) => x.ticker);
-  writeJsonFile(STATE_FILE, state);
-
-  if (!signals.length) {
-    await sendTelegramMessage(
-      `<b>Onay Alanlar</b>\n<b>Saat:</b> ${escapeHtml(updatedAt)}\nUygun hisse bulunamadı.`
-    );
-    return;
-  }
-
-  const chunks = buildTelegramChunks("Onay Alanlar", signals, updatedAt, false);
-  await sendChunks(chunks);
-}
-
-async function runIntraday(page) {
-  const now = getNow();
-  const updatedAt = getLocalTimeString(now);
-  const today = getLocalDateString(now);
-  const firstSeen = getLocalHourMinute(now);
-
-  const state = ensureStateShape(readJsonFile(STATE_FILE, {}));
-
-  if (state.intraday.lastDate !== today) {
-    state.intraday.lastDate = today;
-    state.intraday.seenTickers = [];
-  }
-
-  const allSignals = await collectSignals(page);
-  const seenSet = new Set(state.intraday.seenTickers);
-
-  const newSignals = allSignals
-    .filter((x) => !seenSet.has(x.ticker))
-    .map((x) => ({ ...x, firstSeen }));
-
-  const currentJson = readJsonFile(INTRADAY_FILE, {
-    updatedAt: null,
-    type: "intraday",
-    signals: []
+  rows.forEach((row, i) => {
+    text += `${pad(i + 1, 3, true)} ${pad(row.ticker, 6)} ${pad(row.alis, 9, true)} ${pad(row.son, 9, true)} ${pad(row.risk.toFixed(2), 6, true)}\n`;
   });
 
-  const existingSignals = Array.isArray(currentJson.signals)
-    ? currentJson.signals
-    : [];
-
-  const mergedSignals = [
-    ...existingSignals,
-    ...newSignals.map((x) =>
-      normalizeSignalForJson(x, { firstSeen: x.firstSeen })
-    )
-  ];
-
-  const intradayJson = {
-    updatedAt,
-    type: "intraday",
-    signals: mergedSignals
-  };
-
-  writeJsonFile(INTRADAY_FILE, intradayJson);
-  saveLastSignals(newSignals, updatedAt, "intraday");
-
-  state.intraday.seenTickers = [
-    ...new Set([
-      ...state.intraday.seenTickers,
-      ...allSignals.map((x) => x.ticker)
-    ])
-  ];
-  writeJsonFile(STATE_FILE, state);
-
-  if (!newSignals.length) {
-    console.log("Yeni seans içi sinyal yok.");
-    return;
-  }
-
-  const chunks = buildTelegramChunks(
-    "Seans İçi Yeni Düşenler",
-    newSignals,
-    updatedAt,
-    true
-  );
-  await sendChunks(chunks);
+  text += `\nToplam: ${rows.length}`;
+  return text;
 }
 
-async function main() {
-  console.log("Bot modu:", MODE);
+function splitRowsForTelegram(title, rows, chunkSize = 25) {
+  const messages = [];
 
+  for (let i = 0; i < rows.length; i += chunkSize) {
+    const chunk = rows.slice(i, i + chunkSize);
+    const chunkTitle = i === 0 ? title : `${title} (devam)`;
+    messages.push(buildTable(chunkTitle, chunk));
+  }
+
+  return messages;
+}
+
+async function run() {
   const browser = await puppeteer.launch({
     headless: "new",
     args: ["--no-sandbox", "--disable-setuid-sandbox"]
   });
 
-  const page = await browser.newPage();
-  await page.setViewport({ width: 1440, height: 2600 });
-
   try {
-    if (MODE === "approved") {
-      await runApproved(page);
-    } else if (MODE === "intraday") {
-      await runIntraday(page);
-    } else {
-      throw new Error(`Geçersiz BOT_MODE: ${MODE}`);
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1400, height: 2200 });
+
+    await page.goto(URL, {
+      waitUntil: "networkidle2",
+      timeout: 60000
+    });
+
+    await sleep(5000);
+    await autoScroll(page);
+    await sleep(2000);
+
+    const rows = await extractRows(page);
+
+    if (!rows.length) {
+      await sendTelegram("Bot hatasi:\nListe bos geldi");
+      return;
     }
 
-    console.log("İşlem tamamlandı.");
-  } catch (err) {
-    console.error("HATA:", err);
-    const msg = escapeHtml(err.message || String(err));
-    await sendTelegramMessage(`<b>Bot hatası</b>\n<pre>${msg}</pre>`);
-    process.exitCode = 1;
+    const detailPage = await browser.newPage();
+    await detailPage.setViewport({ width: 1400, height: 2200 });
+
+    for (const row of rows) {
+      try {
+        const detail = await extractDetailLevels(detailPage, row.ticker);
+
+        if (detail.alSeviyesi && detail.alSeviyesi !== "-") {
+          row.alis = detail.alSeviyesi;
+        }
+
+        if (detail.stoploss && detail.stoploss !== "-") {
+          row.son = detail.stoploss;
+        }
+      } catch (e) {}
+
+      await sleep(700);
+    }
+
+    await detailPage.close();
+
+    const filtered = rows
+      .map(row => {
+        const alisNum = toNumber(row.alis);
+        const stopNum = toNumber(row.son);
+
+        if (isNaN(alisNum) || isNaN(stopNum) || alisNum <= 0 || stopNum >= alisNum) {
+          return null;
+        }
+
+        const risk = ((alisNum - stopNum) / alisNum) * 100;
+
+        return {
+          ...row,
+          risk
+        };
+      })
+      .filter(Boolean)
+      .filter(row => row.risk <= 3)
+      .sort((a, b) => a.risk - b.risk);
+
+    saveJson(filtered);
+
+    if (!filtered.length) {
+      await sendTelegram("Risk <= 3 uygun sinyal bulunamadi");
+      return;
+    }
+
+    const messages = splitRowsForTelegram("Risk <= 3 Uygun Hisseler", filtered);
+
+    for (const message of messages) {
+      await sendTelegram(message);
+      await sleep(700);
+    }
   } finally {
     await browser.close();
   }
 }
 
-main();
+run().catch(async err => {
+  try {
+    await sendTelegram(`Bot hatasi:\n${err.message}`);
+  } catch (e) {
+    console.log("Telegram hata gonderimi de basarisiz:", e.message);
+  }
+});
