@@ -12,7 +12,7 @@ const URL = "https://www.turkishbulls.com/SignalList.aspx?lang=tr&MarketSymbol=I
 const DETAIL_URL = "https://www.turkishbulls.com/SignalPage.aspx?lang=tr&Ticker=";
 
 const TELEGRAM_CHUNK_SIZE = 25;
-const MAX_ROWS = 250;
+const MAX_ROWS = 400;
 const RISK_LIMIT = 3;
 
 const APPROVED_FILE = "approved_signals.json";
@@ -143,41 +143,14 @@ async function sendTelegramMessage(message) {
   });
 }
 
-async function autoScroll(page) {
-  let previousHeight = 0;
-  let stableCount = 0;
-
-  for (let i = 0; i < 50; i++) {
-    const currentHeight = await page.evaluate(() => {
-      window.scrollTo(0, document.body.scrollHeight);
-      return document.body.scrollHeight;
-    });
-
-    await sleep(1200);
-
-    const newHeight = await page.evaluate(() => document.body.scrollHeight);
-
-    if (newHeight === previousHeight && newHeight === currentHeight) {
-      stableCount++;
-    } else {
-      stableCount = 0;
-    }
-
-    previousHeight = newHeight;
-
-    if (stableCount >= 3) break;
-  }
-
-  await page.evaluate(() => window.scrollTo(0, 0));
-  await sleep(700);
+function normalizeTicker(value) {
+  return String(value ?? "")
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-ZÇĞİÖŞÜ]/g, "");
 }
 
-async function getTickersFromList(page) {
-  await page.goto(URL, { waitUntil: "networkidle2", timeout: 120000 });
-  await sleep(3500);
-
-  await autoScroll(page);
-
+async function extractTickersFromPage(page) {
   const tickers = await page.evaluate(() => {
     const result = new Set();
 
@@ -196,43 +169,140 @@ async function getTickersFromList(page) {
       "SIGNAL",
       "LIST",
       "SINYAL",
-      "SAYFA"
+      "SAYFA",
+      "FX",
+      "AY",
+      "BOGA",
+      "AYI"
     ]);
+
+    const addTicker = (value) => {
+      const t = String(value || "").trim().toUpperCase();
+      if (/^[A-ZÇĞİÖŞÜ]{2,6}$/.test(t) && !blacklist.has(t)) {
+        result.add(t);
+      }
+    };
+
+    const links = Array.from(document.querySelectorAll("a"));
+    for (const a of links) {
+      const txt = (a.textContent || a.innerText || "").trim().toUpperCase();
+      addTicker(txt);
+
+      const href = a.href || "";
+      const m = href.match(/Ticker=([A-ZÇĞİÖŞÜ]{2,10})/i);
+      if (m && m[1]) {
+        addTicker(m[1]);
+      }
+    }
 
     const text = document.body.innerText || "";
     const matches = text.match(/\b[A-ZÇĞİÖŞÜ]{2,6}\b/g) || [];
     for (const m of matches) {
-      const t = String(m).trim().toUpperCase();
-      if (/^[A-ZÇĞİÖŞÜ]{2,6}$/.test(t) && !blacklist.has(t)) {
-        result.add(t);
-      }
-    }
-
-    const links = Array.from(document.querySelectorAll("a"));
-    for (const a of links) {
-      const txt = (a.innerText || "").trim().toUpperCase();
-      if (/^[A-ZÇĞİÖŞÜ]{2,6}$/.test(txt) && !blacklist.has(txt)) {
-        result.add(txt);
-      }
-
-      const href = a.href || "";
-      const match = href.match(/Ticker=([A-ZÇĞİÖŞÜ]{2,6})/i);
-      if (match && match[1]) {
-        const ticker = match[1].toUpperCase();
-        if (!blacklist.has(ticker)) {
-          result.add(ticker);
-        }
-      }
+      addTicker(m);
     }
 
     return Array.from(result);
   });
 
-  return [...new Set(
-    tickers
-      .map((x) => String(x).trim().toUpperCase())
-      .filter((x) => /^[A-ZÇĞİÖŞÜ]{2,6}$/.test(x))
-  )].slice(0, MAX_ROWS);
+  return [...new Set(tickers.map(normalizeTicker).filter((x) => /^[A-ZÇĞİÖŞÜ]{2,6}$/.test(x)))];
+}
+
+async function autoScrollToBottom(page) {
+  let sameCountRounds = 0;
+  let lastTickerCount = 0;
+  let lastHeight = 0;
+
+  for (let round = 0; round < 80; round++) {
+    const pageInfo = await page.evaluate(() => {
+      return {
+        innerHeight: window.innerHeight,
+        scrollY: window.scrollY,
+        scrollHeight: document.body.scrollHeight
+      };
+    });
+
+    const step = Math.max(700, Math.floor(pageInfo.innerHeight * 0.9));
+    const targetY = Math.min(
+      pageInfo.scrollY + step,
+      Math.max(0, pageInfo.scrollHeight - pageInfo.innerHeight)
+    );
+
+    await page.evaluate((y) => {
+      window.scrollTo({ top: y, behavior: "instant" });
+    }, targetY);
+
+    await sleep(900);
+
+    const tickersNow = await extractTickersFromPage(page);
+    const afterInfo = await page.evaluate(() => {
+      return {
+        scrollY: window.scrollY,
+        innerHeight: window.innerHeight,
+        scrollHeight: document.body.scrollHeight
+      };
+    });
+
+    const atBottom =
+      afterInfo.scrollY + afterInfo.innerHeight >= afterInfo.scrollHeight - 20;
+
+    const noGrowth =
+      tickersNow.length === lastTickerCount &&
+      afterInfo.scrollHeight === lastHeight;
+
+    if (noGrowth) {
+      sameCountRounds++;
+    } else {
+      sameCountRounds = 0;
+    }
+
+    lastTickerCount = tickersNow.length;
+    lastHeight = afterInfo.scrollHeight;
+
+    console.log(
+      `Scroll turu ${round + 1} | ticker=${tickersNow.length} | y=${afterInfo.scrollY} | h=${afterInfo.scrollHeight} | bottom=${atBottom}`
+    );
+
+    if (atBottom) {
+      await sleep(1800);
+
+      const finalTickers = await extractTickersFromPage(page);
+      const finalInfo = await page.evaluate(() => {
+        return {
+          scrollY: window.scrollY,
+          innerHeight: window.innerHeight,
+          scrollHeight: document.body.scrollHeight
+        };
+      });
+
+      const stillBottom =
+        finalInfo.scrollY + finalInfo.innerHeight >= finalInfo.scrollHeight - 20;
+
+      if (stillBottom && finalTickers.length === lastTickerCount) {
+        console.log("Sayfa sonuna ulaşıldı.");
+        break;
+      }
+    }
+
+    if (sameCountRounds >= 6) {
+      console.log("Yeni ticker gelmiyor, scroll sonlandırıldı.");
+      break;
+    }
+  }
+
+  await sleep(1000);
+}
+
+async function getTickersFromList(page) {
+  await page.goto(URL, { waitUntil: "networkidle2", timeout: 120000 });
+  await sleep(4000);
+
+  await autoScrollToBottom(page);
+
+  const tickers = await extractTickersFromPage(page);
+
+  console.log("Toplanan toplam ticker:", tickers.length);
+
+  return tickers.slice(0, MAX_ROWS);
 }
 
 async function getDetailData(page, ticker) {
@@ -543,7 +613,7 @@ async function main() {
   });
 
   const page = await browser.newPage();
-  await page.setViewport({ width: 1440, height: 2400 });
+  await page.setViewport({ width: 1440, height: 2600 });
 
   try {
     if (MODE === "approved") {
