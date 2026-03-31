@@ -176,7 +176,10 @@ async function extractTickersFromPage(page) {
       "GIZLILIK",
       "KOSULLAR",
       "LINKLER",
-      "NAMEHEADER"
+      "NAMEHEADER",
+      "AY",
+      "BOGA",
+      "AYI"
     ]);
 
     const addTicker = (value) => {
