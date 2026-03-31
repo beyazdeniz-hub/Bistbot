@@ -16,9 +16,6 @@ jobs:
     steps:
       - name: Repo çek
         uses: actions/checkout@v4
-        with:
-          persist-credentials: true
-          fetch-depth: 0
 
       - name: Node kur
         uses: actions/setup-node@v4
@@ -65,15 +62,11 @@ jobs:
           GITHUB_BRANCH: main
         run: node bot.js
 
-      - name: JSON dosyalarını commit et
+      - name: Commit JSON
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git stash push --include-untracked -m "json-temp" || true
-          git pull --rebase origin main || true
-          git stash pop || true
-
-          git add signals.json onay.json seans.json history.json charts || true
-          git diff --cached --quiet && echo "Değişiklik yok" || git commit -m "JSON ve grafik dosyalarını güncelle"
-          git push origin main
+          git add .
+          git commit -m "update data" || echo "no changes"
+          git push
