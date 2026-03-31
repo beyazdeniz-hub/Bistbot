@@ -81,30 +81,48 @@ async function getLivePrice(ticker) {
   }
 }
 
-async function autoScroll(page) {
-  await page.evaluate(async () => {
-    await new Promise((resolve) => {
-      let sameCount = 0;
-      let lastHeight = document.body.scrollHeight;
+async function scrollStep(page, step = 1200, waitMs = 900) {
+  await page.evaluate((y) => {
+    window.scrollBy(0, y);
+  }, step);
 
-      const timer = setInterval(() => {
-        window.scrollBy(0, 900);
+  await sleep(waitMs);
+}
 
-        const newHeight = document.body.scrollHeight;
-        if (newHeight === lastHeight) {
-          sameCount += 1;
-        } else {
-          sameCount = 0;
-          lastHeight = newHeight;
-        }
+async function scrollToBottomHard(page) {
+  let lastHeight = 0;
+  let stableRounds = 0;
 
-        if (sameCount >= 8) {
-          clearInterval(timer);
-          resolve();
-        }
-      }, 1200);
+  for (let i = 0; i < 25; i++) {
+    const height = await page.evaluate(() => {
+      return Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight
+      );
     });
-  });
+
+    await page.evaluate((h) => {
+      window.scrollTo(0, h);
+    }, height);
+
+    await sleep(1500);
+
+    const newHeight = await page.evaluate(() => {
+      return Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight
+      );
+    });
+
+    if (newHeight === lastHeight) {
+      stableRounds += 1;
+    } else {
+      stableRounds = 0;
+      lastHeight = newHeight;
+    }
+
+    if (stableRounds >= 4) break;
+  }
 }
 
 async function extractRows(page) {
@@ -116,7 +134,11 @@ async function extractRows(page) {
 
     for (const tr of trs) {
       const link = tr.querySelector('a[href*="SignalPage"]');
-      const ticker = link?.href.match(/Ticker=([A-Z]+)/)?.[1];
+      const href = link?.href || "";
+      const ticker =
+        href.match(/Ticker=([A-Z]+)/)?.[1] ||
+        (link?.innerText || "").trim().toUpperCase();
+
       if (!ticker) continue;
 
       const cells = Array.from(tr.querySelectorAll("td")).map((x) =>
@@ -132,11 +154,69 @@ async function extractRows(page) {
 
     const seen = new Set();
     return rows.filter((r) => {
+      if (!r?.ticker) return false;
       if (seen.has(r.ticker)) return false;
       seen.add(r.ticker);
       return true;
     });
   });
+}
+
+function mergeUniqueRows(...parts) {
+  const map = new Map();
+
+  for (const arr of parts) {
+    for (const item of arr || []) {
+      if (!item?.ticker) continue;
+      if (!map.has(item.ticker)) {
+        map.set(item.ticker, item);
+      }
+    }
+  }
+
+  return Array.from(map.values());
+}
+
+async function autoScrollAndCollect(page) {
+  let merged = [];
+  let lastCount = 0;
+  let noGrowthRounds = 0;
+
+  for (let round = 1; round <= 30; round++) {
+    for (let s = 0; s < 4; s++) {
+      await scrollStep(page, 1200, 1000);
+    }
+
+    await sleep(1800);
+
+    const part = await extractRows(page);
+    merged = mergeUniqueRows(merged, part);
+
+    const count = merged.length;
+    console.log(`Scroll turu ${round} | bulunan ticker: ${count}`);
+
+    if (count > lastCount) {
+      lastCount = count;
+      noGrowthRounds = 0;
+    } else {
+      noGrowthRounds += 1;
+    }
+
+    if (noGrowthRounds >= 4) {
+      console.log("Yeni ticker artışı durdu, son dip taraması yapılıyor...");
+      break;
+    }
+  }
+
+  await scrollToBottomHard(page);
+  await sleep(2500);
+
+  const finalPart = await extractRows(page);
+  merged = mergeUniqueRows(merged, finalPart);
+
+  console.log(`Final tarama sonrası toplam ticker: ${merged.length}`);
+
+  return merged.slice(0, MAX_ROWS);
 }
 
 async function collectAllRows(page) {
@@ -147,26 +227,9 @@ async function collectAllRows(page) {
 
   await sleep(5000);
 
-  let merged = [];
+  const rows = await autoScrollAndCollect(page);
 
-  for (let i = 0; i < 3; i++) {
-    await autoScroll(page);
-    await sleep(2500);
-
-    const part = await extractRows(page);
-    const map = new Map();
-
-    for (const item of [...merged, ...part]) {
-      if (!item?.ticker) continue;
-      if (!map.has(item.ticker)) {
-        map.set(item.ticker, item);
-      }
-    }
-
-    merged = Array.from(map.values());
-  }
-
-  return merged.slice(0, MAX_ROWS);
+  return rows.slice(0, MAX_ROWS);
 }
 
 async function extractDetailLevels(page, ticker) {
