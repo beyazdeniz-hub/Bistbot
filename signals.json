@@ -1,128 +1,128 @@
 {
-  "updatedAt": "31.03.2026 04:42:16",
+  "updatedAt": "31.03.2026 12:24:31",
   "signals": [
     {
-      "ticker": "DURDO",
-      "alis": "3.6050",
-      "stop": "3.5600",
-      "risk": "1.25",
+      "ticker": "ALFAS",
+      "alis": "36.90",
+      "stop": "36.50",
+      "risk": "1.08",
+      "current": null,
+      "change": null,
+      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/seans/ALFAS.png"
+    },
+    {
+      "ticker": "ALARK",
+      "alis": "87.75",
+      "stop": "86.35",
+      "risk": "1.60",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "ERCB",
-      "alis": "47.68",
-      "stop": "47.04",
-      "risk": "1.34",
+      "ticker": "ALTNY",
+      "alis": "14.48",
+      "stop": "14.21",
+      "risk": "1.86",
       "current": null,
       "change": null,
-      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/diger/ERCB.png"
+      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/seans/ALTNY.png"
     },
     {
-      "ticker": "ENKAI",
-      "alis": "92.83",
-      "stop": "91.50",
-      "risk": "1.43",
+      "ticker": "ADESE",
+      "alis": "0.9600",
+      "stop": "0.9400",
+      "risk": "2.08",
       "current": null,
       "change": null,
-      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/diger/ENKAI.png"
+      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/seans/ADESE.png"
     },
     {
-      "ticker": "ENTRA",
-      "alis": "10.40",
-      "stop": "10.22",
-      "risk": "1.73",
-      "current": null,
-      "change": null,
-      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/diger/ENTRA.png"
-    },
-    {
-      "ticker": "GARFA",
-      "alis": "26.23",
-      "stop": "25.76",
-      "risk": "1.79",
+      "ticker": "AGYO",
+      "alis": "7.9800",
+      "stop": "7.8000",
+      "risk": "2.26",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "AYDEM",
-      "alis": "27.50",
-      "stop": "27.00",
-      "risk": "1.82",
-      "current": null,
-      "change": null,
-      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/diger/AYDEM.png"
-    },
-    {
-      "ticker": "CUSAN",
-      "alis": "23.70",
-      "stop": "23.20",
-      "risk": "2.11",
-      "current": null,
-      "change": null,
-      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/diger/CUSAN.png"
-    },
-    {
-      "ticker": "BIOEN",
-      "alis": "17.01",
-      "stop": "16.65",
-      "risk": "2.12",
+      "ticker": "AGROT",
+      "alis": "2.8300",
+      "stop": "2.7500",
+      "risk": "2.83",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "ADEL",
-      "alis": "32.75",
-      "stop": "32.00",
-      "risk": "2.29",
+      "ticker": "AHGAZ",
+      "alis": "22.54",
+      "stop": "21.86",
+      "risk": "3.02",
+      "current": null,
+      "change": null,
+      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/seans/AHGAZ.png"
+    },
+    {
+      "ticker": "AFYON",
+      "alis": "17.39",
+      "stop": "16.84",
+      "risk": "3.16",
+      "current": null,
+      "change": null,
+      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/seans/AFYON.png"
+    },
+    {
+      "ticker": "ANHYT",
+      "alis": "109.90",
+      "stop": "106.10",
+      "risk": "3.46",
+      "current": null,
+      "change": null,
+      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/seans/ANHYT.png"
+    },
+    {
+      "ticker": "ARFYE",
+      "alis": "24.49",
+      "stop": "23.60",
+      "risk": "3.63",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "ELITE",
-      "alis": "27.74",
-      "stop": "27.02",
-      "risk": "2.60",
+      "ticker": "ARASE",
+      "alis": "88.40",
+      "stop": "85.00",
+      "risk": "3.85",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "HOROZ",
-      "alis": "55.50",
-      "stop": "53.50",
-      "risk": "3.60",
+      "ticker": "AKENR",
+      "alis": "9.5400",
+      "stop": "9.1100",
+      "risk": "4.51",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "FRIGO",
-      "alis": "9.4300",
-      "stop": "9.0700",
-      "risk": "3.82",
+      "ticker": "AKSUE",
+      "alis": "27.95",
+      "stop": "26.68",
+      "risk": "4.54",
       "current": null,
       "change": null,
-      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/diger/FRIGO.png"
+      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/seans/AKSUE.png"
     },
     {
-      "ticker": "AVTUR",
-      "alis": "18.50",
-      "stop": "17.70",
-      "risk": "4.32",
-      "current": null,
-      "change": null,
-      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/diger/AVTUR.png"
-    },
-    {
-      "ticker": "BAKAB",
-      "alis": "39.06",
-      "stop": "37.18",
-      "risk": "4.81",
+      "ticker": "AGESA",
+      "alis": "218.60",
+      "stop": "207.80",
+      "risk": "4.94",
       "current": null,
       "change": null,
       "grafikUrl": null
