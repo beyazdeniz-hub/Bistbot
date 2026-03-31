@@ -5,6 +5,10 @@ on:
   schedule:
     - cron: "*/10 * * * *"
 
+concurrency:
+  group: bist-bot-main
+  cancel-in-progress: true
+
 jobs:
   run-bot:
     runs-on: ubuntu-latest
