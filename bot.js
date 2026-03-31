@@ -1,8 +1,6 @@
 const puppeteer = require("puppeteer");
 const axios = require("axios");
 const fs = require("fs");
-const path = require("path");
-const FormData = require("form-data");
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
@@ -14,9 +12,6 @@ const GITHUB_BRANCH = process.env.GITHUB_BRANCH || "main";
 const URL = "https://www.turkishbulls.com/SignalList.aspx?lang=tr&MarketSymbol=IMKB";
 const DETAIL_URL = "https://www.turkishbulls.com/SignalPage.aspx?lang=tr&Ticker=";
 
-const TEMP_DIR = "tmp_charts";
-const TV_HOME_URL = "https://tr.tradingview.com/";
-
 const RISK_LIMIT = 5;
 const MAX_ROWS = 400;
 const DETAIL_DELAY_MS = 800;
@@ -24,10 +19,6 @@ const TELEGRAM_DELAY_MS = 1500;
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function ensureDir(dir) {
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 }
 
 function toNumber(value) {
@@ -77,22 +68,6 @@ async function sendTelegram(text) {
   await axios.post(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
     chat_id: CHAT_ID,
     text,
-  });
-}
-
-async function sendTelegramPhoto(filePath, caption) {
-  if (!TOKEN || !CHAT_ID) {
-    throw new Error("TELEGRAM_BOT_TOKEN veya TELEGRAM_CHAT_ID eksik");
-  }
-
-  const form = new FormData();
-  form.append("chat_id", CHAT_ID);
-  form.append("photo", fs.createReadStream(filePath));
-  form.append("caption", caption);
-
-  await axios.post(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, form, {
-    headers: form.getHeaders(),
-    maxBodyLength: Infinity,
   });
 }
 
@@ -199,6 +174,7 @@ async function extractDetailLevels(page, ticker) {
     waitUntil: "networkidle2",
     timeout: 60000,
   });
+
   await sleep(2200);
 
   return await page.evaluate(() => {
@@ -299,308 +275,6 @@ async function uploadJsonToGithub(remotePath, data, message) {
   );
 }
 
-async function uploadFileToGithub(localPath, remotePath) {
-  if (!GITHUB_TOKEN || !GITHUB_REPOSITORY) return null;
-
-  const content = fs.readFileSync(localPath, "base64");
-  const sha = await getExistingGitHubSha(remotePath);
-
-  await axios.put(
-    `https://api.github.com/repos/${GITHUB_REPOSITORY}/contents/${remotePath}`,
-    {
-      message: `chart upload: ${remotePath}`,
-      content,
-      branch: GITHUB_BRANCH,
-      ...(sha ? { sha } : {}),
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${GITHUB_TOKEN}`,
-        Accept: "application/vnd.github+json",
-      },
-      timeout: 30000,
-    }
-  );
-
-  return `https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${GITHUB_BRANCH}/${remotePath}`;
-}
-
-async function dismissTradingViewPopups(page) {
-  try {
-    await page.evaluate(() => {
-      const nodes = Array.from(
-        document.querySelectorAll("button, [role='button'], a, span, div")
-      );
-
-      for (const el of nodes) {
-        const txt = (
-          (el.innerText || "") +
-          " " +
-          (el.getAttribute?.("aria-label") || "")
-        )
-          .toLowerCase()
-          .trim();
-
-        if (
-          txt.includes("tamam") ||
-          txt.includes("kapat") ||
-          txt.includes("anladım") ||
-          txt.includes("got it") ||
-          txt.includes("close") ||
-          txt.includes("ok") ||
-          txt.includes("accept")
-        ) {
-          try {
-            el.click();
-          } catch {}
-        }
-      }
-    });
-  } catch {}
-}
-
-async function isTradingViewInvalid(page) {
-  try {
-    return await page.evaluate(() => {
-      const txt = (document.body.innerText || "").toLowerCase();
-      return (
-        txt.includes("geçersiz sembol") ||
-        txt.includes("invalid symbol") ||
-        txt.includes("bulunamadı") ||
-        txt.includes("not found") ||
-        txt.includes("sembol sadece tradingview'de bulunabilir") ||
-        txt.includes("symbol is only available on tradingview")
-      );
-    });
-  } catch {
-    return true;
-  }
-}
-
-async function clickByText(page, textList) {
-  return await page.evaluate((textList) => {
-    const normalize = (s) =>
-      String(s || "")
-        .toLowerCase()
-        .replace(/\s+/g, " ")
-        .trim();
-
-    const targets = textList.map(normalize);
-    const nodes = Array.from(
-      document.querySelectorAll("a, button, [role='button'], span, div")
-    );
-
-    for (const node of nodes) {
-      const txt = normalize(node.innerText || node.getAttribute?.("aria-label") || "");
-      if (!txt) continue;
-
-      if (targets.some((t) => txt === t || txt.includes(t))) {
-        try {
-          node.click();
-          return true;
-        } catch {}
-      }
-    }
-
-    return false;
-  }, textList);
-}
-
-async function typeTickerIntoSearch(page, ticker) {
-  const candidates = [
-    'input[type="text"]',
-    'input[placeholder*="Ara"]',
-    'input[placeholder*="ara"]',
-    'input[placeholder*="Search"]',
-    'input[data-role="search"]',
-    'input',
-  ];
-
-  for (const sel of candidates) {
-    const el = await page.$(sel);
-    if (!el) continue;
-
-    try {
-      await el.click({ clickCount: 3 });
-      await page.keyboard.press("Backspace");
-      await el.type(`BIST:${ticker}`, { delay: 80 });
-      return true;
-    } catch {}
-  }
-
-  return false;
-}
-
-async function chooseTickerFromResults(page, ticker) {
-  const ok = await page.evaluate((ticker) => {
-    const normalize = (s) =>
-      String(s || "")
-        .toLowerCase()
-        .replace(/\s+/g, " ")
-        .trim();
-
-    const want1 = normalize(`BIST:${ticker}`);
-    const want2 = normalize(ticker);
-
-    const nodes = Array.from(
-      document.querySelectorAll("a, button, [role='button'], div, span")
-    );
-
-    for (const node of nodes) {
-      const txt = normalize(node.innerText || "");
-      if (!txt) continue;
-
-      if (
-        txt.includes(want1) ||
-        txt === want2 ||
-        txt.startsWith(`${want2} `) ||
-        txt.includes(` ${want2} `)
-      ) {
-        try {
-          node.click();
-          return true;
-        } catch {}
-      }
-    }
-
-    return false;
-  }, ticker);
-
-  if (ok) return true;
-
-  try {
-    await page.keyboard.press("ArrowDown");
-    await sleep(600);
-    await page.keyboard.press("Enter");
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function openSuperchartsAndSearch(page, ticker) {
-  await page.goto(TV_HOME_URL, {
-    waitUntil: "domcontentloaded",
-    timeout: 60000,
-  });
-
-  await sleep(5000);
-  await dismissTradingViewPopups(page);
-  await sleep(1500);
-
-  const clickedProducts = await clickByText(page, ["Ürünler", "Urunler", "Products"]);
-  if (!clickedProducts) {
-    return false;
-  }
-
-  await sleep(1500);
-
-  const clickedSupercharts = await clickByText(page, [
-    "Süpergrafikler",
-    "Supercharts",
-    "Süper Grafikler",
-  ]);
-  if (!clickedSupercharts) {
-    return false;
-  }
-
-  await sleep(5000);
-  await dismissTradingViewPopups(page);
-  await sleep(1500);
-
-  const typed = await typeTickerIntoSearch(page, ticker);
-  if (!typed) {
-    return false;
-  }
-
-  await sleep(2500);
-
-  const chosen = await chooseTickerFromResults(page, ticker);
-  if (!chosen) {
-    return false;
-  }
-
-  await sleep(7000);
-  await dismissTradingViewPopups(page);
-  await sleep(2000);
-
-  return true;
-}
-
-async function captureTradingViewImage(browser, ticker, outFile) {
-  const page = await browser.newPage();
-
-  try {
-    await page.setViewport({ width: 1440, height: 900 });
-
-    let opened = await openSuperchartsAndSearch(page, ticker);
-
-    if (!opened) {
-      const fallbackUrl = `https://tr.tradingview.com/chart/?symbol=${encodeURIComponent(`BIST:${ticker}`)}`;
-
-      await page.goto(fallbackUrl, {
-        waitUntil: "domcontentloaded",
-        timeout: 60000,
-      });
-
-      await sleep(7000);
-      await dismissTradingViewPopups(page);
-      await sleep(1500);
-    }
-
-    const invalid = await isTradingViewInvalid(page);
-    if (invalid) {
-      return false;
-    }
-
-    await page.screenshot({
-      path: outFile,
-      type: "png",
-      fullPage: false,
-    });
-
-    return true;
-  } catch {
-    return false;
-  } finally {
-    await page.close();
-  }
-}
-
-async function generateChart(row, folder, browser) {
-  ensureDir(TEMP_DIR);
-
-  const finalFile = path.join(TEMP_DIR, `${row.ticker}.png`);
-  const ok = await captureTradingViewImage(browser, row.ticker, finalFile);
-
-  if (!ok || !fs.existsSync(finalFile)) {
-    return { file: null, grafikUrl: null, usedReal: false };
-  }
-
-  const remote = `charts/${folder}/${row.ticker}.png`;
-  const grafikUrl = await uploadFileToGithub(finalFile, remote);
-
-  return { file: finalFile, grafikUrl, usedReal: true };
-}
-
-function buildCaption(row) {
-  let caption =
-`${row.ticker}
-Alış: ${row.alis}
-Stop: ${row.stop}
-Risk: %${Number(row.risk).toFixed(2)}`;
-
-  if (row.current) {
-    caption += `\nGüncel: ${row.current}`;
-  }
-
-  if (row.change) {
-    caption += `\nFark: %${row.change}`;
-  }
-
-  return caption;
-}
-
 function buildAppPayload(results, updatedAt) {
   return {
     updatedAt,
@@ -611,7 +285,7 @@ function buildAppPayload(results, updatedAt) {
       risk: Number(row.risk).toFixed(2),
       current: row.current ?? null,
       change: row.change ?? null,
-      grafikUrl: row.grafikUrl ?? null,
+      grafikUrl: null,
     })),
   };
 }
@@ -663,9 +337,25 @@ async function updateAppJsons(results, category) {
   }
 }
 
-async function run() {
-  ensureDir(TEMP_DIR);
+function buildSignalText(row) {
+  let text =
+`${row.ticker}
+Alış: ${row.alis}
+Stop: ${row.stop}
+Risk: %${Number(row.risk).toFixed(2)}`;
 
+  if (row.current) {
+    text += `\nGüncel: ${row.current}`;
+  }
+
+  if (row.change) {
+    text += `\nFark: %${row.change}`;
+  }
+
+  return text;
+}
+
+async function run() {
   const browser = await puppeteer.launch({
     headless: "new",
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -708,17 +398,13 @@ async function run() {
         const s = toNumber(stop);
 
         if (isNaN(a) || isNaN(s) || a <= 0) {
-          console.log(
-            `HATALI SAYI ${r.ticker} | alis=${alis} | stop=${stop}`
-          );
+          console.log(`HATALI SAYI ${r.ticker} | alis=${alis} | stop=${stop}`);
           await sleep(DETAIL_DELAY_MS);
           continue;
         }
 
         if (s >= a) {
-          console.log(
-            `STOP ALISTAN BUYUK/EŞIT ${r.ticker} | alis=${a} | stop=${s}`
-          );
+          console.log(`STOP ALISTAN BUYUK/EŞIT ${r.ticker} | alis=${a} | stop=${s}`);
           await sleep(DETAIL_DELAY_MS);
           continue;
         }
@@ -747,7 +433,6 @@ async function run() {
           risk,
           current: live ? Number(live).toFixed(2) : null,
           change,
-          grafikUrl: null,
         });
 
         console.log(
@@ -769,31 +454,16 @@ async function run() {
       return;
     }
 
-    const category = getTimeCategory();
-
     for (const row of results) {
       try {
-        const { file, grafikUrl, usedReal } = await generateChart(row, category, browser);
-        row.grafikUrl = grafikUrl || null;
-
-        if (usedReal && file) {
-          const caption = buildCaption(row);
-          await sendTelegramPhoto(file, caption);
-        } else {
-          const text =
-`${row.ticker}
-Alış: ${row.alis}
-Stop: ${row.stop}
-Risk: %${Number(row.risk).toFixed(2)}${row.current ? `\nGüncel: ${row.current}` : ""}${row.change ? `\nFark: %${row.change}` : ""}`;
-          await sendTelegram(text);
-        }
-
+        await sendTelegram(buildSignalText(row));
         await sleep(TELEGRAM_DELAY_MS);
       } catch (e) {
-        console.log(`Grafik/telegram hata: ${row.ticker} - ${e.message}`);
+        console.log(`Telegram hata: ${row.ticker} - ${e.message}`);
       }
     }
 
+    const category = getTimeCategory();
     await updateAppJsons(results, category);
 
     let summary = `Sinyaller (${category})\n`;
