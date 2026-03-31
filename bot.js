@@ -5,13 +5,20 @@ const fs = require("fs");
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
+const MODE = (process.env.BOT_MODE || "intraday").trim().toLowerCase();
+// intraday | approved
+
 const URL = "https://www.turkishbulls.com/SignalList.aspx?lang=tr&MarketSymbol=IMKB";
 const DETAIL_URL = "https://www.turkishbulls.com/SignalPage.aspx?lang=tr&Ticker=";
 
 const TELEGRAM_CHUNK_SIZE = 25;
-const MAX_ROWS = 200;
+const MAX_ROWS = 250;
 const RISK_LIMIT = 3;
-const HAFIZA_DOSYASI = "borsa_hafiza.json";
+
+const APPROVED_FILE = "approved_signals.json";
+const INTRADAY_FILE = "intraday_signals.json";
+const STATE_FILE = "bot_state.json";
+const LAST_SIGNALS_FILE = "last_signals.json";
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -31,14 +38,21 @@ function escapeHtml(text) {
 }
 
 function toNumber(value) {
-  const normalized = String(value ?? "")
+  if (value === null || value === undefined) return NaN;
+
+  let str = String(value).trim();
+  if (!str) return NaN;
+
+  str = str
     .replace(/\s+/g, "")
+    .replace(/₺/g, "")
+    .replace(/TL/gi, "")
     .replace(/\./g, "")
     .replace(/,/g, ".")
     .replace(/[^\d.-]/g, "");
 
-  const n = parseFloat(normalized);
-  return Number.isFinite(n) ? n : NaN;
+  const num = Number(str);
+  return Number.isFinite(num) ? num : NaN;
 }
 
 function formatNumber(value, digits = 2) {
@@ -46,319 +60,505 @@ function formatNumber(value, digits = 2) {
   return value.toFixed(digits).replace(".", ",");
 }
 
-function getNowTR() {
-  return new Date().toLocaleString("tr-TR", {
+function formatPercent(value, digits = 2) {
+  if (!Number.isFinite(value)) return "-";
+  return value.toFixed(digits).replace(".", ",") + "%";
+}
+
+function getNow() {
+  return new Date();
+}
+
+function getLocalDateTimeParts(date = new Date()) {
+  const formatter = new Intl.DateTimeFormat("tr-TR", {
     timeZone: "Europe/Istanbul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false
   });
+
+  const parts = formatter.formatToParts(date);
+  const map = {};
+  for (const p of parts) {
+    if (p.type !== "literal") map[p.type] = p.value;
+  }
+
+  return {
+    day: map.day,
+    month: map.month,
+    year: map.year,
+    hour: map.hour,
+    minute: map.minute,
+    second: map.second
+  };
 }
 
-function memoryKey(item) {
-  return `${item.ticker}|${formatNumber(item.alis, 4)}|${formatNumber(item.stop, 4)}`;
+function getLocalTimeString(date = new Date()) {
+  const p = getLocalDateTimeParts(date);
+  return `${p.day}.${p.month}.${p.year} ${p.hour}:${p.minute}:${p.second}`;
 }
 
-function hafizayiOku() {
+function getLocalDateString(date = new Date()) {
+  const p = getLocalDateTimeParts(date);
+  return `${p.day}.${p.month}.${p.year}`;
+}
+
+function getLocalHourMinute(date = new Date()) {
+  const p = getLocalDateTimeParts(date);
+  return `${p.hour}:${p.minute}`;
+}
+
+function readJsonFile(path, fallback) {
   try {
-    if (!fs.existsSync(HAFIZA_DOSYASI)) {
-      return {};
-    }
-    const raw = fs.readFileSync(HAFIZA_DOSYASI, "utf8");
-    const data = JSON.parse(raw);
-    return data && typeof data === "object" ? data : {};
+    if (!fs.existsSync(path)) return fallback;
+    const raw = fs.readFileSync(path, "utf8");
+    return JSON.parse(raw);
   } catch (err) {
-    console.log("Hafıza okunamadı, sıfırdan başlanıyor:", err.message);
-    return {};
+    console.error(`${path} okunamadı, varsayılan kullanılacak:`, err.message);
+    return fallback;
   }
 }
 
-function hafizayiYaz(data) {
-  try {
-    fs.writeFileSync(HAFIZA_DOSYASI, JSON.stringify(data, null, 2), "utf8");
-  } catch (err) {
-    console.log("Hafıza yazılamadı:", err.message);
-  }
+function writeJsonFile(path, data) {
+  fs.writeFileSync(path, JSON.stringify(data, null, 2), "utf8");
 }
 
-function hafizaTemizle(memory, maxAgeDays = 30) {
-  const now = Date.now();
-  const maxAgeMs = maxAgeDays * 24 * 60 * 60 * 1000;
-  const temiz = {};
-
-  for (const [key, value] of Object.entries(memory || {})) {
-    if (!value || !value.ts) continue;
-    if (now - value.ts <= maxAgeMs) {
-      temiz[key] = value;
-    }
+async function sendTelegramMessage(message) {
+  if (!TOKEN || !CHAT_ID) {
+    console.log("Telegram bilgileri eksik, mesaj atlanıyor.");
+    return;
   }
 
-  return temiz;
-}
+  const tgUrl = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
 
-async function telegramGonder(text) {
-  const endpoint = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
-
-  await axios.post(endpoint, {
+  await axios.post(tgUrl, {
     chat_id: CHAT_ID,
-    text,
+    text: message,
     parse_mode: "HTML",
-    disable_web_page_preview: true,
+    disable_web_page_preview: true
   });
 }
 
-async function detaydanAlisStopGetir(browser, ticker) {
-  const page = await browser.newPage();
+async function autoScroll(page) {
+  let previousHeight = 0;
+  let stableCount = 0;
 
-  try {
-    await page.goto(`${DETAIL_URL}${ticker}`, {
-      waitUntil: "domcontentloaded",
-      timeout: 60000,
-    });
-
-    await sleep(1500);
-
-    const bodyText = await page.evaluate(() => document.body.innerText || "");
-
-    const satirlar = bodyText
-      .split("\n")
-      .map((x) => x.trim())
-      .filter(Boolean);
-
-    let alis = NaN;
-    let stop = NaN;
-
-    for (let i = 0; i < satirlar.length; i++) {
-      const s = satirlar[i].toLowerCase();
-
-      if (!Number.isFinite(alis) && s.includes("alış")) {
-        const joined = `${satirlar[i]} ${satirlar[i + 1] || ""} ${satirlar[i + 2] || ""}`;
-        const match = joined.match(/(\d{1,4}(?:[.,]\d{1,4})?)/);
-        if (match) alis = toNumber(match[1]);
-      }
-
-      if (!Number.isFinite(stop) && s.includes("stop")) {
-        const joined = `${satirlar[i]} ${satirlar[i + 1] || ""} ${satirlar[i + 2] || ""}`;
-        const match = joined.match(/(\d{1,4}(?:[.,]\d{1,4})?)/);
-        if (match) stop = toNumber(match[1]);
-      }
-    }
-
-    if (!Number.isFinite(alis) || !Number.isFinite(stop)) {
-      const html = await page.content();
-      if (!Number.isFinite(alis)) {
-        const m1 = html.match(/Alış[^0-9]{0,40}(\d{1,4}(?:[.,]\d{1,4})?)/i);
-        if (m1) alis = toNumber(m1[1]);
-      }
-      if (!Number.isFinite(stop)) {
-        const m2 = html.match(/Stop[^0-9]{0,40}(\d{1,4}(?:[.,]\d{1,4})?)/i);
-        if (m2) stop = toNumber(m2[1]);
-      }
-    }
-
-    return { alis, stop };
-  } catch (err) {
-    console.log(`${ticker} detay hatası:`, err.message);
-    return { alis: NaN, stop: NaN };
-  } finally {
-    await page.close();
-  }
-}
-
-async function sinyalListesiniGetir(page) {
-  await page.goto(URL, {
-    waitUntil: "domcontentloaded",
-    timeout: 60000,
-  });
-
-  await sleep(2500);
-
-  let lastCount = 0;
-  let sameCount = 0;
-
-  for (let i = 0; i < 35; i++) {
-    await page.evaluate(() => {
+  for (let i = 0; i < 50; i++) {
+    const currentHeight = await page.evaluate(() => {
       window.scrollTo(0, document.body.scrollHeight);
+      return document.body.scrollHeight;
     });
 
     await sleep(1200);
 
-    const count = await page.evaluate(() => {
-      const text = document.body.innerText || "";
-      const matches = text.match(/\b[A-ZÇĞİÖŞÜ]{2,6}\b/g) || [];
-      return matches.length;
-    });
+    const newHeight = await page.evaluate(() => document.body.scrollHeight);
 
-    if (count === lastCount) {
-      sameCount++;
+    if (newHeight === previousHeight && newHeight === currentHeight) {
+      stableCount++;
     } else {
-      sameCount = 0;
-      lastCount = count;
+      stableCount = 0;
     }
 
-    if (sameCount >= 3) break;
+    previousHeight = newHeight;
+
+    if (stableCount >= 3) break;
   }
 
-  await sleep(1500);
-
-  const tickers = await page.evaluate(() => {
-    const text = document.body.innerText || "";
-    const found = text.match(/\b[A-ZÇĞİÖŞÜ]{2,6}\b/g) || [];
-
-    const blacklist = new Set([
-      "BIST",
-      "IMKB",
-      "BORSA",
-      "SAT",
-      "AL",
-      "STOP",
-      "TR",
-      "USD",
-      "EUR",
-      "TL",
-      "DETAY",
-      "SAYFA",
-      "LANG",
-      "MARKETSYMBOL",
-      "SIGNALLIST",
-      "SIGNALPAGE",
-      "HOME",
-      "DEFAULT",
-    ]);
-
-    const unique = [];
-    for (const item of found) {
-      const t = item.trim().toUpperCase();
-      if (t.length < 3 || t.length > 6) continue;
-      if (blacklist.has(t)) continue;
-      if (!unique.includes(t)) unique.push(t);
-    }
-
-    return unique;
-  });
-
-  return tickers.slice(0, MAX_ROWS);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await sleep(700);
 }
 
-function tabloHazirla(rows, taramaZamani, yeniSayisi) {
-  const lines = [];
+async function getTickersFromList(page) {
+  await page.goto(URL, { waitUntil: "networkidle2", timeout: 120000 });
+  await sleep(3500);
 
-  lines.push(`Tarama zamanı: ${taramaZamani}`);
-  lines.push(`Yeni sinyal sayısı: ${yeniSayisi}`);
-  lines.push("");
-  lines.push(
-    `${pad("Hisse", 8)} ${pad("Alış", 10, true)} ${pad("Stop", 10, true)} ${pad("Risk%", 8, true)} ${pad("Kar%", 8, true)}`
-  );
-  lines.push(
-    `${pad("-----", 8)} ${pad("------", 10, true)} ${pad("------", 10, true)} ${pad("------", 8, true)} ${pad("------", 8, true)}`
-  );
+  await autoScroll(page);
 
-  for (const item of rows) {
-    lines.push(
-      `${pad(item.ticker, 8)} ${pad(formatNumber(item.alis), 10, true)} ${pad(formatNumber(item.stop), 10, true)} ${pad(formatNumber(item.risk), 8, true)} ${pad(formatNumber(item.kar), 8, true)}`
-    );
+  const tickers = await page.evaluate(() => {
+    const result = new Set();
+
+    const blacklist = new Set([
+      "IMKB",
+      "BIST",
+      "BORSA",
+      "TURKISH",
+      "BULLS",
+      "AL",
+      "SAT",
+      "TR",
+      "EN",
+      "HOME",
+      "PAGE",
+      "SIGNAL",
+      "LIST",
+      "SINYAL",
+      "SAYFA"
+    ]);
+
+    const text = document.body.innerText || "";
+    const matches = text.match(/\b[A-ZÇĞİÖŞÜ]{2,6}\b/g) || [];
+    for (const m of matches) {
+      const t = String(m).trim().toUpperCase();
+      if (/^[A-ZÇĞİÖŞÜ]{2,6}$/.test(t) && !blacklist.has(t)) {
+        result.add(t);
+      }
+    }
+
+    const links = Array.from(document.querySelectorAll("a"));
+    for (const a of links) {
+      const txt = (a.innerText || "").trim().toUpperCase();
+      if (/^[A-ZÇĞİÖŞÜ]{2,6}$/.test(txt) && !blacklist.has(txt)) {
+        result.add(txt);
+      }
+
+      const href = a.href || "";
+      const match = href.match(/Ticker=([A-ZÇĞİÖŞÜ]{2,6})/i);
+      if (match && match[1]) {
+        const ticker = match[1].toUpperCase();
+        if (!blacklist.has(ticker)) {
+          result.add(ticker);
+        }
+      }
+    }
+
+    return Array.from(result);
+  });
+
+  return [...new Set(
+    tickers
+      .map((x) => String(x).trim().toUpperCase())
+      .filter((x) => /^[A-ZÇĞİÖŞÜ]{2,6}$/.test(x))
+  )].slice(0, MAX_ROWS);
+}
+
+async function getDetailData(page, ticker) {
+  const url = `${DETAIL_URL}${encodeURIComponent(ticker)}`;
+
+  try {
+    await page.goto(url, { waitUntil: "networkidle2", timeout: 120000 });
+    await sleep(1800);
+
+    const text = await page.evaluate(() => {
+      return (document.body.innerText || "")
+        .replace(/\r/g, "\n")
+        .replace(/\t/g, " ")
+        .replace(/[ ]+/g, " ");
+    });
+
+    let alis = NaN;
+    let stop = NaN;
+    let hedef = NaN;
+
+    const alisPatterns = [
+      /Alış Seviyesi[:\s]*([0-9.,]+)/i,
+      /Alis Seviyesi[:\s]*([0-9.,]+)/i,
+      /Alış[:\s]*([0-9.,]+)/i,
+      /Alis[:\s]*([0-9.,]+)/i
+    ];
+
+    const stopPatterns = [
+      /Stop Seviyesi[:\s]*([0-9.,]+)/i,
+      /Stop[:\s]*([0-9.,]+)/i
+    ];
+
+    const hedefPatterns = [
+      /Hedef Fiyat[:\s]*([0-9.,]+)/i,
+      /Hedef[:\s]*([0-9.,]+)/i,
+      /Direnç[:\s]*([0-9.,]+)/i
+    ];
+
+    for (const p of alisPatterns) {
+      const m = text.match(p);
+      if (m?.[1]) {
+        alis = toNumber(m[1]);
+        if (Number.isFinite(alis)) break;
+      }
+    }
+
+    for (const p of stopPatterns) {
+      const m = text.match(p);
+      if (m?.[1]) {
+        stop = toNumber(m[1]);
+        if (Number.isFinite(stop)) break;
+      }
+    }
+
+    for (const p of hedefPatterns) {
+      const m = text.match(p);
+      if (m?.[1]) {
+        hedef = toNumber(m[1]);
+        if (Number.isFinite(hedef)) break;
+      }
+    }
+
+    if (!Number.isFinite(alis) || !Number.isFinite(stop)) {
+      const nums = [...text.matchAll(/\b\d{1,4}[.,]\d{1,4}\b/g)]
+        .map((x) => x[0])
+        .map(toNumber)
+        .filter(Number.isFinite);
+
+      if (!Number.isFinite(alis) && nums.length >= 1) alis = nums[0];
+      if (!Number.isFinite(stop) && nums.length >= 2) stop = nums[1];
+      if (!Number.isFinite(hedef) && nums.length >= 3) hedef = nums[2];
+    }
+
+    return {
+      ticker,
+      alis,
+      stop,
+      hedef: Number.isFinite(hedef) ? hedef : null
+    };
+  } catch (err) {
+    console.error(`Detay okunamadı: ${ticker}`, err.message);
+    return null;
+  }
+}
+
+function calculateSignal(detail) {
+  if (!detail) return null;
+
+  const alis = toNumber(detail.alis);
+  const stop = toNumber(detail.stop);
+  const hedef = toNumber(detail.hedef);
+
+  if (!Number.isFinite(alis) || !Number.isFinite(stop)) return null;
+  if (alis <= 0 || stop <= 0) return null;
+  if (stop >= alis) return null;
+
+  const risk = ((alis - stop) / alis) * 100;
+  if (!Number.isFinite(risk) || risk <= 0 || risk > RISK_LIMIT) return null;
+
+  let kar = null;
+  if (Number.isFinite(hedef) && hedef > alis) {
+    kar = ((hedef - alis) / alis) * 100;
   }
 
-  return `<pre>${escapeHtml(lines.join("\n"))}</pre>`;
+  return {
+    ticker: detail.ticker,
+    alis,
+    stop,
+    hedef: Number.isFinite(hedef) ? hedef : null,
+    risk,
+    kar
+  };
+}
+
+function normalizeSignalForJson(item, extra = {}) {
+  return {
+    ticker: item.ticker,
+    alis: formatNumber(item.alis),
+    stop: formatNumber(item.stop),
+    hedef: item.hedef != null ? formatNumber(item.hedef) : null,
+    risk: formatPercent(item.risk),
+    kar: item.kar != null ? formatPercent(item.kar) : null,
+    ...extra
+  };
+}
+
+function buildTelegramChunks(title, signals, updatedAt, showFirstSeen = false) {
+  const chunks = [];
+
+  for (let i = 0; i < signals.length; i += TELEGRAM_CHUNK_SIZE) {
+    const part = signals.slice(i, i + TELEGRAM_CHUNK_SIZE);
+
+    let text = "";
+    text += `<b>${escapeHtml(title)}</b>\n`;
+    text += `<b>Saat:</b> ${escapeHtml(updatedAt)}\n`;
+    text += `<pre>`;
+
+    if (showFirstSeen) {
+      text += `${pad("Hisse", 8)} ${pad("Alış", 10, true)} ${pad("Stop", 10, true)} ${pad("Risk%", 8, true)} ${pad("Saat", 6, true)}\n`;
+      text += `${"-".repeat(52)}\n`;
+      for (const item of part) {
+        text += `${pad(item.ticker, 8)} ${pad(formatNumber(item.alis), 10, true)} ${pad(formatNumber(item.stop), 10, true)} ${pad(formatNumber(item.risk), 8, true)} ${pad(item.firstSeen || "-", 6, true)}\n`;
+      }
+    } else {
+      text += `${pad("Hisse", 8)} ${pad("Alış", 10, true)} ${pad("Stop", 10, true)} ${pad("Risk%", 8, true)} ${pad("Kar%", 8, true)}\n`;
+      text += `${"-".repeat(50)}\n`;
+      for (const item of part) {
+        text += `${pad(item.ticker, 8)} ${pad(formatNumber(item.alis), 10, true)} ${pad(formatNumber(item.stop), 10, true)} ${pad(formatNumber(item.risk), 8, true)} ${pad(item.kar != null ? formatNumber(item.kar) : "-", 8, true)}\n`;
+      }
+    }
+
+    text += `</pre>`;
+    chunks.push(text);
+  }
+
+  return chunks;
+}
+
+async function sendChunks(chunks) {
+  for (const chunk of chunks) {
+    await sendTelegramMessage(chunk);
+    await sleep(1500);
+  }
+}
+
+function sortSignals(signals) {
+  return [...signals].sort((a, b) => {
+    if (a.risk !== b.risk) return a.risk - b.risk;
+    return a.ticker.localeCompare(b.ticker, "tr");
+  });
+}
+
+async function collectSignals(page) {
+  console.log("Liste sayfası açılıyor...");
+  const tickers = await getTickersFromList(page);
+  console.log("Bulunan ticker sayısı:", tickers.length);
+
+  const details = [];
+  for (const ticker of tickers) {
+    console.log("Detay okunuyor:", ticker);
+    const detail = await getDetailData(page, ticker);
+    if (detail) details.push(detail);
+    await sleep(450);
+  }
+
+  const signals = sortSignals(
+    details.map(calculateSignal).filter(Boolean)
+  );
+
+  console.log("Filtre sonrası sinyal sayısı:", signals.length);
+  return signals;
+}
+
+function ensureStateShape(state) {
+  return {
+    approved: {
+      lastDate: state?.approved?.lastDate || null,
+      tickers: Array.isArray(state?.approved?.tickers) ? state.approved.tickers : []
+    },
+    intraday: {
+      lastDate: state?.intraday?.lastDate || null,
+      seenTickers: Array.isArray(state?.intraday?.seenTickers) ? state.intraday.seenTickers : []
+    }
+  };
+}
+
+function saveLastSignals(signals, updatedAt, type) {
+  writeJsonFile(LAST_SIGNALS_FILE, {
+    updatedAt,
+    type,
+    signals: signals.map((x) => normalizeSignalForJson(x, x.firstSeen ? { firstSeen: x.firstSeen } : {}))
+  });
+}
+
+async function runApproved(page) {
+  const now = getNow();
+  const updatedAt = getLocalTimeString(now);
+  const today = getLocalDateString(now);
+
+  const state = ensureStateShape(readJsonFile(STATE_FILE, {}));
+  const signals = await collectSignals(page);
+
+  const approvedJson = {
+    updatedAt,
+    type: "approved",
+    signals: signals.map((x) => normalizeSignalForJson(x))
+  };
+
+  writeJsonFile(APPROVED_FILE, approvedJson);
+  saveLastSignals(signals, updatedAt, "approved");
+
+  state.approved.lastDate = today;
+  state.approved.tickers = signals.map((x) => x.ticker);
+  writeJsonFile(STATE_FILE, state);
+
+  if (!signals.length) {
+    await sendTelegramMessage(`<b>Onay Alanlar</b>\n<b>Saat:</b> ${escapeHtml(updatedAt)}\nUygun hisse bulunamadı.`);
+    return;
+  }
+
+  const chunks = buildTelegramChunks("Onay Alanlar", signals, updatedAt, false);
+  await sendChunks(chunks);
+}
+
+async function runIntraday(page) {
+  const now = getNow();
+  const updatedAt = getLocalTimeString(now);
+  const today = getLocalDateString(now);
+  const firstSeen = getLocalHourMinute(now);
+
+  const state = ensureStateShape(readJsonFile(STATE_FILE, {}));
+
+  if (state.intraday.lastDate !== today) {
+    state.intraday.lastDate = today;
+    state.intraday.seenTickers = [];
+  }
+
+  const allSignals = await collectSignals(page);
+  const seenSet = new Set(state.intraday.seenTickers);
+
+  const newSignals = allSignals
+    .filter((x) => !seenSet.has(x.ticker))
+    .map((x) => ({ ...x, firstSeen }));
+
+  const currentJson = readJsonFile(INTRADAY_FILE, {
+    updatedAt: null,
+    type: "intraday",
+    signals: []
+  });
+
+  const existingSignals = Array.isArray(currentJson.signals) ? currentJson.signals : [];
+
+  const mergedSignals = [
+    ...existingSignals,
+    ...newSignals.map((x) => normalizeSignalForJson(x, { firstSeen: x.firstSeen }))
+  ];
+
+  const intradayJson = {
+    updatedAt,
+    type: "intraday",
+    signals: mergedSignals
+  };
+
+  writeJsonFile(INTRADAY_FILE, intradayJson);
+  saveLastSignals(newSignals, updatedAt, "intraday");
+
+  state.intraday.seenTickers = [...new Set([
+    ...state.intraday.seenTickers,
+    ...allSignals.map((x) => x.ticker)
+  ])];
+  writeJsonFile(STATE_FILE, state);
+
+  if (!newSignals.length) {
+    console.log("Yeni seans içi sinyal yok.");
+    return;
+  }
+
+  const chunks = buildTelegramChunks("Seans İçi Yeni Düşenler", newSignals, updatedAt, true);
+  await sendChunks(chunks);
 }
 
 async function main() {
-  if (!TOKEN || !CHAT_ID) {
-    throw new Error("TELEGRAM_BOT_TOKEN veya TELEGRAM_CHAT_ID eksik.");
-  }
+  console.log("Bot modu:", MODE);
 
   const browser = await puppeteer.launch({
-    headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    headless: "new",
+    args: ["--no-sandbox", "--disable-setuid-sandbox"]
   });
 
+  const page = await browser.newPage();
+  await page.setViewport({ width: 1440, height: 2400 });
+
   try {
-    const page = await browser.newPage();
-    await page.setViewport({ width: 1400, height: 2400 });
-
-    console.log("Sinyal listesi açılıyor...");
-    const tickers = await sinyalListesiniGetir(page);
-    console.log("Bulunan ticker sayısı:", tickers.length);
-
-    const tumSonuclar = [];
-
-    for (const ticker of tickers) {
-      console.log("İşleniyor:", ticker);
-
-      const { alis, stop } = await detaydanAlisStopGetir(browser, ticker);
-
-      if (!Number.isFinite(alis) || !Number.isFinite(stop)) {
-        console.log(`${ticker} geçildi: alış/stop bulunamadı`);
-        continue;
-      }
-
-      if (stop >= alis) {
-        console.log(`${ticker} geçildi: stop alıştan büyük/eşit`);
-        continue;
-      }
-
-      const risk = ((alis - stop) / alis) * 100;
-      if (!Number.isFinite(risk) || risk <= 0 || risk > RISK_LIMIT) {
-        console.log(`${ticker} geçildi: risk uygun değil -> ${risk}`);
-        continue;
-      }
-
-      const kar = (risk * 2);
-
-      tumSonuclar.push({
-        ticker,
-        alis,
-        stop,
-        risk,
-        kar,
-      });
-
-      await sleep(400);
+    if (MODE === "approved") {
+      await runApproved(page);
+    } else if (MODE === "intraday") {
+      await runIntraday(page);
+    } else {
+      throw new Error(`Geçersiz BOT_MODE: ${MODE}`);
     }
 
-    tumSonuclar.sort((a, b) => a.risk - b.risk);
-
-    console.log("Filtre sonrası toplam uygun sinyal:", tumSonuclar.length);
-
-    let hafiza = hafizayiOku();
-    hafiza = hafizaTemizle(hafiza, 30);
-
-    const yeniSinyaller = [];
-    const nowTs = Date.now();
-
-    for (const item of tumSonuclar) {
-      const key = memoryKey(item);
-
-      if (!hafiza[key]) {
-        yeniSinyaller.push(item);
-        hafiza[key] = {
-          ticker: item.ticker,
-          alis: item.alis,
-          stop: item.stop,
-          ts: nowTs,
-          tarih: getNowTR(),
-        };
-      }
-    }
-
-    hafizayiYaz(hafiza);
-
-    console.log("Yeni sinyal sayısı:", yeniSinyaller.length);
-
-    if (yeniSinyaller.length === 0) {
-      console.log("Yeni sinyal yok, Telegram gönderimi yapılmadı.");
-      return;
-    }
-
-    const taramaZamani = getNowTR();
-
-    for (let i = 0; i < yeniSinyaller.length; i += TELEGRAM_CHUNK_SIZE) {
-      const chunk = yeniSinyaller.slice(i, i + TELEGRAM_CHUNK_SIZE);
-      const text = tabloHazirla(chunk, taramaZamani, yeniSinyaller.length);
-      await telegramGonder(text);
-      await sleep(1200);
-    }
-
-    console.log("Telegram gönderimi tamamlandı.");
+    console.log("İşlem tamamlandı.");
   } catch (err) {
     console.error("HATA:", err);
+    const msg = escapeHtml(err.message || String(err));
+    await sendTelegramMessage(`<b>Bot hatası</b>\n<pre>${msg}</pre>`);
     process.exitCode = 1;
   } finally {
     await browser.close();
