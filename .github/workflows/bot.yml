@@ -3,8 +3,8 @@ name: Signal Bot
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 18 * * *"
-    - cron: "0 9-15 * * 1-5"
+    - cron: "0 18 * * 1-5"
+    - cron: "0 9-17 * * 1-5"
 
 jobs:
   run-bot:
@@ -24,6 +24,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
       - name: Sistem paketleri kur
         run: |
@@ -71,9 +72,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git stash push --include-untracked -m "json-temp" || true
-          git pull --rebase origin main
+          git pull --rebase origin main || true
           git stash pop || true
 
-          git add signals.json onay.json seans.json history.json
-          git commit -m "JSON dosyalarını güncelle" || echo "Commit yok"
+          git add signals.json onay.json seans.json history.json charts || true
+          git diff --cached --quiet && echo "Değişiklik yok" || git commit -m "JSON ve grafik dosyalarını güncelle"
           git push origin main
