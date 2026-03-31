@@ -202,18 +202,22 @@ async function extractDetailLevels(page, ticker) {
   await sleep(2200);
 
   return await page.evaluate(() => {
-    const text = document.body.innerText || "";
+    const text = (document.body.innerText || "").replace(/\u00a0/g, " ");
 
     const al =
-      text.match(/Al Seviyesi[:\s]*([0-9.,]+)/i)?.[1] ||
-      text.match(/AL Seviyesi[:\s]*([0-9.,]+)/i)?.[1] ||
-      text.match(/Alış Seviyesi[:\s]*([0-9.,]+)/i)?.[1] ||
-      text.match(/Aliş Seviyesi[:\s]*([0-9.,]+)/i)?.[1] ||
+      text.match(/Alış\s*Seviyesi[:\s]*([0-9.,]+)/i)?.[1] ||
+      text.match(/Aliş\s*Seviyesi[:\s]*([0-9.,]+)/i)?.[1] ||
+      text.match(/Al\s*Seviyesi[:\s]*([0-9.,]+)/i)?.[1] ||
+      text.match(/AL\s*Seviyesi[:\s]*([0-9.,]+)/i)?.[1] ||
+      text.match(/Alış[:\s]*([0-9.,]+)/i)?.[1] ||
       null;
 
     const stop =
+      text.match(/Stoploss\s*Seviyesi[:\s]*([0-9.,]+)/i)?.[1] ||
+      text.match(/Stop\s*Loss\s*Seviyesi[:\s]*([0-9.,]+)/i)?.[1] ||
+      text.match(/Stop\s*Seviyesi[:\s]*([0-9.,]+)/i)?.[1] ||
       text.match(/Stoploss[:\s]*([0-9.,]+)/i)?.[1] ||
-      text.match(/Stop Loss[:\s]*([0-9.,]+)/i)?.[1] ||
+      text.match(/Stop\s*Loss[:\s]*([0-9.,]+)/i)?.[1] ||
       text.match(/Stop[:\s]*([0-9.,]+)/i)?.[1] ||
       null;
 
@@ -689,18 +693,43 @@ async function run() {
       try {
         const detail = await extractDetailLevels(detailPage, r.ticker);
 
-        const alis = detail.al || r.alis;
-        const stop = detail.stop || r.son;
+        const alis = detail.al;
+        const stop = detail.stop;
+
+        if (!alis || !stop) {
+          console.log(
+            `SEVIYE YOK ${r.ticker} | detail.al=${detail.al} | detail.stop=${detail.stop} | listAlis=${r.alis} | listSon=${r.son}`
+          );
+          await sleep(DETAIL_DELAY_MS);
+          continue;
+        }
 
         const a = toNumber(alis);
         const s = toNumber(stop);
 
-        if (isNaN(a) || isNaN(s) || s >= a || a <= 0) {
+        if (isNaN(a) || isNaN(s) || a <= 0) {
+          console.log(
+            `HATALI SAYI ${r.ticker} | alis=${alis} | stop=${stop}`
+          );
+          await sleep(DETAIL_DELAY_MS);
+          continue;
+        }
+
+        if (s >= a) {
+          console.log(
+            `STOP ALISTAN BUYUK/EŞIT ${r.ticker} | alis=${a} | stop=${s}`
+          );
+          await sleep(DETAIL_DELAY_MS);
           continue;
         }
 
         const risk = ((a - s) / a) * 100;
+
         if (risk > RISK_LIMIT) {
+          console.log(
+            `RISK ELENDI ${r.ticker} | alis=${a} | stop=${s} | risk=${risk.toFixed(2)}`
+          );
+          await sleep(DETAIL_DELAY_MS);
           continue;
         }
 
@@ -721,9 +750,13 @@ async function run() {
           grafikUrl: null,
         });
 
+        console.log(
+          `EKLENDI ${r.ticker} | alis=${a} | stop=${s} | risk=${risk.toFixed(2)}`
+        );
+
         await sleep(DETAIL_DELAY_MS);
       } catch (e) {
-        console.log(`Detay okunamadı: ${r.ticker}`);
+        console.log(`Detay okunamadı: ${r.ticker} | ${e.message}`);
       }
     }
 
