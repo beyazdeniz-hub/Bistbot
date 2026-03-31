@@ -93,17 +93,17 @@ jobs:
           git config --global user.email "actions@github.com"
 
       - name: Commit hazırla
-        run: |
-          git add approved_signals.json intraday_signals.json bot_state.json last_signals.json || true
-          git status
+  run: |
+    git add *.json || true
+    git status
 
-          if git diff --cached --quiet; then
-            echo "CHANGES_EXIST=false" >> $GITHUB_ENV
-            echo "Commitlenecek değişiklik yok."
-          else
-            echo "CHANGES_EXIST=true" >> $GITHUB_ENV
-            git commit -m "Bot verileri güncellendi"
-          fi
+    if git diff --cached --quiet; then
+      echo "CHANGES_EXIST=false" >> $GITHUB_ENV
+      echo "Commitlenecek değişiklik yok."
+    else
+      echo "CHANGES_EXIST=true" >> $GITHUB_ENV
+      git commit -m "Bot verileri güncellendi"
+    fi
 
       - name: Rebase al
         if: env.CHANGES_EXIST == 'true'
