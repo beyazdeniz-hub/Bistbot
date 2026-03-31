@@ -34,8 +34,7 @@ jobs:
       - name: NPM cache
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.npm
+          path: ~/.npm
           key: ${{ runner.os }}-node-20-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-20-
@@ -55,8 +54,6 @@ jobs:
           else
             echo "BOT_MODE=intraday" >> $GITHUB_ENV
           fi
-
-          echo "Seçilen BOT_MODE=$BOT_MODE"
 
       - name: Çalışma öncesi dosyaları göster
         run: |
