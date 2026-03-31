@@ -9,7 +9,7 @@ const URL = "https://www.turkishbulls.com/SignalList.aspx?lang=tr&MarketSymbol=I
 const DETAIL_URL = "https://www.turkishbulls.com/SignalPage.aspx?lang=tr&Ticker=";
 
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function pad(value, width, right = false) {
@@ -20,9 +20,9 @@ function pad(value, width, right = false) {
 
 function escapeHtml(text) {
   return String(text)
-    .replace(/&/g, "&")
-    .replace(/</g, "<")
-    .replace(/>/g, ">");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
 function toNumber(value) {
@@ -34,6 +34,17 @@ function toNumber(value) {
 
   const num = parseFloat(normalized);
   return isNaN(num) ? NaN : num;
+}
+
+function formatNumberTR(value) {
+  if (value === null || value === undefined || value === "" || Number.isNaN(Number(value))) {
+    return "-";
+  }
+
+  return Number(value).toLocaleString("tr-TR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
 }
 
 async function sendTelegram(text) {
@@ -54,7 +65,7 @@ async function sendTelegram(text) {
 function saveJson(rows) {
   const payload = {
     updatedAt: new Date().toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" }),
-    signals: rows.map(row => ({
+    signals: rows.map((row) => ({
       ticker: row.ticker,
       buy: row.alis,
       stop: row.son,
@@ -74,11 +85,9 @@ async function getVisibleTickerCount(page) {
       return m ? m[1].toUpperCase() : null;
     }
 
-    const links = Array.from(
-      document.querySelectorAll('a[href*="SignalPage"]')
-    );
-
+    const links = Array.from(document.querySelectorAll('a[href*="SignalPage"]'));
     const tickers = new Set();
+
     for (const link of links) {
       const ticker = getTickerFromHref(link.getAttribute("href"));
       if (ticker) tickers.add(ticker);
@@ -112,7 +121,7 @@ async function autoScroll(page) {
         window.scrollBy(0, distance);
         doc.scrollTop = doc.scrollTop + distance;
 
-        const allEls = Array.from(document.querySelectorAll("*")).filter(el => {
+        const allEls = Array.from(document.querySelectorAll("*")).filter((el) => {
           const style = window.getComputedStyle(el);
           const canScroll =
             /(auto|scroll)/i.test(style.overflowY) &&
@@ -124,7 +133,7 @@ async function autoScroll(page) {
           el.scrollTop = el.scrollHeight;
         }
 
-        await new Promise(resolve => setTimeout(resolve, 700));
+        await new Promise((resolve) => setTimeout(resolve, 700));
       }
     });
 
@@ -140,9 +149,7 @@ async function autoScroll(page) {
       };
     });
 
-    const reachedBottom =
-      after.scrollTop + after.clientHeight >= after.scrollHeight - 5;
-
+    const reachedBottom = after.scrollTop + after.clientHeight >= after.scrollHeight - 5;
     const countUnchanged = currentCount === lastCount;
     const heightUnchanged = after.scrollHeight === lastHeight;
 
@@ -183,8 +190,9 @@ async function extractRows(page) {
     }
 
     const rows = [];
-    const trList = Array.from(document.querySelectorAll("tr"))
-      .filter(tr => tr.querySelector('a[href*="SignalPage"]'));
+    const trList = Array.from(document.querySelectorAll("tr")).filter((tr) =>
+      tr.querySelector('a[href*="SignalPage"]')
+    );
 
     for (const tr of trList) {
       const link = tr.querySelector('a[href*="SignalPage"]');
@@ -193,7 +201,7 @@ async function extractRows(page) {
       if (!ticker) continue;
 
       const cells = Array.from(tr.querySelectorAll("td, th"))
-        .map(el => clean(el.innerText || el.textContent))
+        .map((el) => clean(el.innerText || el.textContent))
         .filter(Boolean);
 
       let alis = "-";
@@ -201,7 +209,7 @@ async function extractRows(page) {
       let yuzde = "-";
 
       if (cells.length >= 4) {
-        const nonTickerCells = cells.filter(cell => !cell.includes(ticker));
+        const nonTickerCells = cells.filter((cell) => !cell.includes(ticker));
 
         if (nonTickerCells.length >= 3) {
           alis = nonTickerCells[0] || "-";
@@ -212,11 +220,11 @@ async function extractRows(page) {
 
       if (alis === "-" && son === "-" && yuzde === "-") {
         const tokens = cells
-          .flatMap(cell => cell.split(/\s+/))
+          .flatMap((cell) => cell.split(/\s+/))
           .map(clean)
           .filter(Boolean)
-          .filter(token => !token.includes(ticker))
-          .filter(token => looksNumeric(token));
+          .filter((token) => !token.includes(ticker))
+          .filter((token) => looksNumeric(token));
 
         if (tokens.length >= 1) alis = tokens[0];
         if (tokens.length >= 2) son = tokens[1];
@@ -232,7 +240,7 @@ async function extractRows(page) {
     }
 
     const seen = new Set();
-    return rows.filter(row => {
+    return rows.filter((row) => {
       if (seen.has(row.ticker)) return false;
       seen.add(row.ticker);
       return true;
@@ -282,26 +290,24 @@ async function extractDetailLevels(detailPage, ticker) {
   });
 }
 
-function buildTable(title, rows) {
-  let text = `${title}\n\n`;
-  text += `${pad("No", 3, true)} ${pad("Hisse", 6)} ${pad("Alis", 9, true)} ${pad("STOP", 9, true)} ${pad("Risk%", 6, true)}\n`;
-  text += `${pad("---", 3)} ${pad("------", 6)} ${pad("---------", 9)} ${pad("---------", 9)} ${pad("------", 6)}\n`;
+function buildTable(rows) {
+  let text = "";
+  text += `${pad("Hisse", 8)} ${pad("Alış", 12, true)} ${pad("Stop", 12, true)} ${pad("Risk%", 7, true)}\n`;
+  text += `${"-".repeat(8)} ${"-".repeat(12)} ${"-".repeat(12)} ${"-".repeat(7)}\n`;
 
-  rows.forEach((row, i) => {
-    text += `${pad(i + 1, 3, true)} ${pad(row.ticker, 6)} ${pad(row.alis, 9, true)} ${pad(row.son, 9, true)} ${pad(row.risk.toFixed(2), 6, true)}\n`;
+  rows.forEach((row) => {
+    text += `${pad(row.ticker, 8)} ${pad(row.alis, 12, true)} ${pad(row.son, 12, true)} ${pad(row.riskText, 7, true)}\n`;
   });
 
-  text += `\nToplam: ${rows.length}`;
-  return text;
+  return text.trimEnd();
 }
 
-function splitRowsForTelegram(title, rows, chunkSize = 25) {
+function splitRowsForTelegram(rows, chunkSize = 20) {
   const messages = [];
 
   for (let i = 0; i < rows.length; i += chunkSize) {
     const chunk = rows.slice(i, i + chunkSize);
-    const chunkTitle = i === 0 ? title : `${title} (devam)`;
-    messages.push(buildTable(chunkTitle, chunk));
+    messages.push(buildTable(chunk));
   }
 
   return messages;
@@ -329,7 +335,7 @@ async function run() {
     const rows = await extractRows(page);
 
     if (!rows.length) {
-      await sendTelegram("Bot hatasi:\nListe bos geldi");
+      await sendTelegram("Liste boş geldi");
       return;
     }
 
@@ -347,7 +353,9 @@ async function run() {
         if (detail.stoploss && detail.stoploss !== "-") {
           row.son = detail.stoploss;
         }
-      } catch (e) {}
+      } catch (e) {
+        console.log(`${row.ticker} detay okunamadı: ${e.message}`);
+      }
 
       await sleep(700);
     }
@@ -355,7 +363,7 @@ async function run() {
     await detailPage.close();
 
     const filtered = rows
-      .map(row => {
+      .map((row) => {
         const alisNum = toNumber(row.alis);
         const stopNum = toNumber(row.son);
 
@@ -366,36 +374,39 @@ async function run() {
         const risk = ((alisNum - stopNum) / alisNum) * 100;
 
         return {
-          ...row,
-          risk
+          ticker: row.ticker,
+          alis: formatNumberTR(alisNum),
+          son: formatNumberTR(stopNum),
+          risk,
+          riskText: formatNumberTR(risk)
         };
       })
       .filter(Boolean)
-      .filter(row => row.risk <= 3)
+      .filter((row) => row.risk <= 3)
       .sort((a, b) => a.risk - b.risk);
 
     saveJson(filtered);
 
     if (!filtered.length) {
-      await sendTelegram("Risk <= 3 uygun sinyal bulunamadi");
+      await sendTelegram("Risk <= 3 uygun sinyal bulunamadı");
       return;
     }
 
-    const messages = splitRowsForTelegram("Risk <= 3 Uygun Hisseler", filtered);
+    const messages = splitRowsForTelegram(filtered, 20);
 
     for (const message of messages) {
       await sendTelegram(message);
-      await sleep(700);
+      await sleep(1000);
     }
   } finally {
     await browser.close();
   }
 }
 
-run().catch(async err => {
+run().catch(async (err) => {
   try {
-    await sendTelegram(`Bot hatasi:\n${err.message}`);
+    await sendTelegram(`Bot hatası:\n${err.message}`);
   } catch (e) {
-    console.log("Telegram hata gonderimi de basarisiz:", e.message);
+    console.log("Telegram hata gönderimi de başarısız:", e.message);
   }
 });
