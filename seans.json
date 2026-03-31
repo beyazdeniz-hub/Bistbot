@@ -1,5 +1,5 @@
 {
-  "updatedAt": "31.03.2026 12:27:34",
+  "updatedAt": "31.03.2026 12:49:27",
   "signals": [
     {
       "ticker": "ALFAS",
@@ -17,7 +17,7 @@
       "risk": "1.60",
       "current": null,
       "change": null,
-      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/seans/ALARK.png"
+      "grafikUrl": null
     },
     {
       "ticker": "ALTNY",
@@ -26,7 +26,7 @@
       "risk": "1.86",
       "current": null,
       "change": null,
-      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/seans/ALTNY.png"
+      "grafikUrl": null
     },
     {
       "ticker": "ADESE",
@@ -35,7 +35,7 @@
       "risk": "2.08",
       "current": null,
       "change": null,
-      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/seans/ADESE.png"
+      "grafikUrl": null
     },
     {
       "ticker": "AGYO",
@@ -47,13 +47,22 @@
       "grafikUrl": null
     },
     {
+      "ticker": "ATAKP",
+      "alis": "51.33",
+      "stop": "50.00",
+      "risk": "2.59",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "AGROT",
       "alis": "2.8300",
       "stop": "2.7500",
       "risk": "2.83",
       "current": null,
       "change": null,
-      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/seans/AGROT.png"
+      "grafikUrl": null
     },
     {
       "ticker": "AHGAZ",
@@ -80,7 +89,7 @@
       "risk": "3.46",
       "current": null,
       "change": null,
-      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/seans/ANHYT.png"
+      "grafikUrl": null
     },
     {
       "ticker": "ARFYE",
@@ -89,7 +98,7 @@
       "risk": "3.63",
       "current": null,
       "change": null,
-      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/seans/ARFYE.png"
+      "grafikUrl": null
     },
     {
       "ticker": "ARASE",
@@ -116,7 +125,7 @@
       "risk": "4.54",
       "current": null,
       "change": null,
-      "grafikUrl": "https://raw.githubusercontent.com/beyazdeniz-hub/Bistbot/main/charts/seans/AKSUE.png"
+      "grafikUrl": null
     },
     {
       "ticker": "AGESA",
