@@ -17,6 +17,11 @@ const DETAIL_URL = "https://www.turkishbulls.com/SignalPage.aspx?lang=tr&Ticker=
 const TEMP_DIR = "tmp_charts";
 const TV_HOME_URL = "https://tr.tradingview.com/";
 
+const RISK_LIMIT = 5;
+const MAX_ROWS = 400;
+const DETAIL_DELAY_MS = 800;
+const TELEGRAM_DELAY_MS = 1500;
+
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -34,6 +39,27 @@ function getTurkeyNow() {
   return new Date(
     new Date().toLocaleString("en-US", { timeZone: "Europe/Istanbul" })
   );
+}
+
+function formatTurkeyDateTime() {
+  return new Date().toLocaleString("tr-TR", {
+    timeZone: "Europe/Istanbul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+}
+
+function formatTurkeyDateOnly() {
+  return new Date().toLocaleDateString("tr-TR", {
+    timeZone: "Europe/Istanbul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
 }
 
 function getTimeCategory() {
@@ -80,6 +106,32 @@ async function getLivePrice(ticker) {
   }
 }
 
+async function autoScroll(page) {
+  await page.evaluate(async () => {
+    await new Promise((resolve) => {
+      let sameCount = 0;
+      let lastHeight = document.body.scrollHeight;
+
+      const timer = setInterval(() => {
+        window.scrollBy(0, 900);
+
+        const newHeight = document.body.scrollHeight;
+        if (newHeight === lastHeight) {
+          sameCount += 1;
+        } else {
+          sameCount = 0;
+          lastHeight = newHeight;
+        }
+
+        if (sameCount >= 8) {
+          clearInterval(timer);
+          resolve();
+        }
+      }, 1200);
+    });
+  });
+}
+
 async function extractRows(page) {
   return await page.evaluate(() => {
     const rows = [];
@@ -112,12 +164,42 @@ async function extractRows(page) {
   });
 }
 
+async function collectAllRows(page) {
+  await page.goto(URL, {
+    waitUntil: "networkidle2",
+    timeout: 60000,
+  });
+
+  await sleep(5000);
+
+  let merged = [];
+
+  for (let i = 0; i < 3; i++) {
+    await autoScroll(page);
+    await sleep(2500);
+
+    const part = await extractRows(page);
+    const map = new Map();
+
+    for (const item of [...merged, ...part]) {
+      if (!item?.ticker) continue;
+      if (!map.has(item.ticker)) {
+        map.set(item.ticker, item);
+      }
+    }
+
+    merged = Array.from(map.values());
+  }
+
+  return merged.slice(0, MAX_ROWS);
+}
+
 async function extractDetailLevels(page, ticker) {
   await page.goto(`${DETAIL_URL}${ticker}`, {
     waitUntil: "networkidle2",
     timeout: 60000,
   });
-  await sleep(2000);
+  await sleep(2200);
 
   return await page.evaluate(() => {
     const text = document.body.innerText || "";
@@ -125,6 +207,8 @@ async function extractDetailLevels(page, ticker) {
     const al =
       text.match(/Al Seviyesi[:\s]*([0-9.,]+)/i)?.[1] ||
       text.match(/AL Seviyesi[:\s]*([0-9.,]+)/i)?.[1] ||
+      text.match(/Alış Seviyesi[:\s]*([0-9.,]+)/i)?.[1] ||
+      text.match(/Aliş Seviyesi[:\s]*([0-9.,]+)/i)?.[1] ||
       null;
 
     const stop =
@@ -154,6 +238,61 @@ async function getExistingGitHubSha(remotePath) {
   } catch {
     return null;
   }
+}
+
+async function getGitHubJson(remotePath, fallback = null) {
+  if (!GITHUB_TOKEN || !GITHUB_REPOSITORY) return fallback;
+
+  try {
+    const url = `https://api.github.com/repos/${GITHUB_REPOSITORY}/contents/${remotePath}?ref=${encodeURIComponent(GITHUB_BRANCH)}`;
+    const res = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: "application/vnd.github+json",
+      },
+      timeout: 20000,
+    });
+
+    const base64 = res.data?.content || "";
+    const raw = Buffer.from(base64, "base64").toString("utf8");
+    return JSON.parse(raw);
+  } catch {
+    return fallback;
+  }
+}
+
+async function uploadContentToGithub(remotePath, contentString, message) {
+  if (!GITHUB_TOKEN || !GITHUB_REPOSITORY) return null;
+
+  const content = Buffer.from(contentString, "utf8").toString("base64");
+  const sha = await getExistingGitHubSha(remotePath);
+
+  await axios.put(
+    `https://api.github.com/repos/${GITHUB_REPOSITORY}/contents/${remotePath}`,
+    {
+      message,
+      content,
+      branch: GITHUB_BRANCH,
+      ...(sha ? { sha } : {}),
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: "application/vnd.github+json",
+      },
+      timeout: 30000,
+    }
+  );
+
+  return true;
+}
+
+async function uploadJsonToGithub(remotePath, data, message) {
+  return uploadContentToGithub(
+    remotePath,
+    JSON.stringify(data, null, 2),
+    message
+  );
 }
 
 async function uploadFileToGithub(localPath, remotePath) {
@@ -417,7 +556,7 @@ async function captureTradingViewImage(browser, ticker, outFile) {
     });
 
     return true;
-  } catch (e) {
+  } catch {
     return false;
   } finally {
     await page.close();
@@ -445,7 +584,7 @@ function buildCaption(row) {
 `${row.ticker}
 Alış: ${row.alis}
 Stop: ${row.stop}
-Risk: %${row.risk.toFixed(2)}`;
+Risk: %${Number(row.risk).toFixed(2)}`;
 
   if (row.current) {
     caption += `\nGüncel: ${row.current}`;
@@ -456,6 +595,68 @@ Risk: %${row.risk.toFixed(2)}`;
   }
 
   return caption;
+}
+
+function buildAppPayload(results, updatedAt) {
+  return {
+    updatedAt,
+    signals: results.map((row) => ({
+      ticker: row.ticker,
+      alis: row.alis,
+      stop: row.stop,
+      risk: Number(row.risk).toFixed(2),
+      current: row.current ?? null,
+      change: row.change ?? null,
+      grafikUrl: row.grafikUrl ?? null,
+    })),
+  };
+}
+
+async function updateAppJsons(results, category) {
+  if (!GITHUB_TOKEN || !GITHUB_REPOSITORY) {
+    console.log("GitHub ayarları eksik, json dosyaları güncellenemedi.");
+    return;
+  }
+
+  const updatedAt = formatTurkeyDateTime();
+  const payload = buildAppPayload(results, updatedAt);
+
+  await uploadJsonToGithub(
+    "signals.json",
+    payload,
+    `update signals.json ${updatedAt}`
+  );
+
+  if (category === "seans") {
+    await uploadJsonToGithub(
+      "seans.json",
+      payload,
+      `update seans.json ${updatedAt}`
+    );
+  }
+
+  if (category === "onay") {
+    await uploadJsonToGithub(
+      "onay.json",
+      payload,
+      `update onay.json ${updatedAt}`
+    );
+
+    const history = (await getGitHubJson("history.json", {})) || {};
+    const today = formatTurkeyDateOnly();
+
+    history[today] = {
+      date: today,
+      updatedAt,
+      signals: payload.signals,
+    };
+
+    await uploadJsonToGithub(
+      "history.json",
+      history,
+      `update history.json ${updatedAt}`
+    );
+  }
 }
 
 async function run() {
@@ -470,18 +671,14 @@ async function run() {
     const page = await browser.newPage();
     await page.setViewport({ width: 1400, height: 2200 });
 
-    await page.goto(URL, {
-      waitUntil: "networkidle2",
-      timeout: 60000,
-    });
-    await sleep(5000);
-
-    const rows = await extractRows(page);
+    const rows = await collectAllRows(page);
 
     if (!rows.length) {
       await sendTelegram("Bot hatası: liste boş geldi.");
       return;
     }
+
+    console.log(`Bulunan toplam satır: ${rows.length}`);
 
     const detailPage = await browser.newPage();
     await detailPage.setViewport({ width: 1400, height: 2200 });
@@ -503,7 +700,7 @@ async function run() {
         }
 
         const risk = ((a - s) / a) * 100;
-        if (risk > 3) {
+        if (risk > RISK_LIMIT) {
           continue;
         }
 
@@ -524,7 +721,7 @@ async function run() {
           grafikUrl: null,
         });
 
-        await sleep(300);
+        await sleep(DETAIL_DELAY_MS);
       } catch (e) {
         console.log(`Detay okunamadı: ${r.ticker}`);
       }
@@ -532,8 +729,10 @@ async function run() {
 
     await detailPage.close();
 
+    results.sort((a, b) => Number(a.risk) - Number(b.risk));
+
     if (!results.length) {
-      await sendTelegram("Risk <= 3 uygun sinyal bulunamadı.");
+      await sendTelegram(`Risk <= ${RISK_LIMIT} uygun sinyal bulunamadı.`);
       return;
     }
 
@@ -552,20 +751,26 @@ async function run() {
 `${row.ticker}
 Alış: ${row.alis}
 Stop: ${row.stop}
-Risk: %${row.risk.toFixed(2)}${row.current ? `\nGüncel: ${row.current}` : ""}${row.change ? `\nFark: %${row.change}` : ""}`;
+Risk: %${Number(row.risk).toFixed(2)}${row.current ? `\nGüncel: ${row.current}` : ""}${row.change ? `\nFark: %${row.change}` : ""}`;
           await sendTelegram(text);
         }
 
-        await sleep(1500);
+        await sleep(TELEGRAM_DELAY_MS);
       } catch (e) {
         console.log(`Grafik/telegram hata: ${row.ticker} - ${e.message}`);
       }
     }
 
-    let summary = `Sinyaller (${category})\n\n`;
+    await updateAppJsons(results, category);
+
+    let summary = `Sinyaller (${category})\n`;
+    summary += `Tarama zamanı: ${formatTurkeyDateTime()}\n`;
+    summary += `Risk limiti: %${RISK_LIMIT}\n\n`;
+
     for (const r of results) {
-      summary += `${r.ticker} | ${r.alis} | ${r.stop} | %${r.risk.toFixed(2)}\n`;
+      summary += `${r.ticker} | ${r.alis} | ${r.stop} | %${Number(r.risk).toFixed(2)}\n`;
     }
+
     summary += `\nToplam: ${results.length}`;
 
     await sendTelegram(summary);
