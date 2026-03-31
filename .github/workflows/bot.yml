@@ -3,7 +3,7 @@ name: BIST Bot
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/15 6-20 * * 1-5"
+    - cron: "*/10 * * * *"
 
 jobs:
   run-bot:
@@ -13,39 +13,40 @@ jobs:
       contents: write
 
     steps:
-      - name: Repo cek
+      - name: Repo çek
         uses: actions/checkout@v4
         with:
+          persist-credentials: true
           fetch-depth: 0
 
       - name: Node kur
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: "20"
 
-      - name: Paketleri kur
+      - name: Paketleri yükle
         run: npm install
 
-      - name: Botu calistir
+      - name: Botu çalıştır
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: node bot.js
 
-      - name: Git ayarla
+      - name: Git ayarları
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Degisiklik varsa commit at
+      - name: Değişiklik varsa commit at
         run: |
-          git add signals.json
-          git diff --cached --quiet || git commit -m "signals.json guncellendi"
+          git add .
+          git diff --cached --quiet || git commit -m "Bot verileri guncellendi"
 
-      - name: Pull rebase yap
+      - name: Uzak değişiklikleri al
         run: |
-          git pull origin main --rebase
+          git pull --rebase origin main || true
 
-      - name: Push yap
+      - name: Push et
         run: |
           git push origin main
