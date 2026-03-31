@@ -3,8 +3,14 @@ name: Signal Bot
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 18 * * *"
-    - cron: "0 9-15 * * 1-5"
+    # Seans içi tarama
+    # Türkiye saatiyle yaklaşık 10:00 - 18:00 arası
+    # UTC karşılığı 07:00 - 15:59
+    - cron: "*/10 7-15 * * 1-5"
+
+    # Onay alanlar
+    # Türkiye saati 21:30 = UTC 18:30
+    - cron: "30 18 * * 1-5"
 
 jobs:
   run-bot:
@@ -14,31 +20,49 @@ jobs:
       contents: write
 
     steps:
-      - name: Repo cek
+      - name: Repo çek
         uses: actions/checkout@v4
         with:
           persist-credentials: true
           fetch-depth: 0
 
-      - name: Git pull yap
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-          git pull origin main --rebase || true
-
       - name: Node kur
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: 20
 
-      - name: NPM install
+      - name: Bağımlılıkları kur
         run: npm install
 
-      - name: Botu calistir
+      - name: Mod belirle
+        id: mode
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "BOT_MODE=intraday" >> $GITHUB_ENV
+          elif [ "${{ github.event.schedule }}" = "30 18 * * 1-5" ]; then
+            echo "BOT_MODE=approved" >> $GITHUB_ENV
+          else
+            echo "BOT_MODE=intraday" >> $GITHUB_ENV
+          fi
+
+      - name: Botu çalıştır
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_BRANCH: ${{ github.ref_name }}
+          BOT_MODE: ${{ env.BOT_MODE }}
         run: node bot.js
+
+      - name: Git ayarla
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Değişiklik varsa commit et
+        run: |
+          git add approved_signals.json intraday_signals.json bot_state.json last_signals.json
+          git diff --cached --quiet || git commit -m "Bot verileri güncellendi"
+
+      - name: Push et
+        run: |
+          git pull origin main --rebase || true
+          git push
