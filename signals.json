@@ -1,83 +1,725 @@
 {
-  "updatedAt": "28.03.2026 02:50:50",
+  "updatedAt": "31.03.2026 23:54:33",
   "signals": [
     {
-      "ticker": "EGEGY",
-      "buy": "28.44",
-      "stop": "28.20",
-      "riskPct": "0.84"
+      "ticker": "DMLKT",
+      "buy": "5.7350",
+      "stop": "5.7100",
+      "riskPct": "0.44"
     },
     {
-      "ticker": "CRFSA",
-      "buy": "117.70",
-      "stop": "116.60",
-      "riskPct": "0.93"
+      "ticker": "KLNMA",
+      "buy": "9.6000",
+      "stop": "9.5500",
+      "riskPct": "0.52"
     },
     {
-      "ticker": "CWENE",
-      "buy": "29.24",
-      "stop": "28.86",
+      "ticker": "AKSGY",
+      "buy": "8.8700",
+      "stop": "8.8200",
+      "riskPct": "0.56"
+    },
+    {
+      "ticker": "TURSG",
+      "buy": "12.70",
+      "stop": "12.60",
+      "riskPct": "0.79"
+    },
+    {
+      "ticker": "KONTR",
+      "buy": "8.6400",
+      "stop": "8.5700",
+      "riskPct": "0.81"
+    },
+    {
+      "ticker": "NATEN",
+      "buy": "7.0700",
+      "stop": "7.0100",
+      "riskPct": "0.85"
+    },
+    {
+      "ticker": "ALTIN",
+      "buy": "82.43",
+      "stop": "81.61",
+      "riskPct": "0.99"
+    },
+    {
+      "ticker": "HATSN",
+      "buy": "37.19",
+      "stop": "36.82",
+      "riskPct": "0.99"
+    },
+    {
+      "ticker": "TUPRS",
+      "buy": "247.00",
+      "stop": "244.50",
+      "riskPct": "1.01"
+    },
+    {
+      "ticker": "BALSU",
+      "buy": "14.20",
+      "stop": "14.05",
+      "riskPct": "1.06"
+    },
+    {
+      "ticker": "ALFAS",
+      "buy": "36.90",
+      "stop": "36.50",
+      "riskPct": "1.08"
+    },
+    {
+      "ticker": "CEMTS",
+      "buy": "10.12",
+      "stop": "10.01",
+      "riskPct": "1.09"
+    },
+    {
+      "ticker": "YUNSA",
+      "buy": "7.8700",
+      "stop": "7.7800",
+      "riskPct": "1.14"
+    },
+    {
+      "ticker": "APMDLF",
+      "buy": "24.38",
+      "stop": "24.10",
+      "riskPct": "1.15"
+    },
+    {
+      "ticker": "GSDHO",
+      "buy": "4.2000",
+      "stop": "4.1500",
+      "riskPct": "1.19"
+    },
+    {
+      "ticker": "ISMEN",
+      "buy": "43.16",
+      "stop": "42.64",
+      "riskPct": "1.20"
+    },
+    {
+      "ticker": "MNDTR",
+      "buy": "5.3750",
+      "stop": "5.3100",
+      "riskPct": "1.21"
+    },
+    {
+      "ticker": "KOCMT",
+      "buy": "2.4300",
+      "stop": "2.4000",
+      "riskPct": "1.23"
+    },
+    {
+      "ticker": "MPARK",
+      "buy": "423.75",
+      "stop": "418.50",
+      "riskPct": "1.24"
+    },
+    {
+      "ticker": "MERKO",
+      "buy": "16.61",
+      "stop": "16.40",
+      "riskPct": "1.26"
+    },
+    {
+      "ticker": "APLIBF",
+      "buy": "42.39",
+      "stop": "41.84",
       "riskPct": "1.30"
     },
     {
-      "ticker": "SKYMD",
-      "buy": "11.98",
-      "stop": "11.80",
-      "riskPct": "1.50"
+      "ticker": "KMPUR",
+      "buy": "15.13",
+      "stop": "14.93",
+      "riskPct": "1.32"
     },
     {
-      "ticker": "ANELE",
-      "buy": "14.22",
-      "stop": "14.00",
-      "riskPct": "1.55"
+      "ticker": "ISCTR",
+      "buy": "13.17",
+      "stop": "12.99",
+      "riskPct": "1.37"
     },
     {
-      "ticker": "ULKER",
-      "buy": "111.35",
-      "stop": "108.80",
+      "ticker": "TCELL",
+      "buy": "105.90",
+      "stop": "104.40",
+      "riskPct": "1.42"
+    },
+    {
+      "ticker": "KAREL",
+      "buy": "8.4600",
+      "stop": "8.3400",
+      "riskPct": "1.42"
+    },
+    {
+      "ticker": "VESBE",
+      "buy": "7.0200",
+      "stop": "6.9200",
+      "riskPct": "1.42"
+    },
+    {
+      "ticker": "NETAS",
+      "buy": "55.75",
+      "stop": "54.95",
+      "riskPct": "1.43"
+    },
+    {
+      "ticker": "CELHA",
+      "buy": "9.0500",
+      "stop": "8.9200",
+      "riskPct": "1.44"
+    },
+    {
+      "ticker": "YKBNK",
+      "buy": "33.02",
+      "stop": "32.54",
+      "riskPct": "1.45"
+    },
+    {
+      "ticker": "GRSEL",
+      "buy": "311.88",
+      "stop": "307.25",
+      "riskPct": "1.48"
+    },
+    {
+      "ticker": "BVSAN",
+      "buy": "105.60",
+      "stop": "104.00",
+      "riskPct": "1.52"
+    },
+    {
+      "ticker": "ZGOLDF",
+      "buy": "723.00",
+      "stop": "712.00",
+      "riskPct": "1.52"
+    },
+    {
+      "ticker": "VKFYO",
+      "buy": "31.77",
+      "stop": "31.28",
+      "riskPct": "1.54"
+    },
+    {
+      "ticker": "HEKTS",
+      "buy": "2.8850",
+      "stop": "2.8400",
+      "riskPct": "1.56"
+    },
+    {
+      "ticker": "ALARK",
+      "buy": "87.75",
+      "stop": "86.35",
+      "riskPct": "1.60"
+    },
+    {
+      "ticker": "DERIM",
+      "buy": "34.76",
+      "stop": "34.20",
+      "riskPct": "1.61"
+    },
+    {
+      "ticker": "TTKOM",
+      "buy": "58.50",
+      "stop": "57.55",
+      "riskPct": "1.62"
+    },
+    {
+      "ticker": "GATEG",
+      "buy": "295.00",
+      "stop": "290.00",
+      "riskPct": "1.69"
+    },
+    {
+      "ticker": "MAKTK",
+      "buy": "12.39",
+      "stop": "12.18",
+      "riskPct": "1.69"
+    },
+    {
+      "ticker": "OTKAR",
+      "buy": "368.25",
+      "stop": "362.00",
+      "riskPct": "1.70"
+    },
+    {
+      "ticker": "DYOBY",
+      "buy": "12.95",
+      "stop": "12.73",
+      "riskPct": "1.70"
+    },
+    {
+      "ticker": "KRSTL",
+      "buy": "8.0700",
+      "stop": "7.9300",
+      "riskPct": "1.73"
+    },
+    {
+      "ticker": "TBORG",
+      "buy": "142.60",
+      "stop": "140.10",
+      "riskPct": "1.75"
+    },
+    {
+      "ticker": "AYGAZ",
+      "buy": "230.05",
+      "stop": "226.00",
+      "riskPct": "1.76"
+    },
+    {
+      "ticker": "BESLR",
+      "buy": "12.99",
+      "stop": "12.76",
+      "riskPct": "1.77"
+    },
+    {
+      "ticker": "IMASM",
+      "buy": "3.6650",
+      "stop": "3.6000",
+      "riskPct": "1.77"
+    },
+    {
+      "ticker": "DMSAS",
+      "buy": "8.4400",
+      "stop": "8.2900",
+      "riskPct": "1.78"
+    },
+    {
+      "ticker": "ETILR",
+      "buy": "3.8900",
+      "stop": "3.8200",
+      "riskPct": "1.80"
+    },
+    {
+      "ticker": "IHYAY",
+      "buy": "1.6600",
+      "stop": "1.6300",
+      "riskPct": "1.81"
+    },
+    {
+      "ticker": "KCAER",
+      "buy": "10.95",
+      "stop": "10.75",
+      "riskPct": "1.83"
+    },
+    {
+      "ticker": "DEVA",
+      "buy": "60.05",
+      "stop": "58.95",
+      "riskPct": "1.83"
+    },
+    {
+      "ticker": "PGSUS",
+      "buy": "178.00",
+      "stop": "174.70",
+      "riskPct": "1.85"
+    },
+    {
+      "ticker": "IZMDC",
+      "buy": "6.1950",
+      "stop": "6.0800",
+      "riskPct": "1.86"
+    },
+    {
+      "ticker": "ALTNY",
+      "buy": "14.48",
+      "stop": "14.21",
+      "riskPct": "1.86"
+    },
+    {
+      "ticker": "KRGYO",
+      "buy": "2.6800",
+      "stop": "2.6300",
+      "riskPct": "1.87"
+    },
+    {
+      "ticker": "NUGYO",
+      "buy": "8.9700",
+      "stop": "8.8000",
+      "riskPct": "1.90"
+    },
+    {
+      "ticker": "YKSLN",
+      "buy": "3.1600",
+      "stop": "3.1000",
+      "riskPct": "1.90"
+    },
+    {
+      "ticker": "EKGYO",
+      "buy": "19.23",
+      "stop": "18.86",
+      "riskPct": "1.92"
+    },
+    {
+      "ticker": "GMTAS",
+      "buy": "26.23",
+      "stop": "25.72",
+      "riskPct": "1.94"
+    },
+    {
+      "ticker": "CMENT",
+      "buy": "321.25",
+      "stop": "315.00",
+      "riskPct": "1.95"
+    },
+    {
+      "ticker": "MERCN",
+      "buy": "16.35",
+      "stop": "16.03",
+      "riskPct": "1.96"
+    },
+    {
+      "ticker": "VSNMD",
+      "buy": "76.00",
+      "stop": "74.50",
+      "riskPct": "1.97"
+    },
+    {
+      "ticker": "BMSTL",
+      "buy": "84.78",
+      "stop": "83.10",
+      "riskPct": "1.98"
+    },
+    {
+      "ticker": "GESAN",
+      "buy": "45.00",
+      "stop": "44.10",
+      "riskPct": "2.00"
+    },
+    {
+      "ticker": "ISGLKF",
+      "buy": "725.00",
+      "stop": "710.50",
+      "riskPct": "2.00"
+    },
+    {
+      "ticker": "SILVR",
+      "buy": "2.4600",
+      "stop": "2.4100",
+      "riskPct": "2.03"
+    },
+    {
+      "ticker": "PARSN",
+      "buy": "80.08",
+      "stop": "78.45",
+      "riskPct": "2.04"
+    },
+    {
+      "ticker": "OSMEN",
+      "buy": "7.0650",
+      "stop": "6.9200",
+      "riskPct": "2.05"
+    },
+    {
+      "ticker": "DSTKF",
+      "buy": "1850",
+      "stop": "1812",
+      "riskPct": "2.05"
+    },
+    {
+      "ticker": "KUYAS",
+      "buy": "77.20",
+      "stop": "75.60",
+      "riskPct": "2.07"
+    },
+    {
+      "ticker": "ADESE",
+      "buy": "0.9600",
+      "stop": "0.9400",
+      "riskPct": "2.08"
+    },
+    {
+      "ticker": "EUYO",
+      "buy": "16.96",
+      "stop": "16.60",
+      "riskPct": "2.12"
+    },
+    {
+      "ticker": "SASA",
+      "buy": "2.3500",
+      "stop": "2.3000",
+      "riskPct": "2.13"
+    },
+    {
+      "ticker": "BIMAS",
+      "buy": "677.00",
+      "stop": "662.50",
+      "riskPct": "2.14"
+    },
+    {
+      "ticker": "ISDMR",
+      "buy": "42.50",
+      "stop": "41.58",
+      "riskPct": "2.16"
+    },
+    {
+      "ticker": "BORSK",
+      "buy": "5.9500",
+      "stop": "5.8200",
+      "riskPct": "2.18"
+    },
+    {
+      "ticker": "MEDTR",
+      "buy": "27.40",
+      "stop": "26.80",
+      "riskPct": "2.19"
+    },
+    {
+      "ticker": "VERTU",
+      "buy": "37.32",
+      "stop": "36.50",
+      "riskPct": "2.20"
+    },
+    {
+      "ticker": "GOZDE",
+      "buy": "19.99",
+      "stop": "19.55",
+      "riskPct": "2.20"
+    },
+    {
+      "ticker": "PASEU",
+      "buy": "122.75",
+      "stop": "120.00",
+      "riskPct": "2.24"
+    },
+    {
+      "ticker": "GSDDE",
+      "buy": "9.3700",
+      "stop": "9.1600",
+      "riskPct": "2.24"
+    },
+    {
+      "ticker": "AGYO",
+      "buy": "7.9800",
+      "stop": "7.8000",
+      "riskPct": "2.26"
+    },
+    {
+      "ticker": "LINK",
+      "buy": "5.2800",
+      "stop": "5.1600",
+      "riskPct": "2.27"
+    },
+    {
+      "ticker": "GLCVY",
+      "buy": "62.43",
+      "stop": "61.00",
       "riskPct": "2.29"
     },
     {
-      "ticker": "MACKO",
-      "buy": "32.46",
-      "stop": "31.70",
+      "ticker": "LOGO",
+      "buy": "133.50",
+      "stop": "130.40",
+      "riskPct": "2.32"
+    },
+    {
+      "ticker": "DNISI",
+      "buy": "19.37",
+      "stop": "18.92",
+      "riskPct": "2.32"
+    },
+    {
+      "ticker": "HUNER",
+      "buy": "3.0000",
+      "stop": "2.9300",
+      "riskPct": "2.33"
+    },
+    {
+      "ticker": "VKGYO",
+      "buy": "2.5700",
+      "stop": "2.5100",
+      "riskPct": "2.33"
+    },
+    {
+      "ticker": "BEYAZ",
+      "buy": "27.75",
+      "stop": "27.10",
       "riskPct": "2.34"
     },
     {
-      "ticker": "RGYAS",
-      "buy": "155.10",
-      "stop": "151.30",
-      "riskPct": "2.45"
+      "ticker": "BRISA",
+      "buy": "83.20",
+      "stop": "81.25",
+      "riskPct": "2.34"
     },
     {
-      "ticker": "BMSCH",
-      "buy": "17.01",
-      "stop": "16.58",
+      "ticker": "DAGI",
+      "buy": "5.5200",
+      "stop": "5.3900",
+      "riskPct": "2.36"
+    },
+    {
+      "ticker": "ALBRK",
+      "buy": "8.0400",
+      "stop": "7.8500",
+      "riskPct": "2.36"
+    },
+    {
+      "ticker": "KNFRT",
+      "buy": "10.53",
+      "stop": "10.28",
+      "riskPct": "2.37"
+    },
+    {
+      "ticker": "OPK",
+      "buy": "62.27",
+      "stop": "60.78",
+      "riskPct": "2.39"
+    },
+    {
+      "ticker": "NTGAZ",
+      "buy": "11.52",
+      "stop": "11.24",
+      "riskPct": "2.43"
+    },
+    {
+      "ticker": "MAKIM",
+      "buy": "15.85",
+      "stop": "15.46",
+      "riskPct": "2.46"
+    },
+    {
+      "ticker": "TEHOL",
+      "buy": "17.37",
+      "stop": "16.94",
+      "riskPct": "2.48"
+    },
+    {
+      "ticker": "ALKA",
+      "buy": "10.46",
+      "stop": "10.20",
+      "riskPct": "2.49"
+    },
+    {
+      "ticker": "KRDMA",
+      "buy": "29.64",
+      "stop": "28.90",
+      "riskPct": "2.50"
+    },
+    {
+      "ticker": "ZOREN",
+      "buy": "2.7700",
+      "stop": "2.7000",
       "riskPct": "2.53"
     },
     {
-      "ticker": "SELEC",
-      "buy": "81.00",
-      "stop": "78.85",
-      "riskPct": "2.65"
+      "ticker": "KAYSE",
+      "buy": "4.3400",
+      "stop": "4.2300",
+      "riskPct": "2.53"
     },
     {
-      "ticker": "KRDMB",
-      "buy": "56.58",
-      "stop": "55.00",
-      "riskPct": "2.79"
+      "ticker": "INTEM",
+      "buy": "266.25",
+      "stop": "259.50",
+      "riskPct": "2.54"
     },
     {
-      "ticker": "PCILT",
-      "buy": "29.16",
-      "stop": "28.34",
-      "riskPct": "2.81"
+      "ticker": "CASA",
+      "buy": "92.35",
+      "stop": "90.00",
+      "riskPct": "2.54"
     },
     {
-      "ticker": "POLHO",
-      "buy": "20.80",
-      "stop": "20.18",
-      "riskPct": "2.98"
+      "ticker": "SELVA",
+      "buy": "2.1250",
+      "stop": "2.0700",
+      "riskPct": "2.59"
+    },
+    {
+      "ticker": "ATAKP",
+      "buy": "51.33",
+      "stop": "50.00",
+      "riskPct": "2.59"
+    },
+    {
+      "ticker": "PNLSN",
+      "buy": "46.86",
+      "stop": "45.60",
+      "riskPct": "2.69"
+    },
+    {
+      "ticker": "ISGYO",
+      "buy": "20.23",
+      "stop": "19.68",
+      "riskPct": "2.72"
+    },
+    {
+      "ticker": "PSDTC",
+      "buy": "128.50",
+      "stop": "125.00",
+      "riskPct": "2.72"
+    },
+    {
+      "ticker": "LUKSK",
+      "buy": "93.55",
+      "stop": "91.00",
+      "riskPct": "2.73"
+    },
+    {
+      "ticker": "KATMR",
+      "buy": "2.7450",
+      "stop": "2.6700",
+      "riskPct": "2.73"
+    },
+    {
+      "ticker": "ULUUN",
+      "buy": "7.5500",
+      "stop": "7.3400",
+      "riskPct": "2.78"
+    },
+    {
+      "ticker": "AGROT",
+      "buy": "2.8300",
+      "stop": "2.7500",
+      "riskPct": "2.83"
+    },
+    {
+      "ticker": "TRENJ",
+      "buy": "91.15",
+      "stop": "88.55",
+      "riskPct": "2.85"
+    },
+    {
+      "ticker": "HRKET",
+      "buy": "59.88",
+      "stop": "58.15",
+      "riskPct": "2.89"
+    },
+    {
+      "ticker": "MARTI",
+      "buy": "1.3800",
+      "stop": "1.3400",
+      "riskPct": "2.90"
+    },
+    {
+      "ticker": "SOKE",
+      "buy": "15.75",
+      "stop": "15.29",
+      "riskPct": "2.92"
+    },
+    {
+      "ticker": "JANTS",
+      "buy": "16.98",
+      "stop": "16.48",
+      "riskPct": "2.94"
+    },
+    {
+      "ticker": "SNICA",
+      "buy": "3.8850",
+      "stop": "3.7700",
+      "riskPct": "2.96"
+    },
+    {
+      "ticker": "AZTEK",
+      "buy": "3.8750",
+      "stop": "3.7600",
+      "riskPct": "2.97"
+    },
+    {
+      "ticker": "ECZYT",
+      "buy": "284.00",
+      "stop": "275.50",
+      "riskPct": "2.99"
     }
   ],
   "earlySignals": []
