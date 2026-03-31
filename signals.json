@@ -1,140 +1,84 @@
 {
-  "updatedAt": "31.03.2026 13:12:07",
+  "updatedAt": "28.03.2026 02:50:50",
   "signals": [
     {
-      "ticker": "ALFAS",
-      "alis": "36.90",
-      "stop": "36.50",
-      "risk": "1.08",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
+      "ticker": "EGEGY",
+      "buy": "28.44",
+      "stop": "28.20",
+      "riskPct": "0.84"
     },
     {
-      "ticker": "ALARK",
-      "alis": "87.75",
-      "stop": "86.35",
-      "risk": "1.60",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
+      "ticker": "CRFSA",
+      "buy": "117.70",
+      "stop": "116.60",
+      "riskPct": "0.93"
     },
     {
-      "ticker": "ALTNY",
-      "alis": "14.48",
-      "stop": "14.21",
-      "risk": "1.86",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
+      "ticker": "CWENE",
+      "buy": "29.24",
+      "stop": "28.86",
+      "riskPct": "1.30"
     },
     {
-      "ticker": "ADESE",
-      "alis": "0.9600",
-      "stop": "0.9400",
-      "risk": "2.08",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
+      "ticker": "SKYMD",
+      "buy": "11.98",
+      "stop": "11.80",
+      "riskPct": "1.50"
     },
     {
-      "ticker": "AGYO",
-      "alis": "7.9800",
-      "stop": "7.8000",
-      "risk": "2.26",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
+      "ticker": "ANELE",
+      "buy": "14.22",
+      "stop": "14.00",
+      "riskPct": "1.55"
     },
     {
-      "ticker": "ATAKP",
-      "alis": "51.33",
-      "stop": "50.00",
-      "risk": "2.59",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
+      "ticker": "ULKER",
+      "buy": "111.35",
+      "stop": "108.80",
+      "riskPct": "2.29"
     },
     {
-      "ticker": "AGROT",
-      "alis": "2.8300",
-      "stop": "2.7500",
-      "risk": "2.83",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
+      "ticker": "MACKO",
+      "buy": "32.46",
+      "stop": "31.70",
+      "riskPct": "2.34"
     },
     {
-      "ticker": "AHGAZ",
-      "alis": "22.54",
-      "stop": "21.86",
-      "risk": "3.02",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
+      "ticker": "RGYAS",
+      "buy": "155.10",
+      "stop": "151.30",
+      "riskPct": "2.45"
     },
     {
-      "ticker": "AFYON",
-      "alis": "17.39",
-      "stop": "16.84",
-      "risk": "3.16",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
+      "ticker": "BMSCH",
+      "buy": "17.01",
+      "stop": "16.58",
+      "riskPct": "2.53"
     },
     {
-      "ticker": "ANHYT",
-      "alis": "109.90",
-      "stop": "106.10",
-      "risk": "3.46",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
+      "ticker": "SELEC",
+      "buy": "81.00",
+      "stop": "78.85",
+      "riskPct": "2.65"
     },
     {
-      "ticker": "ARFYE",
-      "alis": "24.49",
-      "stop": "23.60",
-      "risk": "3.63",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
+      "ticker": "KRDMB",
+      "buy": "56.58",
+      "stop": "55.00",
+      "riskPct": "2.79"
     },
     {
-      "ticker": "ARASE",
-      "alis": "88.40",
-      "stop": "85.00",
-      "risk": "3.85",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
+      "ticker": "PCILT",
+      "buy": "29.16",
+      "stop": "28.34",
+      "riskPct": "2.81"
     },
     {
-      "ticker": "AKENR",
-      "alis": "9.5400",
-      "stop": "9.1100",
-      "risk": "4.51",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "AKSUE",
-      "alis": "27.95",
-      "stop": "26.68",
-      "risk": "4.54",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "AGESA",
-      "alis": "218.60",
-      "stop": "207.80",
-      "risk": "4.94",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
+      "ticker": "POLHO",
+      "buy": "20.80",
+      "stop": "20.18",
+      "riskPct": "2.98"
     }
-  ]
+  ],
+  "earlySignals": []
 }
