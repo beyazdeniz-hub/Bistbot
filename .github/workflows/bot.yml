@@ -16,6 +16,9 @@ jobs:
     permissions:
       contents: write
 
+    env:
+      PUPPETEER_CACHE_DIR: ${{ github.workspace }}/.cache/puppeteer
+
     steps:
       - name: Repo çek
         uses: actions/checkout@v4
@@ -31,16 +34,25 @@ jobs:
       - name: Paketleri yükle
         run: npm install
 
-      - name: Puppeteer Chrome kur
-        run: npx puppeteer browsers install chrome
+      - name: Cache klasörü oluştur
+        run: mkdir -p $PUPPETEER_CACHE_DIR
 
-      - name: Chrome kontrol
-        run: npx puppeteer browsers list || true
+      - name: Chrome ve bağımlılıkları kur
+        run: npx puppeteer browsers install chrome --install-deps
+
+      - name: Kurulu browserları listele
+        run: npx puppeteer browsers list
+
+      - name: Chrome yolunu yazdır
+        run: |
+          echo "PUPPETEER_CACHE_DIR=$PUPPETEER_CACHE_DIR"
+          find $PUPPETEER_CACHE_DIR -type f | sort || true
 
       - name: Botu çalıştır
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          PUPPETEER_CACHE_DIR: ${{ github.workspace }}/.cache/puppeteer
         run: node bot.js
 
       - name: Git ayarları
