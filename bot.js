@@ -313,11 +313,31 @@ function splitRowsForTelegram(rows, chunkSize = 20) {
   return messages;
 }
 
-async function run() {
-  const browser = await puppeteer.launch({
+async function launchBrowser() {
+  const options = {
     headless: "new",
     args: ["--no-sandbox", "--disable-setuid-sandbox"]
-  });
+  };
+
+  try {
+    const executablePath =
+      typeof puppeteer.executablePath === "function"
+        ? puppeteer.executablePath()
+        : null;
+
+    if (executablePath) {
+      options.executablePath = executablePath;
+      console.log("Chrome yolu bulundu:", executablePath);
+    }
+  } catch (e) {
+    console.log("Chrome yolu otomatik alınamadı, varsayılan başlatma denenecek.");
+  }
+
+  return await puppeteer.launch(options);
+}
+
+async function run() {
+  const browser = await launchBrowser();
 
   try {
     const page = await browser.newPage();
