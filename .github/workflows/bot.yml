@@ -31,6 +31,12 @@ jobs:
       - name: Paketleri yükle
         run: npm install
 
+      - name: Puppeteer Chrome kur
+        run: npx puppeteer browsers install chrome
+
+      - name: Chrome kontrol
+        run: npx puppeteer browsers list || true
+
       - name: Botu çalıştır
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -42,14 +48,14 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+      - name: Uzak değişiklikleri al
+        run: |
+          git pull --rebase origin main || true
+
       - name: Değişiklik varsa commit at
         run: |
           git add .
           git diff --cached --quiet || git commit -m "Bot verileri guncellendi"
-
-      - name: Uzak değişiklikleri al
-        run: |
-          git pull --rebase origin main || true
 
       - name: Push et
         run: |
