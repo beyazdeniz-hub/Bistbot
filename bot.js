@@ -1,6 +1,8 @@
 const puppeteer = require("puppeteer");
 const axios = require("axios");
 const fs = require("fs");
+const path = require("path");
+const FormData = require("form-data");
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
@@ -12,42 +14,7 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function pad(value, width, right = false) {
-  const s = String(value ?? "-").trim();
-  if (s.length >= width) return s.slice(0, width);
-  return right ? s.padStart(width, " ") : s.padEnd(width, " ");
-}
-
-function escapeHtml(text) {
-  return String(text)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
-
-function toNumber(value) {
-  const normalized = String(value ?? "")
-    .replace(/\s+/g, "")
-    .replace(/\./g, "")
-    .replace(",", ".")
-    .replace(/[^\d.-]/g, "");
-
-  const num = parseFloat(normalized);
-  return isNaN(num) ? NaN : num;
-}
-
-function formatNumberTR(value) {
-  if (value === null || value === undefined || value === "" || Number.isNaN(Number(value))) {
-    return "-";
-  }
-
-  return Number(value).toLocaleString("tr-TR", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-}
-
-async function sendTelegram(text) {
+async function sendTelegramMessage(text) {
   if (!TOKEN || !CHAT_ID) {
     throw new Error("TOKEN veya CHAT_ID eksik");
   }
@@ -56,26 +23,27 @@ async function sendTelegram(text) {
 
   await axios.post(api, {
     chat_id: CHAT_ID,
-    text: `<pre>${escapeHtml(text)}</pre>`,
-    parse_mode: "HTML",
+    text,
     disable_web_page_preview: true
   });
 }
 
-function saveJson(rows) {
-  const payload = {
-    updatedAt: new Date().toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" }),
-    signals: rows.map((row) => ({
-      ticker: row.ticker,
-      buy: row.alis,
-      stop: row.son,
-      riskPct: row.risk.toFixed(2)
-    })),
-    earlySignals: []
-  };
+async function sendTelegramPhoto(filePath, caption = "") {
+  if (!TOKEN || !CHAT_ID) {
+    throw new Error("TOKEN veya CHAT_ID eksik");
+  }
 
-  fs.writeFileSync("signals.json", JSON.stringify(payload, null, 2), "utf8");
-  console.log("signals.json oluşturuldu");
+  const api = `https://api.telegram.org/bot${TOKEN}/sendPhoto`;
+  const form = new FormData();
+
+  form.append("chat_id", CHAT_ID);
+  form.append("caption", caption);
+  form.append("photo", fs.createReadStream(filePath));
+
+  await axios.post(api, form, {
+    headers: form.getHeaders(),
+    maxBodyLength: Infinity
+  });
 }
 
 async function getVisibleTickerCount(page) {
@@ -90,7 +58,9 @@ async function getVisibleTickerCount(page) {
 
     for (const link of links) {
       const ticker = getTickerFromHref(link.getAttribute("href"));
-      if (ticker) tickers.add(ticker);
+      if (ticker) {
+        tickers.add(ticker);
+      }
     }
 
     return tickers.size;
@@ -126,6 +96,7 @@ async function autoScroll(page) {
           const canScroll =
             /(auto|scroll)/i.test(style.overflowY) &&
             el.scrollHeight > el.clientHeight + 50;
+
           return canScroll;
         });
 
@@ -174,143 +145,104 @@ async function autoScroll(page) {
   await sleep(2000);
 }
 
-async function extractRows(page) {
+async function getFirstTicker(page) {
   return await page.evaluate(() => {
-    function clean(text) {
-      return String(text || "").replace(/\s+/g, " ").trim();
-    }
-
     function getTickerFromHref(href) {
       const m = String(href || "").match(/Ticker=([A-Z]+)/i);
       return m ? m[1].toUpperCase() : null;
     }
 
-    function looksNumeric(text) {
-      return /^[+\-]?\d[\d.,]*%?$/.test(clean(text));
+    const links = Array.from(document.querySelectorAll('a[href*="SignalPage"]'));
+
+    for (const link of links) {
+      const ticker = getTickerFromHref(link.getAttribute("href"));
+      if (ticker) {
+        return ticker;
+      }
     }
 
-    const rows = [];
-    const trList = Array.from(document.querySelectorAll("tr")).filter((tr) =>
-      tr.querySelector('a[href*="SignalPage"]')
-    );
+    return null;
+  });
+}
 
-    for (const tr of trList) {
-      const link = tr.querySelector('a[href*="SignalPage"]');
-      const ticker = getTickerFromHref(link?.getAttribute("href"));
+async function captureChart(page, outPath) {
+  const svgs = await page.$$("svg");
+  const candidates = [];
 
-      if (!ticker) continue;
-
-      const cells = Array.from(tr.querySelectorAll("td, th"))
-        .map((el) => clean(el.innerText || el.textContent))
-        .filter(Boolean);
-
-      let alis = "-";
-      let son = "-";
-      let yuzde = "-";
-
-      if (cells.length >= 4) {
-        const nonTickerCells = cells.filter((cell) => !cell.includes(ticker));
-
-        if (nonTickerCells.length >= 3) {
-          alis = nonTickerCells[0] || "-";
-          son = nonTickerCells[1] || "-";
-          yuzde = nonTickerCells[2] || "-";
-        }
+  for (const svg of svgs) {
+    try {
+      const box = await svg.boundingBox();
+      if (!box) {
+        continue;
       }
 
-      if (alis === "-" && son === "-" && yuzde === "-") {
-        const tokens = cells
-          .flatMap((cell) => cell.split(/\s+/))
-          .map(clean)
-          .filter(Boolean)
-          .filter((token) => !token.includes(ticker))
-          .filter((token) => looksNumeric(token));
-
-        if (tokens.length >= 1) alis = tokens[0];
-        if (tokens.length >= 2) son = tokens[1];
-        if (tokens.length >= 3) yuzde = tokens[2];
-      }
-
-      rows.push({
-        ticker,
-        alis,
-        son,
-        yuzde
+      const info = await svg.evaluate((node) => {
+        const rect = node.getBoundingClientRect();
+        const text = (node.textContent || "").replace(/\s+/g, " ").trim();
+        return {
+          width: rect.width,
+          height: rect.height,
+          text
+        };
       });
-    }
 
-    const seen = new Set();
-    return rows.filter((row) => {
-      if (seen.has(row.ticker)) return false;
-      seen.add(row.ticker);
-      return true;
-    });
-  });
-}
+      const width = box.width;
+      const height = box.height;
+      const area = width * height;
+      const text = String(info.text || "");
 
-async function extractDetailLevels(detailPage, ticker) {
-  await detailPage.goto(`${DETAIL_URL}${ticker}`, {
-    waitUntil: "networkidle2",
-    timeout: 60000
-  });
-
-  await sleep(2500);
-
-  return await detailPage.evaluate(() => {
-    function clean(text) {
-      return String(text || "").replace(/\s+/g, " ").trim();
-    }
-
-    const bodyText = clean(document.body.innerText || "");
-
-    function pick(regexList) {
-      for (const regex of regexList) {
-        const m = bodyText.match(regex);
-        if (m && m[1]) {
-          return m[1].trim();
-        }
+      if (width < 300 || height < 150) {
+        continue;
       }
-      return "-";
+
+      if (width > 1200 || height > 900) {
+        continue;
+      }
+
+      let score = 0;
+
+      if (width >= 500 && width <= 900) score += 4;
+      if (height >= 220 && height <= 420) score += 4;
+      if (area >= 120000 && area <= 350000) score += 3;
+
+      if (/Alış|Al Seviyesi|Stoploss|Stop Loss|Kapanış|Tarih/i.test(text)) {
+        score += 6;
+      }
+
+      candidates.push({
+        svg,
+        box,
+        score,
+        textPreview: text.slice(0, 200)
+      });
+    } catch (e) {
+      console.log("SVG aday okunamadı:", e.message);
     }
-
-    const alSeviyesi = pick([
-      /Al Seviyesi[:\s]*([0-9.,]+)/i,
-      /AL Seviyesi[:\s]*([0-9.,]+)/i
-    ]);
-
-    const stoploss = pick([
-      /Stoploss[:\s]*([0-9.,]+)/i,
-      /Stop Loss[:\s]*([0-9.,]+)/i
-    ]);
-
-    return {
-      alSeviyesi,
-      stoploss
-    };
-  });
-}
-
-function buildTable(rows) {
-  let text = "";
-  text += `${pad("Hisse", 8)} ${pad("Alış", 12, true)} ${pad("Stop", 12, true)} ${pad("Risk%", 7, true)}\n`;
-  text += `${"-".repeat(8)} ${"-".repeat(12)} ${"-".repeat(12)} ${"-".repeat(7)}\n`;
-
-  rows.forEach((row) => {
-    text += `${pad(row.ticker, 8)} ${pad(row.alis, 12, true)} ${pad(row.son, 12, true)} ${pad(row.riskText, 7, true)}\n`;
-  });
-
-  return text.trimEnd();
-}
-
-function splitRowsForTelegram(rows, chunkSize = 20) {
-  const messages = [];
-
-  for (let i = 0; i < rows.length; i += chunkSize) {
-    const chunk = rows.slice(i, i + chunkSize);
-    messages.push(buildTable(chunk));
   }
 
-  return messages;
+  candidates.sort((a, b) => b.score - a.score);
+
+  if (!candidates.length) {
+    console.log("Uygun SVG grafik bulunamadı");
+    return false;
+  }
+
+  const best = candidates[0];
+
+  console.log("Seçilen SVG grafik:", {
+    x: best.box.x,
+    y: best.box.y,
+    width: best.box.width,
+    height: best.box.height,
+    score: best.score,
+    textPreview: best.textPreview
+  });
+
+  await best.svg.screenshot({
+    path: outPath
+  });
+
+  return true;
 }
 
 async function launchBrowser() {
@@ -341,82 +273,59 @@ async function run() {
 
     await sleep(5000);
     await autoScroll(page);
-    await sleep(2000);
 
-    const rows = await extractRows(page);
+    const ticker = await getFirstTicker(page);
 
-    if (!rows.length) {
-      await sendTelegram("Liste boş geldi");
+    if (!ticker) {
+      await sendTelegramMessage("İlk hisse bulunamadı");
       return;
     }
 
     const detailPage = await browser.newPage();
     await detailPage.setViewport({ width: 1400, height: 2200 });
 
-    for (const row of rows) {
-      try {
-        const detail = await extractDetailLevels(detailPage, row.ticker);
+    await detailPage.goto(`${DETAIL_URL}${ticker}`, {
+      waitUntil: "networkidle2",
+      timeout: 60000
+    });
 
-        if (detail.alSeviyesi && detail.alSeviyesi !== "-") {
-          row.alis = detail.alSeviyesi;
-        }
+    await sleep(5000);
 
-        if (detail.stoploss && detail.stoploss !== "-") {
-          row.son = detail.stoploss;
-        }
-      } catch (e) {
-        console.log(`${row.ticker} detay okunamadı: ${e.message}`);
-      }
+    const tmpDir = path.join(process.cwd(), "tmp");
+    if (!fs.existsSync(tmpDir)) {
+      fs.mkdirSync(tmpDir, { recursive: true });
+    }
 
-      await sleep(700);
+    const chartPath = path.join(tmpDir, `${ticker}_chart.png`);
+    const fallbackPath = path.join(tmpDir, `${ticker}_detail_full.png`);
+
+    const foundChart = await captureChart(detailPage, chartPath);
+
+    if (foundChart && fs.existsSync(chartPath)) {
+      await sendTelegramPhoto(chartPath, `${ticker} grafik`);
+    } else {
+      await detailPage.screenshot({
+        path: fallbackPath,
+        fullPage: true
+      });
+
+      await sendTelegramPhoto(
+        fallbackPath,
+        `${ticker} için SVG grafik bulunamadı, detay sayfası gönderildi`
+      );
     }
 
     await detailPage.close();
-
-    const filtered = rows
-      .map((row) => {
-        const alisNum = toNumber(row.alis);
-        const stopNum = toNumber(row.son);
-
-        if (isNaN(alisNum) || isNaN(stopNum) || alisNum <= 0 || stopNum >= alisNum) {
-          return null;
-        }
-
-        const risk = ((alisNum - stopNum) / alisNum) * 100;
-
-        return {
-          ticker: row.ticker,
-          alis: formatNumberTR(alisNum),
-          son: formatNumberTR(stopNum),
-          risk,
-          riskText: formatNumberTR(risk)
-        };
-      })
-      .filter(Boolean)
-      .filter((row) => row.risk <= 3)
-      .sort((a, b) => a.risk - b.risk);
-
-    saveJson(filtered);
-
-    if (!filtered.length) {
-      await sendTelegram("Risk <= 3 uygun sinyal bulunamadı");
-      return;
-    }
-
-    const messages = splitRowsForTelegram(filtered, 20);
-
-    for (const message of messages) {
-      await sendTelegram(message);
-      await sleep(1000);
-    }
   } finally {
     await browser.close();
   }
 }
 
 run().catch(async (err) => {
+  console.log("Bot genel hata:", err);
+
   try {
-    await sendTelegram(`Bot hatası:\n${err.message}`);
+    await sendTelegramMessage(`Bot hatası: ${err.message}`);
   } catch (e) {
     console.log("Telegram hata gönderimi de başarısız:", e.message);
   }
