@@ -314,26 +314,17 @@ function splitRowsForTelegram(rows, chunkSize = 20) {
 }
 
 async function launchBrowser() {
-  const options = {
-    headless: "new",
+  const executablePath =
+    process.env.PUPPETEER_EXECUTABLE_PATH ||
+    puppeteer.executablePath();
+
+  console.log("Kullanılan Chrome yolu:", executablePath);
+
+  return await puppeteer.launch({
+    executablePath,
+    headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"]
-  };
-
-  try {
-    const executablePath =
-      typeof puppeteer.executablePath === "function"
-        ? puppeteer.executablePath()
-        : null;
-
-    if (executablePath) {
-      options.executablePath = executablePath;
-      console.log("Chrome yolu bulundu:", executablePath);
-    }
-  } catch (e) {
-    console.log("Chrome yolu otomatik alınamadı, varsayılan başlatma denenecek.");
-  }
-
-  return await puppeteer.launch(options);
+  });
 }
 
 async function run() {
