@@ -1,7 +1,6 @@
 {
   "name": "bistbot",
   "version": "1.0.0",
-  "description": "Turkishbulls telegram screenshot bot",
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js"
