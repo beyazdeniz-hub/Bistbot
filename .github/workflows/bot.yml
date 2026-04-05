@@ -40,7 +40,7 @@ jobs:
             fonts-liberation \
             ca-certificates
 
-      - name: Bağımlılıkları kur
+      - name: NPM kur
         run: npm install
 
       - name: Botu çalıştır
