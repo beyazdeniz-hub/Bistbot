@@ -22,26 +22,14 @@ jobs:
       - name: Chromium kur
         run: |
           sudo apt-get update
-          sudo apt-get install -y chromium \
-            libnss3 \
-            libatk1.0-0 \
-            libatk-bridge2.0-0 \
-            libcups2 \
-            libxkbcommon0 \
-            libxcomposite1 \
-            libxdamage1 \
-            libxrandr2 \
-            libgbm1 \
-            libasound2 \
-            libpangocairo-1.0-0 \
-            libpango-1.0-0 \
-            libx11-xcb1 \
-            libxshmfence1 \
-            fonts-liberation \
-            ca-certificates
+          sudo apt-get install -y chromium
 
       - name: NPM kur
-        run: npm install
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install
 
       - name: Botu çalıştır
         env:
