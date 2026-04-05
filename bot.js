@@ -5,7 +5,6 @@ const TOKEN = "8775847619:AAGT8RrKMOLWV1YYuakcc6zAXLWIgaitias";
 const CHAT_ID = "-1003675682598";
 
 const URL = "https://www.turkishbulls.com/SignalList.aspx?lang=tr&MarketSymbol=IMKB";
-const HOME_URL = "https://www.turkishbulls.com/Default.aspx?lang=tr";
 const DETAIL_URL = "https://www.turkishbulls.com/SignalPage.aspx?lang=tr&Ticker=";
 
 function sleep(ms) {
@@ -27,27 +26,8 @@ function escapeHtml(text) {
 
 function parseNumber(value) {
   if (value === null || value === undefined) return NaN;
-
-  const raw = String(value).trim();
-  if (!raw) return NaN;
-
-  if (raw.includes(",") && raw.includes(".")) {
-    return parseFloat(raw.replace(/\./g, "").replace(",", "."));
-  }
-
-  if (raw.includes(",")) {
-    return parseFloat(raw.replace(",", "."));
-  }
-
-  return parseFloat(raw);
-}
-
-function calculateRisk(alisValue, stopValue) {
-  const alis = parseNumber(alisValue);
-  const stop = parseNumber(stopValue);
-
-  if (isNaN(alis) || isNaN(stop) || alis === 0) return NaN;
-  return ((alis - stop) / alis) * 100;
+  const s = String(value).trim().replace(/\./g, "").replace(",", ".");
+  return parseFloat(s);
 }
 
 async function sendTelegram(text) {
@@ -236,55 +216,6 @@ async function extractRows(page) {
   });
 }
 
-async function extractOversoldTickers(homePage) {
-  await homePage.goto(HOME_URL, {
-    waitUntil: "networkidle2",
-    timeout: 60000
-  });
-
-  await sleep(3000);
-
-  return await homePage.evaluate(() => {
-    function clean(text) {
-      return String(text || "").replace(/\s+/g, " ").trim();
-    }
-
-    function pickTicker(text) {
-      const m = clean(text).match(/\b([A-ZÇĞİÖŞÜ]{4,6})\b/u);
-      return m ? m[1].toUpperCase() : null;
-    }
-
-    const tickers = [];
-    const seen = new Set();
-
-    const anchors = Array.from(document.querySelectorAll("a"));
-
-    for (const a of anchors) {
-      const text = clean(a.innerText || a.textContent || "");
-      if (!text) continue;
-
-      const lower = text.toLocaleLowerCase("tr-TR");
-
-      if (
-        lower.includes("aşırı satım") ||
-        lower.includes("asiri satim")
-      ) {
-        const ticker = pickTicker(text);
-        if (ticker && !seen.has(ticker)) {
-          seen.add(ticker);
-          tickers.push({
-            ticker,
-            alis: "-",
-            son: "-"
-          });
-        }
-      }
-    }
-
-    return tickers;
-  });
-}
-
 async function extractDetailLevels(detailPage, ticker) {
   await detailPage.goto(`${DETAIL_URL}${ticker}`, {
     waitUntil: "networkidle2",
@@ -317,8 +248,7 @@ async function extractDetailLevels(detailPage, ticker) {
 
     const stoploss = pick([
       /Stoploss[:\s]*([0-9.,]+)/i,
-      /Stop Loss[:\s]*([0-9.,]+)/i,
-      /Satış[:\s]*([0-9.,]+)/i
+      /Stop Loss[:\s]*([0-9.,]+)/i
     ]);
 
     return {
@@ -328,44 +258,22 @@ async function extractDetailLevels(detailPage, ticker) {
   });
 }
 
-function applyRiskFilterAndSort(rows) {
-  return rows
-    .filter(row => {
-      const alis = parseNumber(row.alis);
-      const stop = parseNumber(row.son);
-
-      if (isNaN(alis) || isNaN(stop) || alis === 0) return false;
-
-      const risk = ((alis - stop) / alis) * 100;
-
-      return stop <= alis && risk <= 3;
-    })
-    .sort((a, b) => {
-      const riskA = calculateRisk(a.alis, a.son);
-      const riskB = calculateRisk(b.alis, b.son);
-
-      if (isNaN(riskA) && isNaN(riskB)) return 0;
-      if (isNaN(riskA)) return 1;
-      if (isNaN(riskB)) return -1;
-
-      return riskA - riskB;
-    });
-}
-
 function buildTable(title, rows) {
   let text = `${title}\n\n`;
   text += `${pad("No", 3, true)} ${pad("Hisse", 6)} ${pad("Alis", 9, true)} ${pad("STOP", 9, true)} ${pad("Risk%", 6, true)}\n`;
   text += `${pad("---", 3)} ${pad("------", 6)} ${pad("---------", 9)} ${pad("---------", 9)} ${pad("------", 6)}\n`;
 
   rows.forEach((row, i) => {
-    let riskText = "-";
-    const risk = calculateRisk(row.alis, row.son);
+    let risk = "-";
 
-    if (!isNaN(risk)) {
-      riskText = risk.toFixed(2);
+    const alis = parseNumber(row.alis);
+    const stop = parseNumber(row.son);
+
+    if (!isNaN(alis) && !isNaN(stop) && alis !== 0) {
+      risk = (((alis - stop) / alis) * 100).toFixed(2);
     }
 
-    text += `${pad(i + 1, 3, true)} ${pad(row.ticker, 6)} ${pad(row.alis, 9, true)} ${pad(row.son, 9, true)} ${pad(riskText, 6, true)}\n`;
+    text += `${pad(i + 1, 3, true)} ${pad(row.ticker, 6)} ${pad(row.alis, 9, true)} ${pad(row.son, 9, true)} ${pad(risk, 6, true)}\n`;
   });
 
   text += `\nToplam: ${rows.length}`;
@@ -382,24 +290,6 @@ function splitRowsForTelegram(title, rows, chunkSize = 25) {
   }
 
   return messages;
-}
-
-async function enrichRowsWithDetails(detailPage, rows) {
-  for (const row of rows) {
-    try {
-      const detail = await extractDetailLevels(detailPage, row.ticker);
-
-      if (detail.alSeviyesi && detail.alSeviyesi !== "-") {
-        row.alis = detail.alSeviyesi;
-      }
-
-      if (detail.stoploss && detail.stoploss !== "-") {
-        row.son = detail.stoploss;
-      }
-    } catch (e) {}
-
-    await sleep(700);
-  }
 }
 
 async function run() {
@@ -431,49 +321,44 @@ async function run() {
     const detailPage = await browser.newPage();
     await detailPage.setViewport({ width: 1400, height: 2200 });
 
-    await enrichRowsWithDetails(detailPage, rows);
+    for (const row of rows) {
+      try {
+        const detail = await extractDetailLevels(detailPage, row.ticker);
 
-    rows = applyRiskFilterAndSort(rows);
-
-    if (!rows.length) {
-      await sendTelegram("Guncel AL listesi\n\nFiltre sonrasi uygun hisse kalmadi.");
-    } else {
-      const messages = splitRowsForTelegram("Guncel AL listesi", rows);
-
-      for (const message of messages) {
-        await sendTelegram(message);
-        await sleep(700);
-      }
-    }
-
-    // Ana sayfadaki aşırı satım hisseleri
-    const homePage = await browser.newPage();
-    await homePage.setViewport({ width: 1400, height: 2200 });
-
-    let earlyRows = [];
-    try {
-      earlyRows = await extractOversoldTickers(homePage);
-    } catch (e) {
-      earlyRows = [];
-    }
-
-    await homePage.close();
-
-    if (earlyRows.length) {
-      await enrichRowsWithDetails(detailPage, earlyRows);
-      earlyRows = applyRiskFilterAndSort(earlyRows);
-
-      if (earlyRows.length) {
-        const earlyMessages = splitRowsForTelegram("erken alım sinyali", earlyRows);
-
-        for (const message of earlyMessages) {
-          await sendTelegram(message);
-          await sleep(700);
+        if (detail.alSeviyesi && detail.alSeviyesi !== "-") {
+          row.alis = detail.alSeviyesi;
         }
-      }
+
+        if (detail.stoploss && detail.stoploss !== "-") {
+          row.son = detail.stoploss;
+        }
+      } catch (e) {}
+
+      await sleep(700);
     }
 
     await detailPage.close();
+
+    // STOP seviyesi AL seviyesinden büyük olanları ele
+    rows = rows.filter(row => {
+      const alis = parseNumber(row.alis);
+      const stop = parseNumber(row.son);
+
+      if (isNaN(alis) || isNaN(stop)) return true;
+      return stop <= alis;
+    });
+
+    if (!rows.length) {
+      await sendTelegram("Guncel AL listesi\n\nFiltre sonrasi uygun hisse kalmadi.");
+      return;
+    }
+
+    const messages = splitRowsForTelegram("Guncel AL listesi", rows);
+
+    for (const message of messages) {
+      await sendTelegram(message);
+      await sleep(700);
+    }
   } finally {
     await browser.close();
   }
