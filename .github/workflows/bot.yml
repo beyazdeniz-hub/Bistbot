@@ -19,21 +19,11 @@ jobs:
         with:
           node-version: 20
 
-      - name: Chromium kur
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y chromium
-
-      - name: NPM kur
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: true
-        run: |
-          rm -rf node_modules package-lock.json
-          npm install
+      - name: Kurulum
+        run: npm install
 
       - name: Botu çalıştır
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium
         run: npm start
