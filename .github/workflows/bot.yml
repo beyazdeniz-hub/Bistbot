@@ -3,72 +3,49 @@ name: BIST Bot
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/10 * * * *"
-
-concurrency:
-  group: bist-bot-main
-  cancel-in-progress: true
+    - cron: "0 18 * * *"
+    - cron: "0 9-15 * * 1-5"
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-
-    env:
-      PUPPETEER_CACHE_DIR: ${{ github.workspace }}/.cache/puppeteer
-
     steps:
       - name: Repo çek
         uses: actions/checkout@v4
-        with:
-          persist-credentials: true
-          fetch-depth: 0
 
       - name: Node kur
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: 20
 
-      - name: Paketleri yükle
-        run: npm install
-
-      - name: Cache klasörü oluştur
-        run: mkdir -p $PUPPETEER_CACHE_DIR
-
-      - name: Chrome ve bağımlılıkları kur
-        run: npx puppeteer browsers install chrome --install-deps
-
-      - name: Kurulu browserları listele
-        run: npx puppeteer browsers list
-
-      - name: Chrome yolunu yazdır
+      - name: Chromium kur
         run: |
-          echo "PUPPETEER_CACHE_DIR=$PUPPETEER_CACHE_DIR"
-          find $PUPPETEER_CACHE_DIR -type f | sort || true
+          sudo apt-get update
+          sudo apt-get install -y chromium \
+            libnss3 \
+            libatk1.0-0 \
+            libatk-bridge2.0-0 \
+            libcups2 \
+            libxkbcommon0 \
+            libxcomposite1 \
+            libxdamage1 \
+            libxrandr2 \
+            libgbm1 \
+            libasound2 \
+            libpangocairo-1.0-0 \
+            libpango-1.0-0 \
+            libx11-xcb1 \
+            libxshmfence1 \
+            fonts-liberation \
+            ca-certificates
+
+      - name: Bağımlılıkları kur
+        run: npm install
 
       - name: Botu çalıştır
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          PUPPETEER_CACHE_DIR: ${{ github.workspace }}/.cache/puppeteer
-        run: node bot.js
-
-      - name: Git ayarları
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-      - name: Uzak değişiklikleri al
-        run: |
-          git pull --rebase origin main || true
-
-      - name: Değişiklik varsa commit at
-        run: |
-          git add .
-          git diff --cached --quiet || git commit -m "Bot verileri guncellendi"
-
-      - name: Push et
-        run: |
-          git push origin main
+          PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium
+        run: npm start
