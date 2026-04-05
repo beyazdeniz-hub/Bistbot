@@ -3,27 +3,39 @@ name: BIST Bot
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 18 * * *"
-    - cron: "0 9-15 * * 1-5"
+    - cron: "15,30,45 * * * *"
+
+permissions:
+  contents: write
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Repo çek
+      - name: Repo'yu çek
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
-      - name: Node kur
+      - name: Node.js kur
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Kurulum
+      - name: Bağımlılıkları yükle
         run: npm install
 
       - name: Botu çalıştır
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: npm start
+        run: node bot.js
+
+      - name: signals.json dosyasını kaydet
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add signals.json
+          git diff --cached --quiet || git commit -m "Update signals.json"
+          git push
