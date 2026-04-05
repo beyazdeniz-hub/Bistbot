@@ -1,275 +1,83 @@
 {
-  "updatedAt": "01.04.2026 01:38:12",
+  "updatedAt": "28.03.2026 02:50:50",
   "signals": [
     {
-      "ticker": "KLNMA",
-      "buy": "96.000,00",
-      "stop": "95.500,00",
-      "riskPct": "0.52"
+      "ticker": "EGEGY",
+      "buy": "28.44",
+      "stop": "28.20",
+      "riskPct": "0.84"
     },
     {
-      "ticker": "AKSGY",
-      "buy": "88.700,00",
-      "stop": "88.200,00",
-      "riskPct": "0.56"
+      "ticker": "CRFSA",
+      "buy": "117.70",
+      "stop": "116.60",
+      "riskPct": "0.93"
     },
     {
-      "ticker": "NATEN",
-      "buy": "70.700,00",
-      "stop": "70.100,00",
-      "riskPct": "0.85"
+      "ticker": "CWENE",
+      "buy": "29.24",
+      "stop": "28.86",
+      "riskPct": "1.30"
     },
     {
-      "ticker": "TUPRS",
-      "buy": "24.700,00",
-      "stop": "24.450,00",
-      "riskPct": "1.01"
+      "ticker": "SKYMD",
+      "buy": "11.98",
+      "stop": "11.80",
+      "riskPct": "1.50"
     },
     {
-      "ticker": "CEMTS",
-      "buy": "1.012,00",
-      "stop": "1.001,00",
-      "riskPct": "1.09"
+      "ticker": "ANELE",
+      "buy": "14.22",
+      "stop": "14.00",
+      "riskPct": "1.55"
     },
     {
-      "ticker": "YUNSA",
-      "buy": "78.700,00",
-      "stop": "77.800,00",
-      "riskPct": "1.14"
+      "ticker": "ULKER",
+      "buy": "111.35",
+      "stop": "108.80",
+      "riskPct": "2.29"
     },
     {
-      "ticker": "GSDHO",
-      "buy": "42.000,00",
-      "stop": "41.500,00",
-      "riskPct": "1.19"
+      "ticker": "MACKO",
+      "buy": "32.46",
+      "stop": "31.70",
+      "riskPct": "2.34"
     },
     {
-      "ticker": "MNDTR",
-      "buy": "53.750,00",
-      "stop": "53.100,00",
-      "riskPct": "1.21"
+      "ticker": "RGYAS",
+      "buy": "155.10",
+      "stop": "151.30",
+      "riskPct": "2.45"
     },
     {
-      "ticker": "MPARK",
-      "buy": "42.375,00",
-      "stop": "41.850,00",
-      "riskPct": "1.24"
+      "ticker": "BMSCH",
+      "buy": "17.01",
+      "stop": "16.58",
+      "riskPct": "2.53"
     },
     {
-      "ticker": "MERKO",
-      "buy": "1.661,00",
-      "stop": "1.640,00",
-      "riskPct": "1.26"
+      "ticker": "SELEC",
+      "buy": "81.00",
+      "stop": "78.85",
+      "riskPct": "2.65"
     },
     {
-      "ticker": "KMPUR",
-      "buy": "1.513,00",
-      "stop": "1.493,00",
-      "riskPct": "1.32"
+      "ticker": "KRDMB",
+      "buy": "56.58",
+      "stop": "55.00",
+      "riskPct": "2.79"
     },
     {
-      "ticker": "KAREL",
-      "buy": "84.600,00",
-      "stop": "83.400,00",
-      "riskPct": "1.42"
+      "ticker": "PCILT",
+      "buy": "29.16",
+      "stop": "28.34",
+      "riskPct": "2.81"
     },
     {
-      "ticker": "NETAS",
-      "buy": "5.575,00",
-      "stop": "5.495,00",
-      "riskPct": "1.43"
-    },
-    {
-      "ticker": "VKFYO",
-      "buy": "3.177,00",
-      "stop": "3.128,00",
-      "riskPct": "1.54"
-    },
-    {
-      "ticker": "ALARK",
-      "buy": "8.775,00",
-      "stop": "8.635,00",
-      "riskPct": "1.60"
-    },
-    {
-      "ticker": "AYGAZ",
-      "buy": "23.005,00",
-      "stop": "22.600,00",
-      "riskPct": "1.76"
-    },
-    {
-      "ticker": "BESLR",
-      "buy": "1.299,00",
-      "stop": "1.276,00",
-      "riskPct": "1.77"
-    },
-    {
-      "ticker": "ETILR",
-      "buy": "38.900,00",
-      "stop": "38.200,00",
-      "riskPct": "1.80"
-    },
-    {
-      "ticker": "IZMDC",
-      "buy": "61.950,00",
-      "stop": "60.800,00",
-      "riskPct": "1.86"
-    },
-    {
-      "ticker": "GMTAS",
-      "buy": "2.623,00",
-      "stop": "2.572,00",
-      "riskPct": "1.94"
-    },
-    {
-      "ticker": "MERCN",
-      "buy": "1.635,00",
-      "stop": "1.603,00",
-      "riskPct": "1.96"
-    },
-    {
-      "ticker": "GESAN",
-      "buy": "4.500,00",
-      "stop": "4.410,00",
-      "riskPct": "2.00"
-    },
-    {
-      "ticker": "SILVR",
-      "buy": "24.600,00",
-      "stop": "24.100,00",
-      "riskPct": "2.03"
-    },
-    {
-      "ticker": "PARSN",
-      "buy": "8.008,00",
-      "stop": "7.845,00",
-      "riskPct": "2.04"
-    },
-    {
-      "ticker": "OSMEN",
-      "buy": "70.650,00",
-      "stop": "69.200,00",
-      "riskPct": "2.05"
-    },
-    {
-      "ticker": "DSTKF",
-      "buy": "1.850,00",
-      "stop": "1.812,00",
-      "riskPct": "2.05"
-    },
-    {
-      "ticker": "EUYO",
-      "buy": "1.696,00",
-      "stop": "1.660,00",
-      "riskPct": "2.12"
-    },
-    {
-      "ticker": "BIMAS",
-      "buy": "67.700,00",
-      "stop": "66.250,00",
-      "riskPct": "2.14"
-    },
-    {
-      "ticker": "BORSK",
-      "buy": "59.500,00",
-      "stop": "58.200,00",
-      "riskPct": "2.18"
-    },
-    {
-      "ticker": "GOZDE",
-      "buy": "1.999,00",
-      "stop": "1.955,00",
-      "riskPct": "2.20"
-    },
-    {
-      "ticker": "PASEU",
-      "buy": "12.275,00",
-      "stop": "12.000,00",
-      "riskPct": "2.24"
-    },
-    {
-      "ticker": "GSDDE",
-      "buy": "93.700,00",
-      "stop": "91.600,00",
-      "riskPct": "2.24"
-    },
-    {
-      "ticker": "DAGI",
-      "buy": "55.200,00",
-      "stop": "53.900,00",
-      "riskPct": "2.36"
-    },
-    {
-      "ticker": "KNFRT",
-      "buy": "1.053,00",
-      "stop": "1.028,00",
-      "riskPct": "2.37"
-    },
-    {
-      "ticker": "OPK",
-      "buy": "6.227,00",
-      "stop": "6.078,00",
-      "riskPct": "2.39"
-    },
-    {
-      "ticker": "NTGAZ",
-      "buy": "1.152,00",
-      "stop": "1.124,00",
-      "riskPct": "2.43"
-    },
-    {
-      "ticker": "KRDMA",
-      "buy": "2.964,00",
-      "stop": "2.890,00",
-      "riskPct": "2.50"
-    },
-    {
-      "ticker": "INTEM",
-      "buy": "26.625,00",
-      "stop": "25.950,00",
-      "riskPct": "2.54"
-    },
-    {
-      "ticker": "SELVA",
-      "buy": "21.250,00",
-      "stop": "20.700,00",
-      "riskPct": "2.59"
-    },
-    {
-      "ticker": "PNLSN",
-      "buy": "4.686,00",
-      "stop": "4.560,00",
-      "riskPct": "2.69"
-    },
-    {
-      "ticker": "AGROT",
-      "buy": "28.300,00",
-      "stop": "27.500,00",
-      "riskPct": "2.83"
-    },
-    {
-      "ticker": "HRKET",
-      "buy": "5.988,00",
-      "stop": "5.815,00",
-      "riskPct": "2.89"
-    },
-    {
-      "ticker": "MARTI",
-      "buy": "13.800,00",
-      "stop": "13.400,00",
-      "riskPct": "2.90"
-    },
-    {
-      "ticker": "AZTEK",
-      "buy": "38.750,00",
-      "stop": "37.600,00",
-      "riskPct": "2.97"
-    },
-    {
-      "ticker": "ECZYT",
-      "buy": "28.400,00",
-      "stop": "27.550,00",
-      "riskPct": "2.99"
+      "ticker": "POLHO",
+      "buy": "20.80",
+      "stop": "20.18",
+      "riskPct": "2.98"
     }
   ],
   "earlySignals": []
