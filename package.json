@@ -1,14 +1,13 @@
 {
   "name": "bistbot",
   "version": "1.0.0",
-  "description": "Turkishbulls scrape bot without browser",
+  "description": "Turkishbulls telegram bot",
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js"
   },
   "dependencies": {
     "axios": "^1.7.9",
-    "cheerio": "^1.0.0",
-    "form-data": "^4.0.0"
+    "puppeteer": "^24.6.1"
   }
 }
