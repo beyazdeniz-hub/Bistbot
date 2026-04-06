@@ -3,11 +3,12 @@ name: BIST Bot
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "0 */1 * * *"  # Her saat başı. */30 yaparsan 30dk'da bir çalışır
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Repoyu cek
@@ -17,9 +18,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Paketleri yukle
-        run: npm install
+        run: npm ci
 
       - name: Botu calistir
+        env:
+          TG_TOKEN: ${{ secrets.TG_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
         run: node bot.js
