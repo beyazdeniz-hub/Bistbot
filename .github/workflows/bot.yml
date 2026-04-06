@@ -3,7 +3,7 @@ name: BIST Bot
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */1 * * *"  # Her saat başı. */30 yaparsan 30dk'da bir çalışır
+    - cron: "0 */1 * * *"
 
 jobs:
   run-bot:
@@ -20,11 +20,15 @@ jobs:
           node-version: 20
           cache: 'npm'
 
+      - name: Chromium kur
+        run: sudo apt-get update && sudo apt-get install -y chromium-browser
+
       - name: Paketleri yukle
         run: npm ci
 
       - name: Botu calistir
         env:
-          TG_TOKEN: ${{ secrets.TG_TOKEN }}
-          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          TG_TOKEN: ${{ secrets.telegram_bot_token }}
+          TG_CHAT_ID: ${{ secrets.telegram_chat_id }}
+          PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium-browser
         run: node bot.js
