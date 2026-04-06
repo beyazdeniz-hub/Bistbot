@@ -7,8 +7,8 @@ const CHAT_ID = process.env.TG_CHAT_ID;
 
 const URL = "https://www.turkishbulls.com/SignalList.aspx?lang=tr&MarketSymbol=IMKB";
 const DETAIL_URL = "https://www.turkishbulls.com/SignalPage.aspx?lang=tr&Ticker=";
-const BATCH_SIZE = 4; // Aynı anda kaç detay sayfası açılsın
-const MESSAGE_CHUNK = 20; // Telegram mesajı kaç satır olsun
+const BATCH_SIZE = 4;
+const MESSAGE_CHUNK = 20;
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -32,15 +32,21 @@ function parseNumber(value) {
 }
 
 async function sendTelegram(text) {
-  if (!TOKEN || !CHAT_ID) throw new Error("TG_TOKEN veya TG_CHAT_ID .env içinde tanımlı değil");
+  if (!TOKEN || !CHAT_ID) throw new Error("TG_TOKEN veya TG_CHAT_ID tanımlı değil");
   
   const api = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
+  
+  // Telegram 4096 karakter limiti
+  if (text.length > 4000) {
+    text = text.slice(0, 4000) + "\n...kesildi";
+  }
+
   await axios.post(api, {
     chat_id: CHAT_ID,
     text: `<pre>${escapeHtml(text)}</pre>`,
     parse_mode: "HTML",
     disable_web_page_preview: true
-  });
+  }, { timeout: 15000 });
 }
 
 async function getVisibleTickerCount(page) {
@@ -114,9 +120,9 @@ async function extractRows(page) {
 
       rows.push({
         ticker,
-        alis: nonTicker[0] || "-",      // Tablodaki AL
-        sonFiyat: nonTicker[1] || "-",  // Tablodaki Son Fiyat
-        stoploss: "-",                  // Detaydan gelecek
+        alis: nonTicker[0] || "-",
+        sonFiyat: nonTicker[1] || "-",
+        stoploss: "-",
         yuzde: nonTicker[2] || "-"
       });
     }
@@ -189,14 +195,15 @@ function buildTable(title, rows) {
 }
 
 async function run() {
+  console.log("Bot başladı...");
   if (!TOKEN || !CHAT_ID) {
-    console.error(".env dosyasında TG_TOKEN ve TG_CHAT_ID tanımlı değil!");
+    console.error("HATA: TG_TOKEN ve TG_CHAT_ID tanımlı değil!");
     return;
   }
 
   const browser = await puppeteer.launch({
     headless: "new",
-    args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
+    args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--disable-gpu"]
   });
 
   try {
@@ -214,7 +221,6 @@ async function run() {
 
     console.log(`${rows.length} hisse bulundu. Detaylar çekiliyor...`);
 
-    // Detayları paralel batch'ler halinde çek
     for (let i = 0; i < rows.length; i += BATCH_SIZE) {
       const batch = rows.slice(i, i + BATCH_SIZE);
       const results = await Promise.all(
@@ -228,14 +234,13 @@ async function run() {
       });
 
       console.log(`İşlendi: ${Math.min(i + BATCH_SIZE, rows.length)}/${rows.length}`);
-      await sleep(500); // Siteyi yormamak için batch arası bekle
+      await sleep(500);
     }
 
-    // STOP > AL olanları ve stoploss'u olmayanları ele
     rows = rows.filter(row => {
       const alis = parseNumber(row.alis);
       const stop = parseNumber(row.stoploss);
-      if (isNaN(alis) || isNaN(stop)) return false; // Veri yoksa at
+      if (isNaN(alis) || isNaN(stop)) return false;
       return stop <= alis;
     });
 
@@ -244,14 +249,12 @@ async function run() {
       return;
     }
 
-    // Risk'e göre sırala: düşük riskli üstte
     rows.sort((a, b) => {
       const riskA = parseNumber(a.alis) - parseNumber(a.stoploss);
       const riskB = parseNumber(b.alis) - parseNumber(b.stoploss);
       return riskA - riskB;
     });
 
-    // Mesajları parçala ve gönder
     for (let i = 0; i < rows.length; i += MESSAGE_CHUNK) {
       const chunk = rows.slice(i, i + MESSAGE_CHUNK);
       const title = i === 0 ? "Guncel AL listesi" : "Guncel AL listesi (devam)";
@@ -262,12 +265,15 @@ async function run() {
     console.log("Bitti. Toplam gönderilen:", rows.length);
 
   } catch (err) {
-    console.error(err);
+    console.error("Ana hata:", err);
     try {
       await sendTelegram(`Bot hatasi:\n${err.message}`);
-    } catch (e) {}
+    } catch (e) {
+      console.error("Telegram hata mesajı gönderilemedi:", e.message);
+    }
   } finally {
     await browser.close();
+    console.log("Browser kapatıldı.");
   }
 }
 
