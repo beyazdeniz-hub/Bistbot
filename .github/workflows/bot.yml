@@ -20,10 +20,14 @@ jobs:
         run: npm install
 
       - name: Puppeteer Chrome kur
+        env:
+          PUPPETEER_CACHE_DIR: /home/runner/.cache/puppeteer
         run: npx puppeteer browsers install chrome@stable
 
-      - name: Chrome yolunu kontrol et
-        run: node -e "const p=require('puppeteer'); console.log(p.executablePath())"
+      - name: Kurulu browserlari goster
+        env:
+          PUPPETEER_CACHE_DIR: /home/runner/.cache/puppeteer
+        run: node -e "const {getInstalledBrowsers}=require('@puppeteer/browsers'); (async()=>{console.log(await getInstalledBrowsers({cacheDir:process.env.PUPPETEER_CACHE_DIR}))})()"
 
       - name: Botu calistir
         env:
