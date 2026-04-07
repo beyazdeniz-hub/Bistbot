@@ -1,14 +1,14 @@
 {
   "name": "bistbot",
   "version": "1.0.0",
-  "description": "Turkishbulls telegram bot",
+  "description": "Turkishbulls screenshot telegram bot",
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js"
   },
   "dependencies": {
     "axios": "^1.7.9",
-    "puppeteer": "^24.6.1",
-    "dotenv": "^16.4.5"
+    "form-data": "^4.0.0",
+    "puppeteer": "^24.6.1"
   }
 }
