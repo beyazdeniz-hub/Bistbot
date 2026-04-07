@@ -1,34 +1,68 @@
-name: BIST Bot
+name: Turkishbulls Screenshot Bot
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */1 * * *"
+    - cron: "0 18 * * 1-5"
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
 
     steps:
-      - name: Repoyu cek
+      - name: Repo çek
         uses: actions/checkout@v4
 
       - name: Node kur
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
 
-      - name: Chromium kur
-        run: sudo apt-get update && sudo apt-get install -y chromium-browser
+      - name: Gerekli paketler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            ca-certificates \
+            fonts-liberation \
+            libasound2t64 \
+            libatk-bridge2.0-0 \
+            libatk1.0-0 \
+            libc6 \
+            libcairo2 \
+            libcups2 \
+            libdbus-1-3 \
+            libexpat1 \
+            libfontconfig1 \
+            libgbm1 \
+            libgcc-s1 \
+            libglib2.0-0 \
+            libgtk-3-0 \
+            libnspr4 \
+            libnss3 \
+            libpango-1.0-0 \
+            libpangocairo-1.0-0 \
+            libstdc++6 \
+            libx11-6 \
+            libx11-xcb1 \
+            libxcb1 \
+            libxcomposite1 \
+            libxcursor1 \
+            libxdamage1 \
+            libxext6 \
+            libxfixes3 \
+            libxi6 \
+            libxrandr2 \
+            libxrender1 \
+            libxss1 \
+            libxtst6 \
+            wget \
+            xdg-utils
 
-      - name: Paketleri yukle
-        run: npm ci
+      - name: NPM kur
+        run: npm install
 
-      - name: Botu calistir
+      - name: Bot çalıştır
         env:
-          TG_TOKEN: ${{ secrets.telegram_bot_token }}
-          TG_CHAT_ID: ${{ secrets.telegram_chat_id }}
-          PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium-browser
-        run: node bot.js
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: npm start
