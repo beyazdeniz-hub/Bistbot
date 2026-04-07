@@ -45,7 +45,7 @@ async function dismissPopups(page) {
     "Anladım",
     "Got it",
     "Close",
-    "Kapat"
+    "Kapat",
   ];
 
   for (const text of texts) {
@@ -56,7 +56,9 @@ async function dismissPopups(page) {
         await elements[0].click().catch(() => {});
         await sleep(1000);
       }
-    } catch (_) {}
+    } catch (err) {
+      // geç
+    }
   }
 }
 
@@ -106,8 +108,8 @@ async function run() {
         "--disable-dev-shm-usage",
         "--disable-gpu",
         "--no-zygote",
-        "--single-process"
-      ]
+        "--single-process",
+      ],
     });
 
     const page = await browser.newPage();
@@ -115,7 +117,7 @@ async function run() {
     await page.setViewport({
       width: 1440,
       height: 2200,
-      deviceScaleFactor: 1
+      deviceScaleFactor: 1,
     });
 
     await page.setUserAgent(
@@ -127,7 +129,7 @@ async function run() {
 
     await page.goto(URL, {
       waitUntil: "networkidle2",
-      timeout: 90000
+      timeout: 90000,
     });
 
     await sleep(4000);
@@ -136,7 +138,7 @@ async function run() {
 
     await page.screenshot({
       path: SCREENSHOT_FILE,
-      fullPage: false
+      fullPage: false,
     });
 
     await sendTelegramPhoto(
@@ -147,14 +149,19 @@ async function run() {
     console.log("İşlem tamamlandı.");
   } catch (error) {
     console.error("HATA:", error);
+
     try {
       await sendTelegramMessage(`Bot hata verdi:\n${error.message}`);
-    } catch (_) {}
+    } catch (telegramError) {
+      console.error("Telegram hata mesajı da gönderilemedi:", telegramError.message);
+    }
+
     process.exit(1);
   } finally {
     if (browser) {
       await browser.close().catch(() => {});
     }
+
     if (fs.existsSync(SCREENSHOT_FILE)) {
       fs.unlinkSync(SCREENSHOT_FILE);
     }
