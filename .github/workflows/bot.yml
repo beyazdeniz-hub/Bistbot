@@ -1,41 +1,33 @@
-name: BIST Bot
+name: Signal Bot
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "15,30,45 * * * *"
-
-permissions:
-  contents: write
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Repo'yu çek
+      - name: Repo cek
         uses: actions/checkout@v4
-        with:
-          persist-credentials: true
 
-      - name: Node.js kur
+      - name: Node kur
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: "20"
 
-      - name: Bağımlılıkları yükle
+      - name: NPM install
         run: npm install
 
-      - name: Botu çalıştır
+      - name: Puppeteer Chrome kur
+        run: npx puppeteer browsers install chrome@stable
+
+      - name: Chrome yolunu kontrol et
+        run: node -e "const p=require('puppeteer'); console.log(p.executablePath())"
+
+      - name: Botu calistir
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          PUPPETEER_CACHE_DIR: /home/runner/.cache/puppeteer
         run: node bot.js
-
-      - name: signals.json dosyasını kaydet
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add signals.json
-          git diff --cached --quiet || git commit -m "Update signals.json"
-          git push
