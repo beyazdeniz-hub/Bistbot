@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "bot.js",
   "dependencies": {
+    "@puppeteer/browsers": "^2.10.13",
     "axios": "^1.7.9",
     "puppeteer": "^24.6.1"
   }
