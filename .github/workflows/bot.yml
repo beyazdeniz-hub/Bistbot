@@ -2,14 +2,22 @@ name: Signal Bot
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "0 18 * * *"
+    - cron: "0 9-15 * * 1-5"
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
       - name: Repo cek
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Node kur
         uses: actions/setup-node@v4
@@ -24,14 +32,12 @@ jobs:
           PUPPETEER_CACHE_DIR: /home/runner/.cache/puppeteer
         run: npx puppeteer browsers install chrome@stable
 
-      - name: Kurulu browserlari goster
-        env:
-          PUPPETEER_CACHE_DIR: /home/runner/.cache/puppeteer
-        run: node -e "const {getInstalledBrowsers}=require('@puppeteer/browsers'); (async()=>{console.log(await getInstalledBrowsers({cacheDir:process.env.PUPPETEER_CACHE_DIR}))})()"
-
       - name: Botu calistir
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_BRANCH: ${{ github.ref_name }}
           PUPPETEER_CACHE_DIR: /home/runner/.cache/puppeteer
         run: node bot.js
