@@ -18,13 +18,13 @@ jobs:
         with:
           node-version: 20
 
-      - name: Gerekli paketler
+      - name: Gerekli sistem paketleri
         run: |
           sudo apt-get update
           sudo apt-get install -y \
             ca-certificates \
             fonts-liberation \
-            libasound2t64 \
+            libasound2 \
             libatk-bridge2.0-0 \
             libatk1.0-0 \
             libc6 \
@@ -58,10 +58,13 @@ jobs:
             wget \
             xdg-utils
 
-      - name: NPM kur
-        run: npm install
+      - name: NPM cache temizle
+        run: npm cache clean --force
 
-      - name: Bot çalıştır
+      - name: NPM paketlerini kur
+        run: npm install --no-audit --no-fund
+
+      - name: Botu çalıştır
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
