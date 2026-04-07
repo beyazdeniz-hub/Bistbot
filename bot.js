@@ -1,5 +1,8 @@
 const puppeteer = require("puppeteer");
+const { getInstalledBrowsers } = require("@puppeteer/browsers");
 const axios = require("axios");
+const os = require("os");
+const path = require("path");
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
@@ -26,6 +29,38 @@ async function sendTelegram(text) {
       timeout: 30000,
     }
   );
+}
+
+async function resolveChromePath() {
+  const cacheDir =
+    process.env.PUPPETEER_CACHE_DIR ||
+    path.join(os.homedir(), ".cache", "puppeteer");
+
+  const installed = await getInstalledBrowsers({ cacheDir });
+
+  if (!installed.length) {
+    throw new Error(
+      `Kurulu Chrome bulunamadi. Cache klasoru: ${cacheDir}`
+    );
+  }
+
+  const chromeCandidates = installed.filter((b) => {
+    return String(b.browser).toLowerCase().includes("chrome");
+  });
+
+  const selected =
+    chromeCandidates[chromeCandidates.length - 1] ||
+    installed[installed.length - 1];
+
+  if (!selected || !selected.executablePath) {
+    throw new Error("Chrome executable path bulunamadi.");
+  }
+
+  console.log("Kullanilan browser:", selected.browser);
+  console.log("Kullanilan buildId:", selected.buildId);
+  console.log("Kullanilan executablePath:", selected.executablePath);
+
+  return selected.executablePath;
 }
 
 async function getTickerCount(page) {
@@ -106,7 +141,7 @@ async function scrollToBottom(page) {
     }
 
     if (stableRounds >= 4) {
-      console.log("Yeni hisse gelmiyor, scroll tamamlandı.");
+      console.log("Yeni hisse gelmiyor, scroll tamamlandi.");
       break;
     }
   }
@@ -164,9 +199,11 @@ function splitMessage(text, maxLen = 3500) {
 }
 
 async function run() {
+  const chromePath = await resolveChromePath();
+
   const browser = await puppeteer.launch({
     headless: true,
-    executablePath: puppeteer.executablePath(),
+    executablePath: chromePath,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
@@ -188,7 +225,7 @@ async function run() {
     console.log("Toplam hisse:", tickers.length);
 
     if (!tickers.length) {
-      await sendTelegram("Hisse listesi boş geldi.");
+      await sendTelegram("Hisse listesi bos geldi.");
       return;
     }
 
