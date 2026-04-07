@@ -8,8 +8,11 @@ const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 const URL = "https://www.turkishbulls.com/SignalList.aspx?lang=tr&MarketSymbol=IMKB";
 const DETAIL_URL = "https://www.turkishbulls.com/SignalPage.aspx?lang=tr&Ticker=";
 
+const RISK_LIMIT = 5;
+const TELEGRAM_CHUNK_SIZE = 25;
+
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function pad(value, width, right = false) {
@@ -33,7 +36,7 @@ function toNumber(value) {
     .replace(/[^\d.-]/g, "");
 
   const num = parseFloat(normalized);
-  return isNaN(num) ? NaN : num;
+  return Number.isNaN(num) ? NaN : num;
 }
 
 async function sendTelegram(text) {
@@ -43,33 +46,49 @@ async function sendTelegram(text) {
 
   const api = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
 
-  await axios.post(api, {
-    chat_id: CHAT_ID,
-    text: `<pre>${escapeHtml(text)}</pre>`,
-    parse_mode: "HTML",
-    disable_web_page_preview: true
-  });
+  await axios.post(
+    api,
+    {
+      chat_id: CHAT_ID,
+      text: `<pre>${escapeHtml(text)}</pre>`,
+      parse_mode: "HTML",
+      disable_web_page_preview: true,
+    },
+    { timeout: 30000 }
+  );
 }
 
 function saveJson(rows) {
   const payload = {
-    updatedAt: new Date().toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" }),
-    signals: rows.map(row => ({
+    updatedAt: new Date().toLocaleString("tr-TR", {
+      timeZone: "Europe/Istanbul",
+    }),
+    signals: rows.map((row) => ({
       ticker: row.ticker,
       buy: row.alis,
       stop: row.son,
-      riskPct: row.risk.toFixed(2)
+      riskPct: row.risk.toFixed(2),
     })),
-    earlySignals: []
+    earlySignals: [],
   };
 
   fs.writeFileSync("signals.json", JSON.stringify(payload, null, 2), "utf8");
   console.log("signals.json oluşturuldu");
 }
 
+async function safeGoto(page, url) {
+  await page.goto(url, {
+    waitUntil: "domcontentloaded",
+    timeout: 60000,
+  });
+
+  await sleep(3500);
+}
+
 async function getPageStats(page) {
   return await page.evaluate(() => {
-    const doc = document.scrollingElement || document.documentElement || document.body;
+    const doc =
+      document.scrollingElement || document.documentElement || document.body;
 
     function getTickerFromHref(href) {
       const m = String(href || "").match(/Ticker=([A-Z]+)/i);
@@ -91,7 +110,7 @@ async function getPageStats(page) {
       scrollTop: doc.scrollTop,
       scrollHeight: doc.scrollHeight,
       clientHeight: doc.clientHeight,
-      tickerCount: tickers.size
+      tickerCount: tickers.size,
     };
   });
 }
@@ -116,7 +135,8 @@ async function forceScrollContainers(page) {
 async function doOneScrollRound(page) {
   for (let i = 0; i < 10; i++) {
     await page.evaluate(() => {
-      const doc = document.scrollingElement || document.documentElement || document.body;
+      const doc =
+        document.scrollingElement || document.documentElement || document.body;
       const step = Math.max(700, Math.floor(window.innerHeight * 0.9));
       window.scrollBy(0, step);
       doc.scrollTop = doc.scrollTop + step;
@@ -132,7 +152,8 @@ async function doOneScrollRound(page) {
   } catch (e) {}
 
   await page.evaluate(() => {
-    const doc = document.scrollingElement || document.documentElement || document.body;
+    const doc =
+      document.scrollingElement || document.documentElement || document.body;
     window.scrollTo(0, doc.scrollHeight);
     doc.scrollTop = doc.scrollHeight;
   });
@@ -155,7 +176,6 @@ async function autoScroll(page) {
 
     const reachedBottom =
       after.scrollTop + after.clientHeight >= after.scrollHeight - 10;
-
     const countUnchanged = after.tickerCount === lastCount;
     const heightUnchanged = after.scrollHeight === lastHeight;
 
@@ -169,13 +189,8 @@ async function autoScroll(page) {
       stableRounds = 0;
     }
 
-    if (after.tickerCount > lastCount) {
-      lastCount = after.tickerCount;
-    }
-
-    if (after.scrollHeight > lastHeight) {
-      lastHeight = after.scrollHeight;
-    }
+    if (after.tickerCount > lastCount) lastCount = after.tickerCount;
+    if (after.scrollHeight > lastHeight) lastHeight = after.scrollHeight;
 
     if (stableRounds >= 4) {
       console.log("Scroll sabitlendi, çıkılıyor.");
@@ -189,7 +204,8 @@ async function autoScroll(page) {
 
   for (let i = 0; i < 4; i++) {
     await page.evaluate(() => {
-      const doc = document.scrollingElement || document.documentElement || document.body;
+      const doc =
+        document.scrollingElement || document.documentElement || document.body;
       window.scrollTo(0, doc.scrollHeight);
       doc.scrollTop = doc.scrollHeight;
     });
@@ -235,13 +251,14 @@ async function extractRows(page) {
           ticker,
           alis: "-",
           son: "-",
-          yuzde: "-"
+          yuzde: "-",
         });
       }
     }
 
-    const trList = Array.from(document.querySelectorAll("tr"))
-      .filter(tr => tr.querySelector('a[href*="SignalPage"]'));
+    const trList = Array.from(document.querySelectorAll("tr")).filter((tr) =>
+      tr.querySelector('a[href*="SignalPage"]')
+    );
 
     for (const tr of trList) {
       const link = tr.querySelector('a[href*="SignalPage"]');
@@ -250,7 +267,7 @@ async function extractRows(page) {
       if (!ticker) continue;
 
       const cells = Array.from(tr.querySelectorAll("td, th"))
-        .map(el => clean(el.innerText || el.textContent))
+        .map((el) => clean(el.innerText || el.textContent))
         .filter(Boolean);
 
       let alis = "-";
@@ -258,7 +275,7 @@ async function extractRows(page) {
       let yuzde = "-";
 
       if (cells.length >= 4) {
-        const nonTickerCells = cells.filter(cell => !cell.includes(ticker));
+        const nonTickerCells = cells.filter((cell) => !cell.includes(ticker));
 
         if (nonTickerCells.length >= 3) {
           alis = nonTickerCells[0] || "-";
@@ -269,11 +286,11 @@ async function extractRows(page) {
 
       if (alis === "-" && son === "-" && yuzde === "-") {
         const tokens = cells
-          .flatMap(cell => cell.split(/\s+/))
+          .flatMap((cell) => cell.split(/\s+/))
           .map(clean)
           .filter(Boolean)
-          .filter(token => !token.includes(ticker))
-          .filter(token => looksNumeric(token));
+          .filter((token) => !token.includes(ticker))
+          .filter((token) => looksNumeric(token));
 
         if (tokens.length >= 1) alis = tokens[0];
         if (tokens.length >= 2) son = tokens[1];
@@ -284,14 +301,14 @@ async function extractRows(page) {
         ticker,
         alis: "-",
         son: "-",
-        yuzde: "-"
+        yuzde: "-",
       };
 
       found.set(ticker, {
         ticker,
         alis: prev.alis !== "-" ? prev.alis : alis,
         son: prev.son !== "-" ? prev.son : son,
-        yuzde: prev.yuzde !== "-" ? prev.yuzde : yuzde
+        yuzde: prev.yuzde !== "-" ? prev.yuzde : yuzde,
       });
     }
 
@@ -302,12 +319,7 @@ async function extractRows(page) {
 }
 
 async function extractDetailLevels(detailPage, ticker) {
-  await detailPage.goto(`${DETAIL_URL}${ticker}`, {
-    waitUntil: "networkidle2",
-    timeout: 60000
-  });
-
-  await sleep(2500);
+  await safeGoto(detailPage, `${DETAIL_URL}${ticker}`);
 
   return await detailPage.evaluate(() => {
     function clean(text) {
@@ -330,7 +342,8 @@ async function extractDetailLevels(detailPage, ticker) {
       /Alış\s*Seviyesi[:\s]*([0-9.,]+)/i,
       /Aliş\s*Seviyesi[:\s]*([0-9.,]+)/i,
       /Al\s*Seviyesi[:\s]*([0-9.,]+)/i,
-      /AL\s*Seviyesi[:\s]*([0-9.,]+)/i
+      /AL\s*Seviyesi[:\s]*([0-9.,]+)/i,
+      /Alış[:\s]*([0-9.,]+)/i,
     ]);
 
     const stoploss = pick([
@@ -339,12 +352,12 @@ async function extractDetailLevels(detailPage, ticker) {
       /Stoploss\s*Seviyesi[:\s]*([0-9.,]+)/i,
       /Stop\s*Loss\s*Seviyesi[:\s]*([0-9.,]+)/i,
       /Stop\s*Seviyesi[:\s]*([0-9.,]+)/i,
-      /Stop[:\s]*([0-9.,]+)/i
+      /Stop[:\s]*([0-9.,]+)/i,
     ]);
 
     return {
       alSeviyesi,
-      stoploss
+      stoploss,
     };
   });
 }
@@ -362,7 +375,7 @@ function buildTable(title, rows) {
   return text;
 }
 
-function splitRowsForTelegram(title, rows, chunkSize = 25) {
+function splitRowsForTelegram(title, rows, chunkSize = TELEGRAM_CHUNK_SIZE) {
   const messages = [];
 
   for (let i = 0; i < rows.length; i += chunkSize) {
@@ -377,19 +390,14 @@ function splitRowsForTelegram(title, rows, chunkSize = 25) {
 async function run() {
   const browser = await puppeteer.launch({
     headless: "new",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"]
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
   try {
     const page = await browser.newPage();
     await page.setViewport({ width: 1400, height: 2200 });
 
-    await page.goto(URL, {
-      waitUntil: "networkidle2",
-      timeout: 60000
-    });
-
-    await sleep(5000);
+    await safeGoto(page, URL);
     await autoScroll(page);
     await sleep(2000);
 
@@ -425,11 +433,16 @@ async function run() {
     await detailPage.close();
 
     const filtered = rows
-      .map(row => {
+      .map((row) => {
         const alisNum = toNumber(row.alis);
         const stopNum = toNumber(row.son);
 
-        if (isNaN(alisNum) || isNaN(stopNum) || alisNum <= 0 || stopNum >= alisNum) {
+        if (
+          Number.isNaN(alisNum) ||
+          Number.isNaN(stopNum) ||
+          alisNum <= 0 ||
+          stopNum >= alisNum
+        ) {
           return null;
         }
 
@@ -437,21 +450,24 @@ async function run() {
 
         return {
           ...row,
-          risk
+          risk,
         };
       })
       .filter(Boolean)
-      .filter(row => row.risk <= 3)
+      .filter((row) => row.risk <= RISK_LIMIT)
       .sort((a, b) => a.risk - b.risk);
 
     saveJson(filtered);
 
     if (!filtered.length) {
-      await sendTelegram("Risk <= 3 uygun sinyal bulunamadi");
+      await sendTelegram(`Risk <= ${RISK_LIMIT} uygun sinyal bulunamadi`);
       return;
     }
 
-    const messages = splitRowsForTelegram("Risk <= 3 Uygun Hisseler", filtered);
+    const messages = splitRowsForTelegram(
+      `Risk <= ${RISK_LIMIT} Uygun Hisseler`,
+      filtered
+    );
 
     for (const message of messages) {
       await sendTelegram(message);
@@ -462,7 +478,7 @@ async function run() {
   }
 }
 
-run().catch(async err => {
+run().catch(async (err) => {
   try {
     await sendTelegram(`Bot hatasi:\n${err.message}`);
   } catch (e) {
