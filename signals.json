@@ -1,84 +1,95 @@
 {
-  "updatedAt": "28.03.2026 02:50:50",
+  "updatedAt": "08.04.2026 01:27:42",
   "signals": [
     {
-      "ticker": "EGEGY",
-      "buy": "28.44",
-      "stop": "28.20",
-      "riskPct": "0.84"
+      "ticker": "MRSHL",
+      "alis": "1411",
+      "stop": "1400",
+      "risk": "0.78",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
     },
     {
-      "ticker": "CRFSA",
-      "buy": "117.70",
-      "stop": "116.60",
-      "riskPct": "0.93"
+      "ticker": "BRKO",
+      "alis": "10.89",
+      "stop": "10.79",
+      "risk": "0.92",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
     },
     {
-      "ticker": "CWENE",
-      "buy": "29.24",
-      "stop": "28.86",
-      "riskPct": "1.30"
+      "ticker": "ENERY",
+      "alis": "8.5000",
+      "stop": "8.4200",
+      "risk": "0.94",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
     },
     {
-      "ticker": "SKYMD",
-      "buy": "11.98",
-      "stop": "11.80",
-      "riskPct": "1.50"
+      "ticker": "ACSEL",
+      "alis": "106.85",
+      "stop": "105.50",
+      "risk": "1.26",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
     },
     {
-      "ticker": "ANELE",
-      "buy": "14.22",
-      "stop": "14.00",
-      "riskPct": "1.55"
+      "ticker": "CEOEM",
+      "alis": "21.14",
+      "stop": "20.76",
+      "risk": "1.80",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
     },
     {
-      "ticker": "ULKER",
-      "buy": "111.35",
-      "stop": "108.80",
-      "riskPct": "2.29"
+      "ticker": "ASELS",
+      "alis": "337.00",
+      "stop": "327.75",
+      "risk": "2.74",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
     },
     {
-      "ticker": "MACKO",
-      "buy": "32.46",
-      "stop": "31.70",
-      "riskPct": "2.34"
+      "ticker": "AHGAZ",
+      "alis": "22.54",
+      "stop": "21.86",
+      "risk": "3.02",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
     },
     {
-      "ticker": "RGYAS",
-      "buy": "155.10",
-      "stop": "151.30",
-      "riskPct": "2.45"
+      "ticker": "SEKFK",
+      "alis": "10.60",
+      "stop": "10.27",
+      "risk": "3.11",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
     },
     {
-      "ticker": "BMSCH",
-      "buy": "17.01",
-      "stop": "16.58",
-      "riskPct": "2.53"
+      "ticker": "GOODY",
+      "alis": "14.90",
+      "stop": "14.31",
+      "risk": "3.96",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
     },
     {
-      "ticker": "SELEC",
-      "buy": "81.00",
-      "stop": "78.85",
-      "riskPct": "2.65"
-    },
-    {
-      "ticker": "KRDMB",
-      "buy": "56.58",
-      "stop": "55.00",
-      "riskPct": "2.79"
-    },
-    {
-      "ticker": "PCILT",
-      "buy": "29.16",
-      "stop": "28.34",
-      "riskPct": "2.81"
-    },
-    {
-      "ticker": "POLHO",
-      "buy": "20.80",
-      "stop": "20.18",
-      "riskPct": "2.98"
+      "ticker": "PETKM",
+      "alis": "20.86",
+      "stop": "19.96",
+      "risk": "4.31",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
     }
-  ],
-  "earlySignals": []
+  ]
 }
