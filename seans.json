@@ -1,6 +1,15 @@
 {
-  "updatedAt": "08.04.2026 12:29:51",
+  "updatedAt": "08.04.2026 15:11:58",
   "signals": [
+    {
+      "ticker": "BASCM",
+      "alis": "13.67",
+      "stop": "13.61",
+      "risk": "0.44",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
     {
       "ticker": "MTRKS",
       "alis": "21.30",
@@ -78,6 +87,15 @@
       "alis": "0.9600",
       "stop": "0.9500",
       "risk": "1.04",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "BRMEN",
+      "alis": "8.4900",
+      "stop": "8.4000",
+      "risk": "1.06",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -254,6 +272,15 @@
       "grafikUrl": null
     },
     {
+      "ticker": "OFSYM",
+      "alis": "61.63",
+      "stop": "60.60",
+      "risk": "1.67",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "AGHOL",
       "alis": "29.10",
       "stop": "28.60",
@@ -276,15 +303,6 @@
       "alis": "10.28",
       "stop": "10.10",
       "risk": "1.75",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "AVOD",
-      "alis": "4.5400",
-      "stop": "4.4600",
-      "risk": "1.76",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -704,15 +722,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "DGATE",
-      "alis": "73.35",
-      "stop": "70.65",
-      "risk": "3.68",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "CEMAS",
       "alis": "5.1000",
       "stop": "4.9000",
@@ -753,15 +762,6 @@
       "alis": "16500",
       "stop": "15708",
       "risk": "4.80",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "FONET",
-      "alis": "4.9400",
-      "stop": "4.7000",
-      "risk": "4.86",
       "current": null,
       "change": null,
       "grafikUrl": null
