@@ -1,5 +1,5 @@
 {
-  "updatedAt": "09.04.2026 15:20:33",
+  "updatedAt": "09.04.2026 16:46:00",
   "signals": [
     {
       "ticker": "BUCIM",
@@ -113,6 +113,15 @@
       "ticker": "KFEIN",
       "alis": "8.3900",
       "stop": "8.2500",
+      "risk": "1.67",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "OFSYM",
+      "alis": "61.63",
+      "stop": "60.60",
       "risk": "1.67",
       "current": null,
       "change": null,
@@ -560,15 +569,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "KLRHO",
-      "alis": "106.15",
-      "stop": "103.00",
-      "risk": "2.97",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "BEGYO",
       "alis": "4.4350",
       "stop": "4.3000",
@@ -654,6 +654,15 @@
       "alis": "17.94",
       "stop": "17.38",
       "risk": "3.12",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "PSDTC",
+      "alis": "128.00",
+      "stop": "124.00",
+      "risk": "3.13",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -870,6 +879,15 @@
       "alis": "68.08",
       "stop": "65.60",
       "risk": "3.64",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "ULAS",
+      "alis": "32.60",
+      "stop": "31.40",
+      "risk": "3.68",
       "current": null,
       "change": null,
       "grafikUrl": null
