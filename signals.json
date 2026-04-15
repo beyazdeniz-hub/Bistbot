@@ -1,5 +1,5 @@
 {
-  "updatedAt": "15.04.2026 15:14:16",
+  "updatedAt": "15.04.2026 19:25:51",
   "signals": [
     {
       "ticker": "EMNIS",
@@ -20,6 +20,15 @@
       "grafikUrl": null
     },
     {
+      "ticker": "YIGIT",
+      "alis": "23.79",
+      "stop": "23.60",
+      "risk": "0.80",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "TMSN",
       "alis": "104.30",
       "stop": "103.30",
@@ -33,15 +42,6 @@
       "alis": "13.94",
       "stop": "13.80",
       "risk": "1.00",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "OBAMS",
-      "alis": "8.2250",
-      "stop": "8.1400",
-      "risk": "1.03",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -123,15 +123,6 @@
       "alis": "8.6200",
       "stop": "8.4900",
       "risk": "1.51",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "BMSTL",
-      "alis": "85.30",
-      "stop": "84.00",
-      "risk": "1.52",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -428,15 +419,6 @@
       "ticker": "VKFYO",
       "alis": "32.28",
       "stop": "31.20",
-      "risk": "3.35",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "MEPET",
-      "alis": "23.90",
-      "stop": "23.10",
       "risk": "3.35",
       "current": null,
       "change": null,
