@@ -1,11 +1,20 @@
 {
-  "updatedAt": "17.04.2026 15:54:50",
+  "updatedAt": "17.04.2026 17:21:22",
   "signals": [
     {
       "ticker": "ALTIN",
       "alis": "81.41",
       "stop": "80.83",
       "risk": "0.71",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "YIGIT",
+      "alis": "23.79",
+      "stop": "23.60",
+      "risk": "0.80",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -33,6 +42,15 @@
       "alis": "33.52",
       "stop": "33.16",
       "risk": "1.07",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "BMSTL",
+      "alis": "84.58",
+      "stop": "83.65",
+      "risk": "1.10",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -249,6 +267,15 @@
       "alis": "13.23",
       "stop": "12.77",
       "risk": "3.48",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "MSGYO",
+      "alis": "7.9850",
+      "stop": "7.7000",
+      "risk": "3.57",
       "current": null,
       "change": null,
       "grafikUrl": null
