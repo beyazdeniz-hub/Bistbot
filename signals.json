@@ -1,5 +1,5 @@
 {
-  "updatedAt": "20.04.2026 13:36:38",
+  "updatedAt": "20.04.2026 15:10:45",
   "signals": [
     {
       "ticker": "OBAMS",
@@ -15,6 +15,15 @@
       "alis": "84.58",
       "stop": "83.65",
       "risk": "1.10",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "OZSUB",
+      "alis": "23.94",
+      "stop": "23.64",
+      "risk": "1.25",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -110,15 +119,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "DOAS",
-      "alis": "190.90",
-      "stop": "187.40",
-      "risk": "1.83",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "IDGYO",
       "alis": "3.7300",
       "stop": "3.6600",
@@ -155,15 +155,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "VAKKO",
-      "alis": "83.58",
-      "stop": "81.70",
-      "risk": "2.25",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "RUBNS",
       "alis": "31.90",
       "stop": "31.18",
@@ -177,6 +168,15 @@
       "alis": "58.50",
       "stop": "57.15",
       "risk": "2.31",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "SAFKR",
+      "alis": "26.64",
+      "stop": "26.02",
+      "risk": "2.33",
       "current": null,
       "change": null,
       "grafikUrl": null
