@@ -1,20 +1,11 @@
 {
-  "updatedAt": "20.04.2026 15:10:45",
+  "updatedAt": "20.04.2026 16:35:37",
   "signals": [
     {
       "ticker": "OBAMS",
       "alis": "8.2250",
       "stop": "8.1400",
       "risk": "1.03",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "BMSTL",
-      "alis": "84.58",
-      "stop": "83.65",
-      "risk": "1.10",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -42,15 +33,6 @@
       "alis": "7.9100",
       "stop": "7.8000",
       "risk": "1.39",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "SEKFK",
-      "alis": "11.05",
-      "stop": "10.89",
-      "risk": "1.45",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -114,6 +96,15 @@
       "alis": "259.50",
       "stop": "255.00",
       "risk": "1.73",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "DOAS",
+      "alis": "190.90",
+      "stop": "187.40",
+      "risk": "1.83",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -506,15 +497,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "TAVHL",
-      "alis": "320.00",
-      "stop": "307.75",
-      "risk": "3.83",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "CVKMD",
       "alis": "36.40",
       "stop": "35.00",
@@ -600,6 +582,15 @@
       "alis": "23.62",
       "stop": "22.52",
       "risk": "4.66",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "ULAS",
+      "alis": "31.52",
+      "stop": "30.02",
+      "risk": "4.76",
       "current": null,
       "change": null,
       "grafikUrl": null
