@@ -1,11 +1,11 @@
 {
-  "updatedAt": "20.04.2026 16:35:37",
+  "updatedAt": "20.04.2026 18:18:43",
   "signals": [
     {
-      "ticker": "OBAMS",
-      "alis": "8.2250",
-      "stop": "8.1400",
-      "risk": "1.03",
+      "ticker": "BMSTL",
+      "alis": "84.58",
+      "stop": "83.65",
+      "risk": "1.10",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -96,15 +96,6 @@
       "alis": "259.50",
       "stop": "255.00",
       "risk": "1.73",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "DOAS",
-      "alis": "190.90",
-      "stop": "187.40",
-      "risk": "1.83",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -209,15 +200,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "DMRGD",
-      "alis": "5.1900",
-      "stop": "5.0600",
-      "risk": "2.50",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "LILAK",
       "alis": "39.68",
       "stop": "38.68",
@@ -263,15 +245,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "GEREL",
-      "alis": "36.00",
-      "stop": "35.00",
-      "risk": "2.78",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "TTRAK",
       "alis": "492.25",
       "stop": "478.50",
@@ -312,15 +285,6 @@
       "alis": "103.30",
       "stop": "100.20",
       "risk": "3.00",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "BAKAB",
-      "alis": "46.04",
-      "stop": "44.64",
-      "risk": "3.04",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -497,6 +461,15 @@
       "grafikUrl": null
     },
     {
+      "ticker": "TAVHL",
+      "alis": "320.00",
+      "stop": "307.75",
+      "risk": "3.83",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "CVKMD",
       "alis": "36.40",
       "stop": "35.00",
@@ -582,15 +555,6 @@
       "alis": "23.62",
       "stop": "22.52",
       "risk": "4.66",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "ULAS",
-      "alis": "31.52",
-      "stop": "30.02",
-      "risk": "4.76",
       "current": null,
       "change": null,
       "grafikUrl": null
