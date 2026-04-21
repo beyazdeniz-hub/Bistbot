@@ -1,15 +1,6 @@
 {
-  "updatedAt": "21.04.2026 15:59:41",
+  "updatedAt": "21.04.2026 17:33:45",
   "signals": [
-    {
-      "ticker": "DAPGM",
-      "alis": "10.61",
-      "stop": "10.50",
-      "risk": "1.04",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
     {
       "ticker": "BMSTL",
       "alis": "84.58",
@@ -24,6 +15,15 @@
       "alis": "165.90",
       "stop": "163.70",
       "risk": "1.33",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "SEKFK",
+      "alis": "11.05",
+      "stop": "10.89",
+      "risk": "1.45",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -56,15 +56,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "BASGZ",
-      "alis": "51.15",
-      "stop": "50.10",
-      "risk": "2.05",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "MEGMT",
       "alis": "80.00",
       "stop": "78.20",
@@ -92,28 +83,10 @@
       "grafikUrl": null
     },
     {
-      "ticker": "ECILC",
-      "alis": "91.45",
-      "stop": "89.20",
-      "risk": "2.46",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "TATGD",
       "alis": "16.98",
       "stop": "16.56",
       "risk": "2.47",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "MAGEN",
-      "alis": "62.65",
-      "stop": "61.05",
-      "risk": "2.55",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -168,6 +141,15 @@
       "alis": "80.95",
       "stop": "78.55",
       "risk": "2.96",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "ARASE",
+      "alis": "103.30",
+      "stop": "100.20",
+      "risk": "3.00",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -245,15 +227,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "MEKAG",
-      "alis": "4.5400",
-      "stop": "4.3600",
-      "risk": "3.96",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "RYGYO",
       "alis": "33.80",
       "stop": "32.40",
@@ -285,15 +258,6 @@
       "alis": "31.80",
       "stop": "30.32",
       "risk": "4.65",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "ULAS",
-      "alis": "31.52",
-      "stop": "30.02",
-      "risk": "4.76",
       "current": null,
       "change": null,
       "grafikUrl": null
