@@ -1,5 +1,5 @@
 {
-  "updatedAt": "21.04.2026 17:33:45",
+  "updatedAt": "21.04.2026 19:07:21",
   "signals": [
     {
       "ticker": "BMSTL",
@@ -65,10 +65,10 @@
       "grafikUrl": null
     },
     {
-      "ticker": "GLYHO",
-      "alis": "16.21",
-      "stop": "15.82",
-      "risk": "2.41",
+      "ticker": "AKSGY",
+      "alis": "9.1221",
+      "stop": "8.9126",
+      "risk": "2.30",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -141,15 +141,6 @@
       "alis": "80.95",
       "stop": "78.55",
       "risk": "2.96",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "ARASE",
-      "alis": "103.30",
-      "stop": "100.20",
-      "risk": "3.00",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -258,6 +249,15 @@
       "alis": "31.80",
       "stop": "30.32",
       "risk": "4.65",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "ULAS",
+      "alis": "31.52",
+      "stop": "30.02",
+      "risk": "4.76",
       "current": null,
       "change": null,
       "grafikUrl": null
