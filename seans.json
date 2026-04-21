@@ -1,5 +1,5 @@
 {
-  "updatedAt": "21.04.2026 14:58:00",
+  "updatedAt": "21.04.2026 15:59:41",
   "signals": [
     {
       "ticker": "DAPGM",
@@ -65,37 +65,10 @@
       "grafikUrl": null
     },
     {
-      "ticker": "VAKKO",
-      "alis": "83.58",
-      "stop": "81.70",
-      "risk": "2.25",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "MEGMT",
       "alis": "80.00",
       "stop": "78.20",
       "risk": "2.25",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "RUBNS",
-      "alis": "31.90",
-      "stop": "31.18",
-      "risk": "2.26",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "SAFKR",
-      "alis": "26.64",
-      "stop": "26.02",
-      "risk": "2.33",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -195,15 +168,6 @@
       "alis": "80.95",
       "stop": "78.55",
       "risk": "2.96",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "ARASE",
-      "alis": "103.30",
-      "stop": "100.20",
-      "risk": "3.00",
       "current": null,
       "change": null,
       "grafikUrl": null
