@@ -1,5 +1,5 @@
 {
-  "updatedAt": "22.04.2026 17:34:43",
+  "updatedAt": "22.04.2026 19:06:29",
   "signals": [
     {
       "ticker": "DMLKT",
@@ -15,15 +15,6 @@
       "alis": "164.90",
       "stop": "162.90",
       "risk": "1.21",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "AKSGY",
-      "alis": "8.9650",
-      "stop": "8.8400",
-      "risk": "1.39",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -60,15 +51,6 @@
       "alis": "30.80",
       "stop": "30.30",
       "risk": "1.62",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "KENT",
-      "alis": "429.75",
-      "stop": "422.00",
-      "risk": "1.80",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -114,24 +96,6 @@
       "alis": "83.58",
       "stop": "81.70",
       "risk": "2.25",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "MEGMT",
-      "alis": "80.00",
-      "stop": "78.20",
-      "risk": "2.25",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "OYAYO",
-      "alis": "55.70",
-      "stop": "54.35",
-      "risk": "2.42",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -191,6 +155,15 @@
       "grafikUrl": null
     },
     {
+      "ticker": "BLUME",
+      "alis": "41.54",
+      "stop": "40.32",
+      "risk": "2.94",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "AKMGY",
       "alis": "277.75",
       "stop": "269.50",
@@ -204,6 +177,15 @@
       "alis": "147.50",
       "stop": "143.10",
       "risk": "2.98",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "ARASE",
+      "alis": "103.30",
+      "stop": "100.20",
+      "risk": "3.00",
       "current": null,
       "change": null,
       "grafikUrl": null
