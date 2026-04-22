@@ -1,5 +1,5 @@
 {
-  "updatedAt": "22.04.2026 14:56:10",
+  "updatedAt": "22.04.2026 16:00:31",
   "signals": [
     {
       "ticker": "DMLKT",
@@ -42,6 +42,15 @@
       "alis": "13.30",
       "stop": "13.10",
       "risk": "1.50",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "DITAS",
+      "alis": "33.18",
+      "stop": "32.66",
+      "risk": "1.57",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -119,15 +128,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "MEGMT",
-      "alis": "80.00",
-      "stop": "78.20",
-      "risk": "2.25",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "OYAYO",
       "alis": "55.70",
       "stop": "54.35",
@@ -159,15 +159,6 @@
       "alis": "31.30",
       "stop": "30.44",
       "risk": "2.75",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "TTRAK",
-      "alis": "492.25",
-      "stop": "478.50",
-      "risk": "2.79",
       "current": null,
       "change": null,
       "grafikUrl": null
