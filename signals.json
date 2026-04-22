@@ -1,5 +1,5 @@
 {
-  "updatedAt": "22.04.2026 16:00:31",
+  "updatedAt": "22.04.2026 17:34:43",
   "signals": [
     {
       "ticker": "DMLKT",
@@ -65,28 +65,10 @@
       "grafikUrl": null
     },
     {
-      "ticker": "APBDLF",
-      "alis": "38.43",
-      "stop": "37.77",
-      "risk": "1.72",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "KENT",
       "alis": "429.75",
       "stop": "422.00",
       "risk": "1.80",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "SANFM",
-      "alis": "7.7450",
-      "stop": "7.6000",
-      "risk": "1.87",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -119,9 +101,27 @@
       "grafikUrl": null
     },
     {
+      "ticker": "RUBNS",
+      "alis": "31.49",
+      "stop": "30.86",
+      "risk": "2.00",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "VAKKO",
       "alis": "83.58",
       "stop": "81.70",
+      "risk": "2.25",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "MEGMT",
+      "alis": "80.00",
+      "stop": "78.20",
       "risk": "2.25",
       "current": null,
       "change": null,
@@ -146,6 +146,15 @@
       "grafikUrl": null
     },
     {
+      "ticker": "TATGD",
+      "alis": "16.98",
+      "stop": "16.56",
+      "risk": "2.47",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "KERVN",
       "alis": "3.7700",
       "stop": "3.6700",
@@ -164,19 +173,19 @@
       "grafikUrl": null
     },
     {
-      "ticker": "QNBTR",
-      "alis": "265.50",
-      "stop": "258.00",
-      "risk": "2.82",
+      "ticker": "TTRAK",
+      "alis": "492.25",
+      "stop": "478.50",
+      "risk": "2.79",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "BLUME",
-      "alis": "41.54",
-      "stop": "40.32",
-      "risk": "2.94",
+      "ticker": "QNBTR",
+      "alis": "265.50",
+      "stop": "258.00",
+      "risk": "2.82",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -195,15 +204,6 @@
       "alis": "147.50",
       "stop": "143.10",
       "risk": "2.98",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "ARASE",
-      "alis": "103.30",
-      "stop": "100.20",
-      "risk": "3.00",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -285,6 +285,15 @@
       "alis": "132.00",
       "stop": "126.20",
       "risk": "4.39",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "PSGYO",
+      "alis": "2.8700",
+      "stop": "2.7400",
+      "risk": "4.53",
       "current": null,
       "change": null,
       "grafikUrl": null
