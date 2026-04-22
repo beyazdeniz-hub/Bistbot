@@ -1,6 +1,15 @@
 {
-  "updatedAt": "22.04.2026 19:06:29",
+  "updatedAt": "22.04.2026 22:21:58",
   "signals": [
+    {
+      "ticker": "HATEK",
+      "alis": "16.33",
+      "stop": "16.20",
+      "risk": "0.80",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
     {
       "ticker": "DMLKT",
       "alis": "6.1200",
@@ -29,37 +38,10 @@
       "grafikUrl": null
     },
     {
-      "ticker": "EUHOL",
-      "alis": "13.30",
-      "stop": "13.10",
-      "risk": "1.50",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "DITAS",
-      "alis": "33.18",
-      "stop": "32.66",
-      "risk": "1.57",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "EGEGY",
-      "alis": "30.80",
-      "stop": "30.30",
-      "risk": "1.62",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "AKSEN",
-      "alis": "80.10",
-      "stop": "78.60",
-      "risk": "1.87",
+      "ticker": "AYCES",
+      "alis": "1303",
+      "stop": "1278",
+      "risk": "1.92",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -74,51 +56,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "EKIZ",
-      "alis": "93.05",
-      "stop": "91.20",
-      "risk": "1.99",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "RUBNS",
-      "alis": "31.49",
-      "stop": "30.86",
-      "risk": "2.00",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "VAKKO",
-      "alis": "83.58",
-      "stop": "81.70",
-      "risk": "2.25",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "LYDYE",
-      "alis": "15998",
-      "stop": "15610",
-      "risk": "2.43",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "TATGD",
-      "alis": "16.98",
-      "stop": "16.56",
-      "risk": "2.47",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "KERVN",
       "alis": "3.7700",
       "stop": "3.6700",
@@ -128,100 +65,10 @@
       "grafikUrl": null
     },
     {
-      "ticker": "BEYAZ",
-      "alis": "31.30",
-      "stop": "30.44",
-      "risk": "2.75",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "TTRAK",
-      "alis": "492.25",
-      "stop": "478.50",
-      "risk": "2.79",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "QNBTR",
-      "alis": "265.50",
-      "stop": "258.00",
-      "risk": "2.82",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "BLUME",
-      "alis": "41.54",
-      "stop": "40.32",
-      "risk": "2.94",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "AKMGY",
-      "alis": "277.75",
-      "stop": "269.50",
-      "risk": "2.97",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "ARMGD",
-      "alis": "147.50",
-      "stop": "143.10",
-      "risk": "2.98",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "ARASE",
-      "alis": "103.30",
-      "stop": "100.20",
-      "risk": "3.00",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "KLSER",
-      "alis": "27.56",
-      "stop": "26.72",
-      "risk": "3.05",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "DUNYH",
       "alis": "109.15",
       "stop": "105.20",
       "risk": "3.62",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "HTTBT",
-      "alis": "41.90",
-      "stop": "40.36",
-      "risk": "3.68",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "TAVHL",
-      "alis": "320.00",
-      "stop": "307.75",
-      "risk": "3.83",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -245,55 +92,10 @@
       "grafikUrl": null
     },
     {
-      "ticker": "SANEL",
-      "alis": "36.10",
-      "stop": "34.60",
-      "risk": "4.16",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "KLYPV",
-      "alis": "62.93",
-      "stop": "60.30",
-      "risk": "4.18",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "HEDEF",
-      "alis": "132.00",
-      "stop": "126.20",
-      "risk": "4.39",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "PSGYO",
       "alis": "2.8700",
       "stop": "2.7400",
       "risk": "4.53",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "OZATD",
-      "alis": "251.10",
-      "stop": "239.20",
-      "risk": "4.74",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "BIOEN",
-      "alis": "19.25",
-      "stop": "18.29",
-      "risk": "4.99",
       "current": null,
       "change": null,
       "grafikUrl": null
