@@ -1,6 +1,15 @@
 {
-  "updatedAt": "23.04.2026 18:07:05",
+  "updatedAt": "23.04.2026 22:18:44",
   "signals": [
+    {
+      "ticker": "HATEK",
+      "alis": "16.33",
+      "stop": "16.20",
+      "risk": "0.80",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
     {
       "ticker": "DMLKT",
       "alis": "6.1200",
