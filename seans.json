@@ -1,15 +1,6 @@
 {
-  "updatedAt": "24.04.2026 15:00:32",
+  "updatedAt": "24.04.2026 16:02:18",
   "signals": [
-    {
-      "ticker": "DAPGM",
-      "alis": "10.61",
-      "stop": "10.50",
-      "risk": "1.04",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
     {
       "ticker": "GEDIK",
       "alis": "5.8900",
@@ -101,6 +92,15 @@
       "grafikUrl": null
     },
     {
+      "ticker": "TLMAN",
+      "alis": "97.55",
+      "stop": "95.80",
+      "risk": "1.79",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "SKTAS",
       "alis": "3.3000",
       "stop": "3.2400",
@@ -182,15 +182,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "GLYHO",
-      "alis": "15.89",
-      "stop": "15.56",
-      "risk": "2.08",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "NTGAZ",
       "alis": "12.24",
       "stop": "11.98",
@@ -249,15 +240,6 @@
       "alis": "47.65",
       "stop": "46.56",
       "risk": "2.29",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "BRLSM",
-      "alis": "15.46",
-      "stop": "15.10",
-      "risk": "2.33",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -344,15 +326,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "TATGD",
-      "alis": "16.98",
-      "stop": "16.56",
-      "risk": "2.47",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "FZLGY",
       "alis": "15.40",
       "stop": "15.01",
@@ -411,15 +384,6 @@
       "alis": "31.30",
       "stop": "30.44",
       "risk": "2.75",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "BRSAN",
-      "alis": "562.25",
-      "stop": "546.50",
-      "risk": "2.80",
       "current": null,
       "change": null,
       "grafikUrl": null
