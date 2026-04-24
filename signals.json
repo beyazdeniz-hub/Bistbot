@@ -1,5 +1,5 @@
 {
-  "updatedAt": "24.04.2026 17:36:06",
+  "updatedAt": "24.04.2026 19:05:34",
   "signals": [
     {
       "ticker": "GEDIK",
@@ -74,6 +74,15 @@
       "grafikUrl": null
     },
     {
+      "ticker": "ZPBDLF",
+      "alis": "259.50",
+      "stop": "255.00",
+      "risk": "1.73",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "GARFA",
       "alis": "28.34",
       "stop": "27.84",
@@ -96,15 +105,6 @@
       "alis": "97.55",
       "stop": "95.80",
       "risk": "1.79",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "SKTAS",
-      "alis": "3.3000",
-      "stop": "3.2400",
-      "risk": "1.82",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -389,9 +389,27 @@
       "grafikUrl": null
     },
     {
+      "ticker": "BRSAN",
+      "alis": "562.25",
+      "stop": "546.50",
+      "risk": "2.80",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "INFO",
       "alis": "3.5500",
       "stop": "3.4500",
+      "risk": "2.82",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "QNBTR",
+      "alis": "265.50",
+      "stop": "258.00",
       "risk": "2.82",
       "current": null,
       "change": null,
