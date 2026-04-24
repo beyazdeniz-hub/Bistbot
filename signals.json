@@ -1,101 +1,551 @@
 {
-  "updatedAt": "23.04.2026 22:18:44",
+  "updatedAt": "24.04.2026 13:22:22",
   "signals": [
     {
-      "ticker": "HATEK",
-      "alis": "16.33",
-      "stop": "16.20",
-      "risk": "0.80",
+      "ticker": "GEDIK",
+      "alis": "5.8900",
+      "stop": "5.8100",
+      "risk": "1.36",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "DMLKT",
-      "alis": "6.1200",
-      "stop": "6.0700",
-      "risk": "0.82",
+      "ticker": "ISGLKF",
+      "alis": "730.00",
+      "stop": "720.00",
+      "risk": "1.37",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "TGSAS",
-      "alis": "164.90",
-      "stop": "162.90",
-      "risk": "1.21",
+      "ticker": "BAKAB",
+      "alis": "43.72",
+      "stop": "43.12",
+      "risk": "1.37",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "TUPRS",
-      "alis": "256.88",
-      "stop": "253.25",
-      "risk": "1.41",
+      "ticker": "IMASM",
+      "alis": "3.8850",
+      "stop": "3.8300",
+      "risk": "1.42",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "AYCES",
-      "alis": "1303",
-      "stop": "1278",
-      "risk": "1.92",
+      "ticker": "DITAS",
+      "alis": "33.18",
+      "stop": "32.66",
+      "risk": "1.57",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "DEVA",
-      "alis": "67.40",
-      "stop": "66.10",
-      "risk": "1.93",
+      "ticker": "EGEGY",
+      "alis": "30.80",
+      "stop": "30.30",
+      "risk": "1.62",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "KERVN",
-      "alis": "3.7700",
-      "stop": "3.6700",
-      "risk": "2.65",
+      "ticker": "BLUME",
+      "alis": "40.65",
+      "stop": "39.98",
+      "risk": "1.65",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "DUNYH",
-      "alis": "109.15",
-      "stop": "105.20",
-      "risk": "3.62",
+      "ticker": "GARFA",
+      "alis": "28.34",
+      "stop": "27.84",
+      "risk": "1.76",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "SEKFK",
-      "alis": "11.02",
-      "stop": "10.59",
-      "risk": "3.90",
+      "ticker": "VKGYO",
+      "alis": "2.7900",
+      "stop": "2.7400",
+      "risk": "1.79",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "ATLAS",
-      "alis": "7.9700",
-      "stop": "7.6500",
+      "ticker": "SKTAS",
+      "alis": "3.3000",
+      "stop": "3.2400",
+      "risk": "1.82",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "VAKKO",
+      "alis": "82.00",
+      "stop": "80.50",
+      "risk": "1.83",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "AKSEN",
+      "alis": "80.10",
+      "stop": "78.60",
+      "risk": "1.87",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "DOKTA",
+      "alis": "24.48",
+      "stop": "24.02",
+      "risk": "1.88",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "KLGYO",
+      "alis": "5.3250",
+      "stop": "5.2200",
+      "risk": "1.97",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "EKIZ",
+      "alis": "93.05",
+      "stop": "91.20",
+      "risk": "1.99",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "RUBNS",
+      "alis": "31.49",
+      "stop": "30.86",
+      "risk": "2.00",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "BASGZ",
+      "alis": "51.15",
+      "stop": "50.10",
+      "risk": "2.05",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "ENKAI",
+      "alis": "106.80",
+      "stop": "104.60",
+      "risk": "2.06",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "NTGAZ",
+      "alis": "12.24",
+      "stop": "11.98",
+      "risk": "2.12",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "ARASE",
+      "alis": "100.88",
+      "stop": "98.70",
+      "risk": "2.16",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "SELEC",
+      "alis": "90.20",
+      "stop": "88.25",
+      "risk": "2.16",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "ADGYO",
+      "alis": "59.30",
+      "stop": "58.00",
+      "risk": "2.19",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "KUVVA",
+      "alis": "125.00",
+      "stop": "122.20",
+      "risk": "2.24",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "MEGMT",
+      "alis": "80.00",
+      "stop": "78.20",
+      "risk": "2.25",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "SISE",
+      "alis": "47.65",
+      "stop": "46.56",
+      "risk": "2.29",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "SONME",
+      "alis": "140.85",
+      "stop": "137.50",
+      "risk": "2.38",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "SANKO",
+      "alis": "22.60",
+      "stop": "22.06",
+      "risk": "2.39",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "GUBRF",
+      "alis": "520.00",
+      "stop": "507.50",
+      "risk": "2.40",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "LYDYE",
+      "alis": "15998",
+      "stop": "15610",
+      "risk": "2.43",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "ECILC",
+      "alis": "91.45",
+      "stop": "89.20",
+      "risk": "2.46",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "VAKFA",
+      "alis": "13.39",
+      "stop": "13.06",
+      "risk": "2.46",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "FZLGY",
+      "alis": "15.40",
+      "stop": "15.01",
+      "risk": "2.53",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "TOASO",
+      "alis": "293.00",
+      "stop": "285.50",
+      "risk": "2.56",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "MNDTR",
+      "alis": "6.2200",
+      "stop": "6.0600",
+      "risk": "2.57",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "SEGYO",
+      "alis": "5.0000",
+      "stop": "4.8700",
+      "risk": "2.60",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "DESA",
+      "alis": "14.15",
+      "stop": "13.78",
+      "risk": "2.61",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "BEYAZ",
+      "alis": "31.30",
+      "stop": "30.44",
+      "risk": "2.75",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "KRDMD",
+      "alis": "36.54",
+      "stop": "35.50",
+      "risk": "2.85",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "KLRHO",
+      "alis": "108.75",
+      "stop": "105.60",
+      "risk": "2.90",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "ASELS",
+      "alis": "402.75",
+      "stop": "391.00",
+      "risk": "2.92",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "AYGAZ",
+      "alis": "273.00",
+      "stop": "265.00",
+      "risk": "2.93",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "AKMGY",
+      "alis": "277.75",
+      "stop": "269.50",
+      "risk": "2.97",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "KLSER",
+      "alis": "27.56",
+      "stop": "26.72",
+      "risk": "3.05",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "ACSEL",
+      "alis": "121.00",
+      "stop": "117.30",
+      "risk": "3.06",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "ULUUN",
+      "alis": "8.0900",
+      "stop": "7.8400",
+      "risk": "3.09",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "ECOGR",
+      "alis": "37.40",
+      "stop": "36.18",
+      "risk": "3.26",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "MRSHL",
+      "alis": "1589",
+      "stop": "1534",
+      "risk": "3.46",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "MOPAS",
+      "alis": "41.05",
+      "stop": "39.62",
+      "risk": "3.48",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "MAGEN",
+      "alis": "60.10",
+      "stop": "57.90",
+      "risk": "3.66",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "HTTBT",
+      "alis": "41.90",
+      "stop": "40.36",
+      "risk": "3.68",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "TABGD",
+      "alis": "262.63",
+      "stop": "252.50",
+      "risk": "3.86",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "KRDMB",
+      "alis": "73.35",
+      "stop": "70.40",
       "risk": "4.02",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "PSGYO",
-      "alis": "2.8700",
-      "stop": "2.7400",
-      "risk": "4.53",
+      "ticker": "ARMGD",
+      "alis": "145.00",
+      "stop": "139.00",
+      "risk": "4.14",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "SANEL",
+      "alis": "36.10",
+      "stop": "34.60",
+      "risk": "4.16",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "KAYSE",
+      "alis": "5.0300",
+      "stop": "4.8200",
+      "risk": "4.17",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "VANGD",
+      "alis": "91.98",
+      "stop": "88.00",
+      "risk": "4.33",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "HEDEF",
+      "alis": "132.00",
+      "stop": "126.20",
+      "risk": "4.39",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "PAPIL",
+      "alis": "17.30",
+      "stop": "16.52",
+      "risk": "4.51",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "ODAS",
+      "alis": "6.9850",
+      "stop": "6.6600",
+      "risk": "4.65",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "OZATD",
+      "alis": "251.10",
+      "stop": "239.20",
+      "risk": "4.74",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "BIOEN",
+      "alis": "19.25",
+      "stop": "18.29",
+      "risk": "4.99",
       "current": null,
       "change": null,
       "grafikUrl": null
