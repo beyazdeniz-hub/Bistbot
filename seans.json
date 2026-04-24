@@ -1,10 +1,19 @@
 {
-  "updatedAt": "24.04.2026 16:02:18",
+  "updatedAt": "24.04.2026 17:36:06",
   "signals": [
     {
       "ticker": "GEDIK",
       "alis": "5.8900",
       "stop": "5.8100",
+      "risk": "1.36",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "GMSTRF",
+      "alis": "696.75",
+      "stop": "687.25",
       "risk": "1.36",
       "current": null,
       "change": null,
@@ -33,15 +42,6 @@
       "alis": "3.8850",
       "stop": "3.8300",
       "risk": "1.42",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "DITAS",
-      "alis": "33.18",
-      "stop": "32.66",
-      "risk": "1.57",
       "current": null,
       "change": null,
       "grafikUrl": null
