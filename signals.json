@@ -1,15 +1,6 @@
 {
-  "updatedAt": "27.04.2026 15:30:07",
+  "updatedAt": "27.04.2026 18:10:06",
   "signals": [
-    {
-      "ticker": "KLKIM",
-      "alis": "35.23",
-      "stop": "35.00",
-      "risk": "0.65",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
     {
       "ticker": "TMSN",
       "alis": "104.15",
@@ -65,15 +56,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "CUSAN",
-      "alis": "25.33",
-      "stop": "25.02",
-      "risk": "1.22",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "DOAS",
       "alis": "185.30",
       "stop": "183.00",
@@ -114,6 +96,15 @@
       "alis": "6.2650",
       "stop": "6.1800",
       "risk": "1.36",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "AKSGY",
+      "alis": "8.9650",
+      "stop": "8.8400",
+      "risk": "1.39",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -231,15 +222,6 @@
       "alis": "15.12",
       "stop": "14.86",
       "risk": "1.72",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "ENERY",
-      "alis": "9.2400",
-      "stop": "9.0800",
-      "risk": "1.73",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -425,15 +407,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "BLCYT",
-      "alis": "32.20",
-      "stop": "31.54",
-      "risk": "2.05",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "ENKAI",
       "alis": "106.80",
       "stop": "104.60",
@@ -446,15 +419,6 @@
       "ticker": "SAFKR",
       "alis": "25.60",
       "stop": "25.06",
-      "risk": "2.11",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "PATEK",
-      "alis": "21.78",
-      "stop": "21.32",
       "risk": "2.11",
       "current": null,
       "change": null,
@@ -482,15 +446,6 @@
       "ticker": "OBAMS",
       "alis": "8.0050",
       "stop": "7.8300",
-      "risk": "2.19",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "KLYPV",
-      "alis": "61.75",
-      "stop": "60.40",
       "risk": "2.19",
       "current": null,
       "change": null,
@@ -596,15 +551,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "PGSUS",
-      "alis": "192.05",
-      "stop": "187.50",
-      "risk": "2.37",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "SONME",
       "alis": "140.85",
       "stop": "137.50",
@@ -650,15 +596,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "INGRM",
-      "alis": "427.00",
-      "stop": "416.50",
-      "risk": "2.46",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "BERA",
       "alis": "17.47",
       "stop": "17.04",
@@ -698,15 +635,6 @@
       "ticker": "AKSA",
       "alis": "10.67",
       "stop": "10.40",
-      "risk": "2.53",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "FZLGY",
-      "alis": "15.40",
-      "stop": "15.01",
       "risk": "2.53",
       "current": null,
       "change": null,
