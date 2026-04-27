@@ -1,5 +1,5 @@
 {
-  "updatedAt": "27.04.2026 14:07:45",
+  "updatedAt": "27.04.2026 15:30:07",
   "signals": [
     {
       "ticker": "KLKIM",
@@ -123,15 +123,6 @@
       "alis": "3.8850",
       "stop": "3.8300",
       "risk": "1.42",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "DITAS",
-      "alis": "33.18",
-      "stop": "32.66",
-      "risk": "1.57",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -461,6 +452,15 @@
       "grafikUrl": null
     },
     {
+      "ticker": "PATEK",
+      "alis": "21.78",
+      "stop": "21.32",
+      "risk": "2.11",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "ASUZU",
       "alis": "69.50",
       "stop": "68.00",
@@ -644,6 +644,15 @@
       "ticker": "PETUN",
       "alis": "12.62",
       "stop": "12.31",
+      "risk": "2.46",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "INGRM",
+      "alis": "427.00",
+      "stop": "416.50",
       "risk": "2.46",
       "current": null,
       "change": null,
@@ -906,6 +915,15 @@
       "alis": "12.58",
       "stop": "12.22",
       "risk": "2.86",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "KLRHO",
+      "alis": "108.75",
+      "stop": "105.60",
+      "risk": "2.90",
       "current": null,
       "change": null,
       "grafikUrl": null
