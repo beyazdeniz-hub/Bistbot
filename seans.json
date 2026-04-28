@@ -1,38 +1,11 @@
 {
-  "updatedAt": "28.04.2026 14:03:56",
+  "updatedAt": "28.04.2026 15:29:10",
   "signals": [
-    {
-      "ticker": "KRPLS",
-      "alis": "9.1700",
-      "stop": "9.1100",
-      "risk": "0.65",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
     {
       "ticker": "GWIND",
       "alis": "26.24",
       "stop": "26.06",
       "risk": "0.69",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "AKFGY",
-      "alis": "2.8800",
-      "stop": "2.8500",
-      "risk": "1.04",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "REEDR",
-      "alis": "7.9650",
-      "stop": "7.8800",
-      "risk": "1.07",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -47,28 +20,10 @@
       "grafikUrl": null
     },
     {
-      "ticker": "CMENT",
-      "alis": "331.38",
-      "stop": "327.50",
-      "risk": "1.17",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "AYES",
-      "alis": "31.35",
-      "stop": "30.98",
-      "risk": "1.18",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "AKSGY",
-      "alis": "8.9650",
-      "stop": "8.8400",
-      "risk": "1.39",
+      "ticker": "IZINV",
+      "alis": "66.08",
+      "stop": "65.20",
+      "risk": "1.33",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -92,15 +47,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "DNISI",
-      "alis": "20.73",
-      "stop": "20.40",
-      "risk": "1.59",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "TBORG",
       "alis": "146.45",
       "stop": "144.10",
@@ -114,6 +60,15 @@
       "alis": "8.0300",
       "stop": "7.9000",
       "risk": "1.62",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "BLUME",
+      "alis": "40.65",
+      "stop": "39.98",
+      "risk": "1.65",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -155,27 +110,9 @@
       "grafikUrl": null
     },
     {
-      "ticker": "CEMAS",
-      "alis": "5.0000",
-      "stop": "4.9100",
-      "risk": "1.80",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "SRVGY",
       "alis": "3.3200",
       "stop": "3.2600",
-      "risk": "1.81",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "MHRGY",
-      "alis": "3.8700",
-      "stop": "3.8000",
       "risk": "1.81",
       "current": null,
       "change": null,
@@ -186,15 +123,6 @@
       "alis": "28.19",
       "stop": "27.68",
       "risk": "1.81",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "TLMAN",
-      "alis": "96.80",
-      "stop": "95.00",
-      "risk": "1.86",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -407,15 +335,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "PRKME",
-      "alis": "19.60",
-      "stop": "19.12",
-      "risk": "2.45",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "BMSCH",
       "alis": "18.36",
       "stop": "17.91",
@@ -434,27 +353,9 @@
       "grafikUrl": null
     },
     {
-      "ticker": "ULAS",
-      "alis": "30.01",
-      "stop": "29.24",
-      "risk": "2.57",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "EKOS",
       "alis": "5.8400",
       "stop": "5.6900",
-      "risk": "2.57",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "MNDTR",
-      "alis": "6.2200",
-      "stop": "6.0600",
       "risk": "2.57",
       "current": null,
       "change": null,
@@ -474,15 +375,6 @@
       "alis": "6.9000",
       "stop": "6.7200",
       "risk": "2.61",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "ERBOS",
-      "alis": "200.10",
-      "stop": "194.80",
-      "risk": "2.65",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -510,15 +402,6 @@
       "alis": "6.4000",
       "stop": "6.2300",
       "risk": "2.66",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "TRMET",
-      "alis": "133.00",
-      "stop": "129.40",
-      "risk": "2.71",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -618,15 +501,6 @@
       "alis": "55.55",
       "stop": "53.80",
       "risk": "3.15",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "VESTL",
-      "alis": "29.02",
-      "stop": "28.10",
-      "risk": "3.17",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -735,15 +609,6 @@
       "alis": "2.4600",
       "stop": "2.3700",
       "risk": "3.66",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "HALKB",
-      "alis": "40.82",
-      "stop": "39.30",
-      "risk": "3.72",
       "current": null,
       "change": null,
       "grafikUrl": null
