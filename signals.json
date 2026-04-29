@@ -1,5 +1,5 @@
 {
-  "updatedAt": "29.04.2026 15:20:06",
+  "updatedAt": "29.04.2026 18:08:50",
   "signals": [
     {
       "ticker": "KRPLS",
@@ -20,15 +20,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "PGSUS",
-      "alis": "183.15",
-      "stop": "180.50",
-      "risk": "1.45",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "DITAS",
       "alis": "33.18",
       "stop": "32.66",
@@ -38,28 +29,10 @@
       "grafikUrl": null
     },
     {
-      "ticker": "VAKFN",
-      "alis": "1.8900",
-      "stop": "1.8600",
-      "risk": "1.59",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "CCOLA",
       "alis": "75.93",
       "stop": "74.70",
       "risk": "1.62",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "EYGYO",
-      "alis": "2.8700",
-      "stop": "2.8200",
-      "risk": "1.74",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -92,24 +65,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "SKBNK",
-      "alis": "12.70",
-      "stop": "12.47",
-      "risk": "1.81",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "TLMAN",
-      "alis": "96.80",
-      "stop": "95.00",
-      "risk": "1.86",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "BAHKM",
       "alis": "115.15",
       "stop": "113.00",
@@ -128,37 +83,10 @@
       "grafikUrl": null
     },
     {
-      "ticker": "BRISA",
-      "alis": "85.88",
-      "stop": "84.25",
-      "risk": "1.90",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "BRLSM",
-      "alis": "15.19",
-      "stop": "14.90",
-      "risk": "1.91",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "HLGYO",
       "alis": "5.8150",
       "stop": "5.7000",
       "risk": "1.98",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "CONSE",
-      "alis": "3.2350",
-      "stop": "3.1700",
-      "risk": "2.01",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -281,15 +209,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "PRKME",
-      "alis": "19.60",
-      "stop": "19.12",
-      "risk": "2.45",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "BMSCH",
       "alis": "18.36",
       "stop": "17.91",
@@ -362,15 +281,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "BTCIM",
-      "alis": "6.4000",
-      "stop": "6.2300",
-      "risk": "2.66",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "SUMAS",
       "alis": "267.25",
       "stop": "260.00",
@@ -407,15 +317,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "KLRHO",
-      "alis": "108.75",
-      "stop": "105.60",
-      "risk": "2.90",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "UCAYM",
       "alis": "28.84",
       "stop": "27.98",
@@ -438,24 +339,6 @@
       "alis": "36.40",
       "stop": "35.28",
       "risk": "3.08",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "OZYSR",
-      "alis": "11.66",
-      "stop": "11.30",
-      "risk": "3.09",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "MARKA",
-      "alis": "55.55",
-      "stop": "53.80",
-      "risk": "3.15",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -501,15 +384,6 @@
       "alis": "16.15",
       "stop": "15.58",
       "risk": "3.53",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "GENIL",
-      "alis": "9.9500",
-      "stop": "9.5900",
-      "risk": "3.62",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -591,15 +465,6 @@
       "alis": "19.00",
       "stop": "18.23",
       "risk": "4.05",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "ARCLK",
-      "alis": "117.20",
-      "stop": "112.40",
-      "risk": "4.10",
       "current": null,
       "change": null,
       "grafikUrl": null
