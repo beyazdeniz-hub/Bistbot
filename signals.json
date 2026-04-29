@@ -1,20 +1,11 @@
 {
-  "updatedAt": "29.04.2026 13:56:38",
+  "updatedAt": "29.04.2026 15:20:06",
   "signals": [
     {
       "ticker": "KRPLS",
       "alis": "9.1700",
       "stop": "9.1100",
       "risk": "0.65",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "AKFGY",
-      "alis": "2.8800",
-      "stop": "2.8500",
-      "risk": "1.04",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -51,15 +42,6 @@
       "alis": "1.8900",
       "stop": "1.8600",
       "risk": "1.59",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "TBORG",
-      "alis": "146.45",
-      "stop": "144.10",
-      "risk": "1.60",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -236,15 +218,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "VERTU",
-      "alis": "40.79",
-      "stop": "39.92",
-      "risk": "2.13",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "LOGO",
       "alis": "140.85",
       "stop": "137.80",
@@ -285,15 +258,6 @@
       "alis": "34.12",
       "stop": "33.34",
       "risk": "2.29",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "INTEM",
-      "alis": "294.00",
-      "stop": "287.25",
-      "risk": "2.30",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -375,24 +339,6 @@
       "alis": "5.8400",
       "stop": "5.6900",
       "risk": "2.57",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "MNDTR",
-      "alis": "6.2200",
-      "stop": "6.0600",
-      "risk": "2.57",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "YAPRK",
-      "alis": "14.70",
-      "stop": "14.32",
-      "risk": "2.59",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -497,6 +443,15 @@
       "grafikUrl": null
     },
     {
+      "ticker": "OZYSR",
+      "alis": "11.66",
+      "stop": "11.30",
+      "risk": "3.09",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "MARKA",
       "alis": "55.55",
       "stop": "53.80",
@@ -542,15 +497,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "MOPAS",
-      "alis": "41.05",
-      "stop": "39.62",
-      "risk": "3.48",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "ALTNY",
       "alis": "16.15",
       "stop": "15.58",
@@ -564,15 +510,6 @@
       "alis": "9.9500",
       "stop": "9.5900",
       "risk": "3.62",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "VRGYO",
-      "alis": "2.4600",
-      "stop": "2.3700",
-      "risk": "3.66",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -681,15 +618,6 @@
       "alis": "12.12",
       "stop": "11.60",
       "risk": "4.29",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "TRENJ",
-      "alis": "94.58",
-      "stop": "90.50",
-      "risk": "4.31",
       "current": null,
       "change": null,
       "grafikUrl": null
