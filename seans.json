@@ -1,11 +1,20 @@
 {
-  "updatedAt": "30.04.2026 15:23:38",
+  "updatedAt": "30.04.2026 18:13:51",
   "signals": [
     {
       "ticker": "PARSN",
       "alis": "83.23",
       "stop": "82.90",
       "risk": "0.40",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "KRPLS",
+      "alis": "9.1700",
+      "stop": "9.1100",
+      "risk": "0.65",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -68,6 +77,15 @@
       "ticker": "TSGYO",
       "alis": "6.8600",
       "stop": "6.7800",
+      "risk": "1.17",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "OTKAR",
+      "alis": "383.75",
+      "stop": "379.25",
       "risk": "1.17",
       "current": null,
       "change": null,
@@ -245,6 +263,15 @@
       "grafikUrl": null
     },
     {
+      "ticker": "SKTAS",
+      "alis": "3.2600",
+      "stop": "3.2100",
+      "risk": "1.53",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "DITAS",
       "alis": "33.18",
       "stop": "32.66",
@@ -312,6 +339,15 @@
       "alis": "26.37",
       "stop": "25.94",
       "risk": "1.63",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "KLSER",
+      "alis": "26.89",
+      "stop": "26.44",
+      "risk": "1.67",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -411,6 +447,15 @@
       "alis": "6.3500",
       "stop": "6.2300",
       "risk": "1.89",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "BRISA",
+      "alis": "85.88",
+      "stop": "84.25",
+      "risk": "1.90",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -527,15 +572,6 @@
       "ticker": "PATEK",
       "alis": "21.78",
       "stop": "21.32",
-      "risk": "2.11",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "TARKM",
-      "alis": "414.00",
-      "stop": "405.25",
       "risk": "2.11",
       "current": null,
       "change": null,
@@ -708,15 +744,6 @@
       "alis": "105.75",
       "stop": "103.00",
       "risk": "2.60",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "BAGFS",
-      "alis": "34.94",
-      "stop": "34.02",
-      "risk": "2.63",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -951,6 +978,15 @@
       "alis": "80.28",
       "stop": "77.65",
       "risk": "3.28",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "MPARK",
+      "alis": "455.00",
+      "stop": "440.00",
+      "risk": "3.30",
       "current": null,
       "change": null,
       "grafikUrl": null
