@@ -1,20 +1,11 @@
 {
-  "updatedAt": "30.04.2026 18:13:51",
+  "updatedAt": "30.04.2026 19:29:55",
   "signals": [
     {
       "ticker": "PARSN",
       "alis": "83.23",
       "stop": "82.90",
       "risk": "0.40",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "KRPLS",
-      "alis": "9.1700",
-      "stop": "9.1100",
-      "risk": "0.65",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -29,19 +20,19 @@
       "grafikUrl": null
     },
     {
-      "ticker": "VAKFN",
-      "alis": "1.8550",
-      "stop": "1.8400",
-      "risk": "0.81",
+      "ticker": "DENGE",
+      "alis": "2.5450",
+      "stop": "2.5200",
+      "risk": "0.98",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "DENGE",
-      "alis": "2.5450",
-      "stop": "2.5200",
-      "risk": "0.98",
+      "ticker": "AKFGY",
+      "alis": "2.8800",
+      "stop": "2.8500",
+      "risk": "1.04",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -236,6 +227,15 @@
       "grafikUrl": null
     },
     {
+      "ticker": "PGSUS",
+      "alis": "183.15",
+      "stop": "180.50",
+      "risk": "1.45",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "DURKN",
       "alis": "20.03",
       "stop": "19.74",
@@ -308,15 +308,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "KOTON",
-      "alis": "15.46",
-      "stop": "15.21",
-      "risk": "1.62",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "CCOLA",
       "alis": "75.93",
       "stop": "74.70",
@@ -339,6 +330,15 @@
       "alis": "26.37",
       "stop": "25.94",
       "risk": "1.63",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "BLUME",
+      "alis": "40.65",
+      "stop": "39.98",
+      "risk": "1.65",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -411,6 +411,15 @@
       "alis": "23.02",
       "stop": "22.60",
       "risk": "1.82",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "TLMAN",
+      "alis": "96.80",
+      "stop": "95.00",
+      "risk": "1.86",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -578,6 +587,15 @@
       "grafikUrl": null
     },
     {
+      "ticker": "TARKM",
+      "alis": "414.00",
+      "stop": "405.25",
+      "risk": "2.11",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "MIATK",
       "alis": "39.36",
       "stop": "38.52",
@@ -614,15 +632,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "OYAYO",
-      "alis": "52.95",
-      "stop": "51.75",
-      "risk": "2.27",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "PAPIL",
       "alis": "16.29",
       "stop": "15.92",
@@ -636,6 +645,15 @@
       "alis": "5.0450",
       "stop": "4.9300",
       "risk": "2.28",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "INTEM",
+      "alis": "294.00",
+      "stop": "287.25",
+      "risk": "2.30",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -689,6 +707,15 @@
       "ticker": "DIRIT",
       "alis": "27.68",
       "stop": "27.00",
+      "risk": "2.46",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "KCHOL",
+      "alis": "207.00",
+      "stop": "201.90",
       "risk": "2.46",
       "current": null,
       "change": null,
@@ -753,15 +780,6 @@
       "alis": "200.10",
       "stop": "194.80",
       "risk": "2.65",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "KFEIN",
-      "alis": "9.0000",
-      "stop": "8.7600",
-      "risk": "2.67",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -851,6 +869,15 @@
       "ticker": "KLKIM",
       "alis": "34.25",
       "stop": "33.24",
+      "risk": "2.95",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "KSTUR",
+      "alis": "3153",
+      "stop": "3060",
       "risk": "2.95",
       "current": null,
       "change": null,
@@ -1041,6 +1068,15 @@
       "alis": "16.15",
       "stop": "15.58",
       "risk": "3.53",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "VRGYO",
+      "alis": "2.4600",
+      "stop": "2.3700",
+      "risk": "3.66",
       "current": null,
       "change": null,
       "grafikUrl": null
