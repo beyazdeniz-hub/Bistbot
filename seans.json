@@ -1,20 +1,11 @@
 {
-  "updatedAt": "30.04.2026 14:00:14",
+  "updatedAt": "30.04.2026 15:23:38",
   "signals": [
     {
       "ticker": "PARSN",
       "alis": "83.23",
       "stop": "82.90",
       "risk": "0.40",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "KRPLS",
-      "alis": "9.1700",
-      "stop": "9.1100",
-      "risk": "0.65",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -42,6 +33,15 @@
       "alis": "2.5450",
       "stop": "2.5200",
       "risk": "0.98",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "BAYRK",
+      "alis": "4.6500",
+      "stop": "4.6000",
+      "risk": "1.08",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -92,10 +92,28 @@
       "grafikUrl": null
     },
     {
+      "ticker": "KENT",
+      "alis": "406.00",
+      "stop": "401.00",
+      "risk": "1.23",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "PRKME",
       "alis": "19.17",
       "stop": "18.93",
       "risk": "1.25",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "VKGYO",
+      "alis": "2.7750",
+      "stop": "2.7400",
+      "risk": "1.26",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -294,15 +312,6 @@
       "alis": "26.37",
       "stop": "25.94",
       "risk": "1.63",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "KLSER",
-      "alis": "26.89",
-      "stop": "26.44",
-      "risk": "1.67",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -596,6 +605,15 @@
       "grafikUrl": null
     },
     {
+      "ticker": "GLYHO",
+      "alis": "15.54",
+      "stop": "15.18",
+      "risk": "2.32",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "GLBMD",
       "alis": "12.03",
       "stop": "11.75",
@@ -695,6 +713,15 @@
       "grafikUrl": null
     },
     {
+      "ticker": "BAGFS",
+      "alis": "34.94",
+      "stop": "34.02",
+      "risk": "2.63",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "ERBOS",
       "alis": "200.10",
       "stop": "194.80",
@@ -785,18 +812,18 @@
       "grafikUrl": null
     },
     {
-      "ticker": "KLKIM",
-      "alis": "34.25",
-      "stop": "33.24",
-      "risk": "2.95",
+      "ticker": "NUHCM",
+      "alis": "253.50",
+      "stop": "246.10",
+      "risk": "2.92",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "KSTUR",
-      "alis": "3153",
-      "stop": "3060",
+      "ticker": "KLKIM",
+      "alis": "34.25",
+      "stop": "33.24",
       "risk": "2.95",
       "current": null,
       "change": null,
@@ -834,6 +861,15 @@
       "alis": "51.60",
       "stop": "50.05",
       "risk": "3.00",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "KORDS",
+      "alis": "64.68",
+      "stop": "62.70",
+      "risk": "3.06",
       "current": null,
       "change": null,
       "grafikUrl": null
