@@ -1,24 +1,6 @@
 {
-  "updatedAt": "04.05.2026 14:10:01",
+  "updatedAt": "04.05.2026 15:33:03",
   "signals": [
-    {
-      "ticker": "CMENT",
-      "alis": "320.75",
-      "stop": "319.25",
-      "risk": "0.47",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "GOZDE",
-      "alis": "20.08",
-      "stop": "19.95",
-      "risk": "0.65",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
     {
       "ticker": "KRPLS",
       "alis": "9.1700",
@@ -101,24 +83,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "OTKAR",
-      "alis": "383.75",
-      "stop": "379.25",
-      "risk": "1.17",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "ALTIN",
-      "alis": "80.53",
-      "stop": "79.55",
-      "risk": "1.22",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "KENT",
       "alis": "406.00",
       "stop": "401.00",
@@ -168,6 +132,15 @@
       "alis": "8.9650",
       "stop": "8.8400",
       "risk": "1.39",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "COSMO",
+      "alis": "208.00",
+      "stop": "205.00",
+      "risk": "1.44",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -267,6 +240,15 @@
       "alis": "410.25",
       "stop": "403.50",
       "risk": "1.65",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "CEMAS",
+      "alis": "4.8200",
+      "stop": "4.7400",
+      "risk": "1.66",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -425,6 +407,15 @@
       "grafikUrl": null
     },
     {
+      "ticker": "YUNSA",
+      "alis": "8.4400",
+      "stop": "8.2700",
+      "risk": "2.01",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "TSPOR",
       "alis": "0.9900",
       "stop": "0.9700",
@@ -437,6 +428,15 @@
       "ticker": "CONSE",
       "alis": "3.1850",
       "stop": "3.1200",
+      "risk": "2.04",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "TABGD",
+      "alis": "269.00",
+      "stop": "263.50",
       "risk": "2.04",
       "current": null,
       "change": null,
@@ -564,15 +564,6 @@
       "alis": "8.4000",
       "stop": "8.2100",
       "risk": "2.26",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "OYAYO",
-      "alis": "52.95",
-      "stop": "51.75",
-      "risk": "2.27",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -785,15 +776,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "SELVA",
-      "alis": "2.4950",
-      "stop": "2.4300",
-      "risk": "2.61",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "KUTPO",
       "alis": "97.40",
       "stop": "94.85",
@@ -857,6 +839,24 @@
       "grafikUrl": null
     },
     {
+      "ticker": "OFSYM",
+      "alis": "57.48",
+      "stop": "55.85",
+      "risk": "2.84",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "VSNMD",
+      "alis": "85.90",
+      "stop": "83.45",
+      "risk": "2.85",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "GRNYO",
       "alis": "18.05",
       "stop": "17.53",
@@ -906,15 +906,6 @@
       "alis": "22.59",
       "stop": "21.92",
       "risk": "2.97",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "BJKAS",
-      "alis": "1.6800",
-      "stop": "1.6300",
-      "risk": "2.98",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -1136,15 +1127,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "EKGYO",
-      "alis": "20.58",
-      "stop": "19.77",
-      "risk": "3.94",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "KIMMR",
       "alis": "16.96",
       "stop": "16.27",
@@ -1212,15 +1194,6 @@
       "alis": "19.38",
       "stop": "18.55",
       "risk": "4.28",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "PINSU",
-      "alis": "12.12",
-      "stop": "11.60",
-      "risk": "4.29",
       "current": null,
       "change": null,
       "grafikUrl": null
