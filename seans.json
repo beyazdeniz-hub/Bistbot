@@ -1,20 +1,11 @@
 {
-  "updatedAt": "05.05.2026 13:41:58",
+  "updatedAt": "05.05.2026 15:08:42",
   "signals": [
     {
       "ticker": "NTHOL",
       "alis": "38.42",
       "stop": "38.18",
       "risk": "0.62",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "GOZDE",
-      "alis": "20.08",
-      "stop": "19.95",
-      "risk": "0.65",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -101,15 +92,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "KAYSE",
-      "alis": "4.7300",
-      "stop": "4.6700",
-      "risk": "1.27",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "VERTU",
       "alis": "39.93",
       "stop": "39.42",
@@ -141,15 +123,6 @@
       "alis": "8.9650",
       "stop": "8.8400",
       "risk": "1.39",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "AGROT",
-      "alis": "3.0950",
-      "stop": "3.0500",
-      "risk": "1.45",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -209,24 +182,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "BALSU",
-      "alis": "14.65",
-      "stop": "14.42",
-      "risk": "1.57",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "KOTON",
-      "alis": "15.46",
-      "stop": "15.21",
-      "risk": "1.62",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "CEMAS",
       "alis": "4.8200",
       "stop": "4.7400",
@@ -248,6 +203,15 @@
       "ticker": "BULGS",
       "alis": "44.52",
       "stop": "43.76",
+      "risk": "1.71",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "DAPGM",
+      "alis": "10.54",
+      "stop": "10.36",
       "risk": "1.71",
       "current": null,
       "change": null,
@@ -284,15 +248,6 @@
       "ticker": "MHRGY",
       "alis": "3.7300",
       "stop": "3.6600",
-      "risk": "1.88",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "BRISA",
-      "alis": "85.20",
-      "stop": "83.60",
       "risk": "1.88",
       "current": null,
       "change": null,
@@ -353,28 +308,10 @@
       "grafikUrl": null
     },
     {
-      "ticker": "YUNSA",
-      "alis": "8.4400",
-      "stop": "8.2700",
-      "risk": "2.01",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "TSPOR",
       "alis": "0.9900",
       "stop": "0.9700",
       "risk": "2.02",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "TABGD",
-      "alis": "269.00",
-      "stop": "263.50",
-      "risk": "2.04",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -416,10 +353,28 @@
       "grafikUrl": null
     },
     {
+      "ticker": "RGYAS",
+      "alis": "186.35",
+      "stop": "182.40",
+      "risk": "2.12",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "ZRGYO",
       "alis": "21.88",
       "stop": "21.40",
       "risk": "2.19",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "REEDR",
+      "alis": "7.7200",
+      "stop": "7.5500",
+      "risk": "2.20",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -551,18 +506,18 @@
       "grafikUrl": null
     },
     {
-      "ticker": "ALCAR",
-      "alis": "786.00",
-      "stop": "767.00",
+      "ticker": "HTTBT",
+      "alis": "42.18",
+      "stop": "41.16",
       "risk": "2.42",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "HTTBT",
-      "alis": "42.18",
-      "stop": "41.16",
+      "ticker": "BINBN",
+      "alis": "177.50",
+      "stop": "173.20",
       "risk": "2.42",
       "current": null,
       "change": null,
