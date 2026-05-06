@@ -1,5 +1,5 @@
 {
-  "updatedAt": "06.05.2026 14:13:05",
+  "updatedAt": "06.05.2026 15:41:33",
   "signals": [
     {
       "ticker": "CMENT",
@@ -1392,6 +1392,15 @@
       "alis": "1.6250",
       "stop": "1.5500",
       "risk": "4.62",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "OTTO",
+      "alis": "302.25",
+      "stop": "288.25",
+      "risk": "4.63",
       "current": null,
       "change": null,
       "grafikUrl": null
