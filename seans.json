@@ -1,5 +1,5 @@
 {
-  "updatedAt": "06.05.2026 15:41:33",
+  "updatedAt": "06.05.2026 18:37:50",
   "signals": [
     {
       "ticker": "CMENT",
@@ -86,15 +86,6 @@
       "ticker": "OSTIM",
       "alis": "2.8500",
       "stop": "2.8200",
-      "risk": "1.05",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "OTKAR",
-      "alis": "379.75",
-      "stop": "375.75",
       "risk": "1.05",
       "current": null,
       "change": null,
@@ -294,15 +285,6 @@
       "alis": "38.64",
       "stop": "38.02",
       "risk": "1.60",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "SERNT",
-      "alis": "8.7200",
-      "stop": "8.5800",
-      "risk": "1.61",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -641,19 +623,19 @@
       "grafikUrl": null
     },
     {
-      "ticker": "KLSER",
-      "alis": "26.64",
-      "stop": "26.08",
+      "ticker": "INTEK",
+      "alis": "245.45",
+      "stop": "240.30",
       "risk": "2.10",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "RGYAS",
-      "alis": "186.35",
-      "stop": "182.40",
-      "risk": "2.12",
+      "ticker": "KLSER",
+      "alis": "26.64",
+      "stop": "26.08",
+      "risk": "2.10",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -1266,15 +1248,6 @@
       "alis": "6.4500",
       "stop": "6.1900",
       "risk": "4.03",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "EUKYO",
-      "alis": "7.5100",
-      "stop": "7.2000",
-      "risk": "4.13",
       "current": null,
       "change": null,
       "grafikUrl": null
