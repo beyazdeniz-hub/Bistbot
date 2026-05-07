@@ -1,5 +1,5 @@
 {
-  "updatedAt": "07.05.2026 15:36:51",
+  "updatedAt": "07.05.2026 18:35:39",
   "signals": [
     {
       "ticker": "ALTIN",
@@ -231,6 +231,15 @@
       "alis": "1098",
       "stop": "1076",
       "risk": "2.00",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "KLNMA",
+      "alis": "9.8000",
+      "stop": "9.6000",
+      "risk": "2.04",
       "current": null,
       "change": null,
       "grafikUrl": null
