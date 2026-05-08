@@ -1,5 +1,5 @@
 {
-  "updatedAt": "08.05.2026 13:20:10",
+  "updatedAt": "08.05.2026 15:09:19",
   "signals": [
     {
       "ticker": "KLNMA",
@@ -38,15 +38,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "BRKO",
-      "alis": "13.20",
-      "stop": "13.00",
-      "risk": "1.52",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "RGYAS",
       "alis": "183.40",
       "stop": "180.60",
@@ -60,6 +51,15 @@
       "alis": "120.00",
       "stop": "118.00",
       "risk": "1.67",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "EUYO",
+      "alis": "5.5500",
+      "stop": "5.4400",
+      "risk": "1.98",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -87,6 +87,15 @@
       "alis": "1.6350",
       "stop": "1.6000",
       "risk": "2.14",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "NUHCM",
+      "alis": "247.60",
+      "stop": "242.10",
+      "risk": "2.22",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -132,6 +141,15 @@
       "alis": "2.7750",
       "stop": "2.7000",
       "risk": "2.70",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "BEYAZ",
+      "alis": "31.30",
+      "stop": "30.44",
+      "risk": "2.75",
       "current": null,
       "change": null,
       "grafikUrl": null
