@@ -75,7 +75,8 @@ function formatTurkeyDateOnly() {
 
 function getTimeCategory() {
   const hour = getTurkeyNow().getHours();
-  if (hour === 21) return "onay";
+  // 21, 22 veya 23 saatlerinden birindeyse "onay" kategorisine girer
+  if (hour >= 21 && hour <= 23) return "onay"; 
   if (hour >= 9 && hour <= 18) return "seans";
   return "diger";
 }
