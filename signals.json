@@ -1,5 +1,5 @@
 {
-  "updatedAt": "08.05.2026 17:35:47",
+  "updatedAt": "08.05.2026 19:12:53",
   "signals": [
     {
       "ticker": "KLNMA",
@@ -24,15 +24,6 @@
       "alis": "1.7300",
       "stop": "1.7100",
       "risk": "1.16",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "GEDIK",
-      "alis": "5.8900",
-      "stop": "5.8100",
-      "risk": "1.36",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -137,15 +128,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "BEYAZ",
-      "alis": "31.30",
-      "stop": "30.44",
-      "risk": "2.75",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "SAMAT",
       "alis": "5.7200",
       "stop": "5.5500",
@@ -213,15 +195,6 @@
       "alis": "29.06",
       "stop": "28.06",
       "risk": "3.44",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "UFUK",
-      "alis": "1476",
-      "stop": "1425",
-      "risk": "3.46",
       "current": null,
       "change": null,
       "grafikUrl": null
