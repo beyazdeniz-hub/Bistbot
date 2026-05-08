@@ -1,5 +1,5 @@
 {
-  "updatedAt": "08.05.2026 15:09:19",
+  "updatedAt": "08.05.2026 17:35:47",
   "signals": [
     {
       "ticker": "KLNMA",
@@ -24,6 +24,15 @@
       "alis": "1.7300",
       "stop": "1.7100",
       "risk": "1.16",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "GEDIK",
+      "alis": "5.8900",
+      "stop": "5.8100",
+      "risk": "1.36",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -56,15 +65,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "EUYO",
-      "alis": "5.5500",
-      "stop": "5.4400",
-      "risk": "1.98",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "MAALT",
       "alis": "1098",
       "stop": "1076",
@@ -87,15 +87,6 @@
       "alis": "1.6350",
       "stop": "1.6000",
       "risk": "2.14",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "NUHCM",
-      "alis": "247.60",
-      "stop": "242.10",
-      "risk": "2.22",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -245,15 +236,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "DYOBY",
-      "alis": "18.17",
-      "stop": "17.52",
-      "risk": "3.58",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "VRGYO",
       "alis": "2.4600",
       "stop": "2.3700",
@@ -299,6 +281,15 @@
       "grafikUrl": null
     },
     {
+      "ticker": "KTSKR",
+      "alis": "122.60",
+      "stop": "117.40",
+      "risk": "4.24",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "ISGSY",
       "alis": "122.25",
       "stop": "117.00",
@@ -321,6 +312,15 @@
       "alis": "30.06",
       "stop": "28.70",
       "risk": "4.52",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "IHAAS",
+      "alis": "79.50",
+      "stop": "75.90",
+      "risk": "4.53",
       "current": null,
       "change": null,
       "grafikUrl": null
