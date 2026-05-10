@@ -1224,5 +1224,173 @@
         "grafikUrl": null
       }
     ]
+  },
+  "10.05.2026": {
+    "date": "10.05.2026",
+    "updatedAt": "10.05.2026 22:13:12",
+    "signals": [
+      {
+        "ticker": "ANHYT",
+        "alis": "115.92",
+        "stop": "114.60",
+        "risk": "1.14",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "USAK",
+        "alis": "1.7300",
+        "stop": "1.7100",
+        "risk": "1.16",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "ENERY",
+        "alis": "8.9100",
+        "stop": "8.7800",
+        "risk": "1.46",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "ENJSA",
+        "alis": "120.00",
+        "stop": "118.00",
+        "risk": "1.67",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "HUNER",
+        "alis": "3.3800",
+        "stop": "3.3100",
+        "risk": "2.07",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "INTEK",
+        "alis": "245.45",
+        "stop": "240.30",
+        "risk": "2.10",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "YESIL",
+        "alis": "1.6350",
+        "stop": "1.6000",
+        "risk": "2.14",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "EYGYO",
+        "alis": "2.7750",
+        "stop": "2.7000",
+        "risk": "2.70",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "SAMAT",
+        "alis": "5.7200",
+        "stop": "5.5500",
+        "risk": "2.97",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "INFO",
+        "alis": "3.6300",
+        "stop": "3.5200",
+        "risk": "3.03",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "TERA",
+        "alis": "241.40",
+        "stop": "233.50",
+        "risk": "3.27",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "SEGMN",
+        "alis": "56.70",
+        "stop": "54.80",
+        "risk": "3.35",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "GWIND",
+        "alis": "29.06",
+        "stop": "28.06",
+        "risk": "3.44",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "ARASE",
+        "alis": "107.80",
+        "stop": "104.00",
+        "risk": "3.53",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "VRGYO",
+        "alis": "2.4600",
+        "stop": "2.3700",
+        "risk": "3.66",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "BESTE",
+        "alis": "30.06",
+        "stop": "28.70",
+        "risk": "4.52",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "IHAAS",
+        "alis": "79.50",
+        "stop": "75.90",
+        "risk": "4.53",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "KIMMR",
+        "alis": "17.29",
+        "stop": "16.50",
+        "risk": "4.57",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      }
+    ]
   }
 }
