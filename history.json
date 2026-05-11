@@ -1392,5 +1392,164 @@
         "grafikUrl": null
       }
     ]
+  },
+  "11.05.2026": {
+    "date": "11.05.2026",
+    "updatedAt": "11.05.2026 22:55:44",
+    "signals": [
+      {
+        "ticker": "MNDRS",
+        "alis": "13.42",
+        "stop": "13.34",
+        "risk": "0.60",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "BNTAS",
+        "alis": "7.0500",
+        "stop": "7.0000",
+        "risk": "0.71",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "TEHOL",
+        "alis": "25.38",
+        "stop": "25.12",
+        "risk": "1.02",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "GEDIK",
+        "alis": "5.8900",
+        "stop": "5.8100",
+        "risk": "1.36",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "GATEG",
+        "alis": "312.00",
+        "stop": "306.00",
+        "risk": "1.92",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "AYEN",
+        "alis": "36.14",
+        "stop": "35.38",
+        "risk": "2.10",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "INTEM",
+        "alis": "294.00",
+        "stop": "287.25",
+        "risk": "2.30",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "MAGEN",
+        "alis": "63.45",
+        "stop": "61.85",
+        "risk": "2.52",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "MOBTL",
+        "alis": "13.10",
+        "stop": "12.70",
+        "risk": "3.05",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "KRDMA",
+        "alis": "39.70",
+        "stop": "38.42",
+        "risk": "3.22",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "KORDS",
+        "alis": "65.70",
+        "stop": "63.55",
+        "risk": "3.27",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "RODRG",
+        "alis": "26.91",
+        "stop": "25.98",
+        "risk": "3.46",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "PETKM",
+        "alis": "24.72",
+        "stop": "23.86",
+        "risk": "3.48",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "KRTEK",
+        "alis": "27.04",
+        "stop": "26.00",
+        "risk": "3.85",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "MOGAN",
+        "alis": "15.28",
+        "stop": "14.66",
+        "risk": "4.06",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "KTSKR",
+        "alis": "122.60",
+        "stop": "117.40",
+        "risk": "4.24",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "CATES",
+        "alis": "40.40",
+        "stop": "38.46",
+        "risk": "4.80",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      }
+    ]
   }
 }
