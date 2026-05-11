@@ -1,15 +1,6 @@
 {
-  "updatedAt": "11.05.2026 17:20:59",
+  "updatedAt": "11.05.2026 20:21:54",
   "signals": [
-    {
-      "ticker": "KLNMA",
-      "alis": "9.6000",
-      "stop": "9.5500",
-      "risk": "0.52",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
     {
       "ticker": "YBTAS",
       "alis": "18.06",
@@ -38,6 +29,15 @@
       "grafikUrl": null
     },
     {
+      "ticker": "BRKO",
+      "alis": "13.20",
+      "stop": "13.00",
+      "risk": "1.52",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "RGYAS",
       "alis": "183.40",
       "stop": "180.60",
@@ -51,6 +51,15 @@
       "alis": "312.00",
       "stop": "306.00",
       "risk": "1.92",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "KSTUR",
+      "alis": "3095",
+      "stop": "3030",
+      "risk": "2.10",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -155,15 +164,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "EUREN",
-      "alis": "5.2650",
-      "stop": "5.0900",
-      "risk": "3.32",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "BORSK",
       "alis": "7.3350",
       "stop": "7.0900",
@@ -177,15 +177,6 @@
       "alis": "37.90",
       "stop": "36.62",
       "risk": "3.38",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "UFUK",
-      "alis": "1476",
-      "stop": "1425",
-      "risk": "3.46",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -285,15 +276,6 @@
       "alis": "25.30",
       "stop": "24.18",
       "risk": "4.43",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "DUNYH",
-      "alis": "117.40",
-      "stop": "111.90",
-      "risk": "4.68",
       "current": null,
       "change": null,
       "grafikUrl": null
