@@ -1,5 +1,5 @@
 {
-  "updatedAt": "11.05.2026 14:59:59",
+  "updatedAt": "11.05.2026 17:20:59",
   "signals": [
     {
       "ticker": "KLNMA",
@@ -177,6 +177,15 @@
       "alis": "37.90",
       "stop": "36.62",
       "risk": "3.38",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "UFUK",
+      "alis": "1476",
+      "stop": "1425",
+      "risk": "3.46",
       "current": null,
       "change": null,
       "grafikUrl": null
