@@ -1,5 +1,5 @@
 {
-  "updatedAt": "12.05.2026 14:14:44",
+  "updatedAt": "12.05.2026 16:34:41",
   "signals": [
     {
       "ticker": "KLNMA",
@@ -42,33 +42,6 @@
       "alis": "35.24",
       "stop": "34.76",
       "risk": "1.36",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "BERA",
-      "alis": "17.90",
-      "stop": "17.58",
-      "risk": "1.79",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "TSKB",
-      "alis": "12.50",
-      "stop": "12.26",
-      "risk": "1.92",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "KONKA",
-      "alis": "16.72",
-      "stop": "16.39",
-      "risk": "1.97",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -159,15 +132,6 @@
       "alis": "17.93",
       "stop": "17.34",
       "risk": "3.29",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "EUREN",
-      "alis": "5.2650",
-      "stop": "5.0900",
-      "risk": "3.32",
       "current": null,
       "change": null,
       "grafikUrl": null
