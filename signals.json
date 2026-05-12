@@ -1,11 +1,11 @@
 {
-  "updatedAt": "12.05.2026 19:15:06",
+  "updatedAt": "12.05.2026 23:00:23",
   "signals": [
     {
-      "ticker": "YBTAS",
-      "alis": "18.06",
-      "stop": "17.90",
-      "risk": "0.89",
+      "ticker": "BASGZ",
+      "alis": "51.55",
+      "stop": "51.15",
+      "risk": "0.78",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -15,6 +15,24 @@
       "alis": "31.56",
       "stop": "31.26",
       "risk": "0.95",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "CWENE",
+      "alis": "40.20",
+      "stop": "39.80",
+      "risk": "1.00",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "ONCSM",
+      "alis": "306.11",
+      "stop": "303.00",
+      "risk": "1.02",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -33,15 +51,6 @@
       "alis": "35.24",
       "stop": "34.76",
       "risk": "1.36",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "EUYO",
-      "alis": "5.5500",
-      "stop": "5.4400",
-      "risk": "1.98",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -74,37 +83,10 @@
       "grafikUrl": null
     },
     {
-      "ticker": "OYYAT",
-      "alis": "54.68",
-      "stop": "53.10",
-      "risk": "2.89",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "DYOBY",
-      "alis": "17.93",
-      "stop": "17.34",
-      "risk": "3.29",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "BORSK",
       "alis": "7.3350",
       "stop": "7.0900",
       "risk": "3.34",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "MZHLD",
-      "alis": "6.6300",
-      "stop": "6.4000",
-      "risk": "3.47",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -119,15 +101,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "HALKB",
-      "alis": "40.82",
-      "stop": "39.30",
-      "risk": "3.72",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "DGNMO",
       "alis": "9.2000",
       "stop": "8.8500",
@@ -137,28 +110,10 @@
       "grafikUrl": null
     },
     {
-      "ticker": "AKHAN",
-      "alis": "29.36",
-      "stop": "28.24",
-      "risk": "3.81",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "ALVES",
       "alis": "3.5100",
       "stop": "3.3600",
       "risk": "4.27",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "ISGSY",
-      "alis": "122.25",
-      "stop": "117.00",
-      "risk": "4.29",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -186,15 +141,6 @@
       "alis": "162.70",
       "stop": "155.00",
       "risk": "4.73",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "GENIL",
-      "alis": "9.4600",
-      "stop": "9.0000",
-      "risk": "4.86",
       "current": null,
       "change": null,
       "grafikUrl": null
