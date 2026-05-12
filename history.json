@@ -1551,5 +1551,155 @@
         "grafikUrl": null
       }
     ]
+  },
+  "12.05.2026": {
+    "date": "12.05.2026",
+    "updatedAt": "12.05.2026 23:00:23",
+    "signals": [
+      {
+        "ticker": "BASGZ",
+        "alis": "51.55",
+        "stop": "51.15",
+        "risk": "0.78",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "EGEGY",
+        "alis": "31.56",
+        "stop": "31.26",
+        "risk": "0.95",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "CWENE",
+        "alis": "40.20",
+        "stop": "39.80",
+        "risk": "1.00",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "ONCSM",
+        "alis": "306.11",
+        "stop": "303.00",
+        "risk": "1.02",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "EUKYO",
+        "alis": "7.4100",
+        "stop": "7.3200",
+        "risk": "1.21",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "KLMSN",
+        "alis": "35.24",
+        "stop": "34.76",
+        "risk": "1.36",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "DURKN",
+        "alis": "21.72",
+        "stop": "21.16",
+        "risk": "2.58",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "ARENA",
+        "alis": "34.82",
+        "stop": "33.90",
+        "risk": "2.64",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "GMTAS",
+        "alis": "41.09",
+        "stop": "39.94",
+        "risk": "2.80",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "BORSK",
+        "alis": "7.3350",
+        "stop": "7.0900",
+        "risk": "3.34",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "COSMO",
+        "alis": "202.90",
+        "stop": "195.80",
+        "risk": "3.50",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "DGNMO",
+        "alis": "9.2000",
+        "stop": "8.8500",
+        "risk": "3.80",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "ALVES",
+        "alis": "3.5100",
+        "stop": "3.3600",
+        "risk": "4.27",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "CRDFA",
+        "alis": "30.34",
+        "stop": "29.02",
+        "risk": "4.35",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "DUNYH",
+        "alis": "117.40",
+        "stop": "111.90",
+        "risk": "4.68",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "TGSAS",
+        "alis": "162.70",
+        "stop": "155.00",
+        "risk": "4.73",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      }
+    ]
   }
 }
