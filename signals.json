@@ -1,15 +1,6 @@
 {
-  "updatedAt": "12.05.2026 16:34:41",
+  "updatedAt": "12.05.2026 19:15:06",
   "signals": [
-    {
-      "ticker": "KLNMA",
-      "alis": "9.6000",
-      "stop": "9.5500",
-      "risk": "0.52",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
     {
       "ticker": "YBTAS",
       "alis": "18.06",
@@ -56,24 +47,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "BRKO",
-      "alis": "13.00",
-      "stop": "12.73",
-      "risk": "2.08",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "FROTO",
-      "alis": "98.05",
-      "stop": "95.65",
-      "risk": "2.45",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "DURKN",
       "alis": "21.72",
       "stop": "21.16",
@@ -92,15 +65,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "TURGG",
-      "alis": "37.50",
-      "stop": "36.50",
-      "risk": "2.67",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "GMTAS",
       "alis": "41.09",
       "stop": "39.94",
@@ -114,15 +78,6 @@
       "alis": "54.68",
       "stop": "53.10",
       "risk": "2.89",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "SELVA",
-      "alis": "2.4600",
-      "stop": "2.3800",
-      "risk": "3.25",
       "current": null,
       "change": null,
       "grafikUrl": null
