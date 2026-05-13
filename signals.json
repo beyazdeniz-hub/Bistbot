@@ -1,20 +1,11 @@
 {
-  "updatedAt": "13.05.2026 17:02:34",
+  "updatedAt": "13.05.2026 19:19:02",
   "signals": [
     {
       "ticker": "MEYSU",
       "alis": "20.75",
       "stop": "20.50",
       "risk": "1.20",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "HLGYO",
-      "alis": "5.9550",
-      "stop": "5.8800",
-      "risk": "1.26",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -38,64 +29,28 @@
       "grafikUrl": null
     },
     {
-      "ticker": "AKMGY",
-      "alis": "261.75",
-      "stop": "256.00",
-      "risk": "2.20",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "EBEBK",
-      "alis": "76.43",
-      "stop": "74.70",
-      "risk": "2.26",
+      "ticker": "ULUFA",
+      "alis": "4.1800",
+      "stop": "4.0900",
+      "risk": "2.15",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
       "ticker": "TARKM",
-      "alis": "496.38",
-      "stop": "485.00",
-      "risk": "2.29",
+      "alis": "492.25",
+      "stop": "477.75",
+      "risk": "2.95",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "EUYO",
-      "alis": "5.5000",
-      "stop": "5.3400",
-      "risk": "2.91",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "EUREN",
-      "alis": "5.2650",
-      "stop": "5.0900",
-      "risk": "3.32",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "ECOGR",
-      "alis": "37.80",
-      "stop": "36.50",
-      "risk": "3.44",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "EUPWR",
-      "alis": "58.83",
-      "stop": "56.80",
-      "risk": "3.45",
+      "ticker": "MZHLD",
+      "alis": "6.6300",
+      "stop": "6.4000",
+      "risk": "3.47",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -110,64 +65,10 @@
       "grafikUrl": null
     },
     {
-      "ticker": "HALKB",
-      "alis": "40.82",
-      "stop": "39.30",
-      "risk": "3.72",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "AKHAN",
-      "alis": "29.36",
-      "stop": "28.24",
-      "risk": "3.81",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "TTRAK",
       "alis": "467.25",
       "stop": "448.00",
       "risk": "4.12",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "BAHKM",
-      "alis": "120.50",
-      "stop": "115.50",
-      "risk": "4.15",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "ISGSY",
-      "alis": "122.25",
-      "stop": "117.00",
-      "risk": "4.29",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "ICUGS",
-      "alis": "6.0850",
-      "stop": "5.8100",
-      "risk": "4.52",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "GENIL",
-      "alis": "9.4600",
-      "stop": "9.0000",
-      "risk": "4.86",
       "current": null,
       "change": null,
       "grafikUrl": null
