@@ -1,5 +1,5 @@
 {
-  "updatedAt": "13.05.2026 14:27:20",
+  "updatedAt": "13.05.2026 17:02:34",
   "signals": [
     {
       "ticker": "MEYSU",
@@ -29,15 +29,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "DMSAS",
-      "alis": "9.2250",
-      "stop": "9.0800",
-      "risk": "1.57",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "LYDHO",
       "alis": "195.75",
       "stop": "192.30",
@@ -47,37 +38,28 @@
       "grafikUrl": null
     },
     {
-      "ticker": "BOSSA",
-      "alis": "6.7200",
-      "stop": "6.5900",
-      "risk": "1.93",
+      "ticker": "AKMGY",
+      "alis": "261.75",
+      "stop": "256.00",
+      "risk": "2.20",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "BIOEN",
-      "alis": "20.13",
-      "stop": "19.61",
-      "risk": "2.58",
+      "ticker": "EBEBK",
+      "alis": "76.43",
+      "stop": "74.70",
+      "risk": "2.26",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "MIATK",
-      "alis": "47.71",
-      "stop": "46.36",
-      "risk": "2.83",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "OYYAT",
-      "alis": "54.68",
-      "stop": "53.10",
-      "risk": "2.89",
+      "ticker": "TARKM",
+      "alis": "496.38",
+      "stop": "485.00",
+      "risk": "2.29",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -119,15 +101,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "MZHLD",
-      "alis": "6.6300",
-      "stop": "6.4000",
-      "risk": "3.47",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "OZRDN",
       "alis": "32.15",
       "stop": "31.02",
@@ -150,15 +123,6 @@
       "alis": "29.36",
       "stop": "28.24",
       "risk": "3.81",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "ADGYO",
-      "alis": "61.55",
-      "stop": "59.20",
-      "risk": "3.82",
       "current": null,
       "change": null,
       "grafikUrl": null
