@@ -1,11 +1,11 @@
 {
-  "updatedAt": "13.05.2026 19:19:02",
+  "updatedAt": "13.05.2026 23:02:26",
   "signals": [
     {
-      "ticker": "MEYSU",
-      "alis": "20.75",
-      "stop": "20.50",
-      "risk": "1.20",
+      "ticker": "AGHOL",
+      "alis": "36.23",
+      "stop": "36.00",
+      "risk": "0.63",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -20,37 +20,37 @@
       "grafikUrl": null
     },
     {
-      "ticker": "LYDHO",
-      "alis": "195.75",
-      "stop": "192.30",
-      "risk": "1.76",
+      "ticker": "EBEBK",
+      "alis": "76.43",
+      "stop": "74.70",
+      "risk": "2.26",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "ULUFA",
-      "alis": "4.1800",
-      "stop": "4.0900",
-      "risk": "2.15",
+      "ticker": "EUYO",
+      "alis": "5.5000",
+      "stop": "5.3400",
+      "risk": "2.91",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "TARKM",
-      "alis": "492.25",
-      "stop": "477.75",
-      "risk": "2.95",
+      "ticker": "ECOGR",
+      "alis": "37.80",
+      "stop": "36.50",
+      "risk": "3.44",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "MZHLD",
-      "alis": "6.6300",
-      "stop": "6.4000",
-      "risk": "3.47",
+      "ticker": "EUPWR",
+      "alis": "58.83",
+      "stop": "56.80",
+      "risk": "3.45",
       "current": null,
       "change": null,
       "grafikUrl": null
