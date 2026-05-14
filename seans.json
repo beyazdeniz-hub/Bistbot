@@ -1,5 +1,5 @@
 {
-  "updatedAt": "14.05.2026 14:14:12",
+  "updatedAt": "14.05.2026 16:29:53",
   "signals": [
     {
       "ticker": "CEOEM",
@@ -74,24 +74,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "ISDMR",
-      "alis": "58.23",
-      "stop": "57.20",
-      "risk": "1.77",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "BOSSA",
-      "alis": "6.7200",
-      "stop": "6.5900",
-      "risk": "1.93",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "ENKAI",
       "alis": "102.80",
       "stop": "100.70",
@@ -150,15 +132,6 @@
       "alis": "14.56",
       "stop": "14.19",
       "risk": "2.54",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "LRSHO",
-      "alis": "3.9000",
-      "stop": "3.8000",
-      "risk": "2.56",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -231,15 +204,6 @@
       "alis": "492.25",
       "stop": "477.75",
       "risk": "2.95",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "BORLS",
-      "alis": "6.2250",
-      "stop": "6.0400",
-      "risk": "2.97",
       "current": null,
       "change": null,
       "grafikUrl": null
