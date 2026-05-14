@@ -1779,5 +1779,146 @@
         "grafikUrl": null
       }
     ]
+  },
+  "14.05.2026": {
+    "date": "14.05.2026",
+    "updatedAt": "14.05.2026 22:53:33",
+    "signals": [
+      {
+        "ticker": "CEOEM",
+        "alis": "25.32",
+        "stop": "25.08",
+        "risk": "0.95",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "OZKGY",
+        "alis": "12.98",
+        "stop": "12.78",
+        "risk": "1.54",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "MGROS",
+        "alis": "708.50",
+        "stop": "696.50",
+        "risk": "1.69",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "ENKAI",
+        "alis": "102.80",
+        "stop": "100.70",
+        "risk": "2.04",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "ISGYO",
+        "alis": "19.89",
+        "stop": "19.46",
+        "risk": "2.16",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "MAALT",
+        "alis": "1074",
+        "stop": "1048",
+        "risk": "2.42",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "TURSG",
+        "alis": "14.56",
+        "stop": "14.19",
+        "risk": "2.54",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "BMSTL",
+        "alis": "79.85",
+        "stop": "77.75",
+        "risk": "2.63",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "DAGI",
+        "alis": "6.5950",
+        "stop": "6.4200",
+        "risk": "2.65",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "MIATK",
+        "alis": "47.71",
+        "stop": "46.36",
+        "risk": "2.83",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "TARKM",
+        "alis": "492.25",
+        "stop": "477.75",
+        "risk": "2.95",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "ICBCT",
+        "alis": "16.84",
+        "stop": "16.26",
+        "risk": "3.44",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "CELHA",
+        "alis": "13.10",
+        "stop": "12.62",
+        "risk": "3.66",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "HALKB",
+        "alis": "40.82",
+        "stop": "39.30",
+        "risk": "3.72",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "PAGYO",
+        "alis": "125.00",
+        "stop": "120.10",
+        "risk": "3.92",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      }
+    ]
   }
 }
