@@ -1,5 +1,5 @@
 {
-  "updatedAt": "14.05.2026 16:29:53",
+  "updatedAt": "14.05.2026 19:09:00",
   "signals": [
     {
       "ticker": "CEOEM",
@@ -74,6 +74,15 @@
       "grafikUrl": null
     },
     {
+      "ticker": "BOSSA",
+      "alis": "6.7200",
+      "stop": "6.5900",
+      "risk": "1.93",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "ENKAI",
       "alis": "102.80",
       "stop": "100.70",
@@ -83,10 +92,10 @@
       "grafikUrl": null
     },
     {
-      "ticker": "CASA",
-      "alis": "93.98",
-      "stop": "92.00",
-      "risk": "2.11",
+      "ticker": "KSTUR",
+      "alis": "3095",
+      "stop": "3030",
+      "risk": "2.10",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -245,15 +254,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "SDTTR",
-      "alis": "274.50",
-      "stop": "265.25",
-      "risk": "3.37",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "ICBCT",
       "alis": "16.84",
       "stop": "16.26",
@@ -294,15 +294,6 @@
       "alis": "40.82",
       "stop": "39.30",
       "risk": "3.72",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "ADGYO",
-      "alis": "61.55",
-      "stop": "59.20",
-      "risk": "3.82",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -362,15 +353,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "KLSYN",
-      "alis": "11.48",
-      "stop": "11.00",
-      "risk": "4.18",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "ISGSY",
       "alis": "122.25",
       "stop": "117.00",
@@ -393,15 +375,6 @@
       "alis": "6.0800",
       "stop": "5.8100",
       "risk": "4.44",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "GENIL",
-      "alis": "9.4600",
-      "stop": "9.0000",
-      "risk": "4.86",
       "current": null,
       "change": null,
       "grafikUrl": null
