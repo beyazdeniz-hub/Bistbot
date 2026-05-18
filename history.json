@@ -2721,5 +2721,128 @@
         "grafikUrl": null
       }
     ]
+  },
+  "18.05.2026": {
+    "date": "18.05.2026",
+    "updatedAt": "18.05.2026 22:50:25",
+    "signals": [
+      {
+        "ticker": "BIGTK",
+        "alis": "221.00",
+        "stop": "220.00",
+        "risk": "0.45",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "OBASE",
+        "alis": "37.90",
+        "stop": "37.32",
+        "risk": "1.53",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "LYDHO",
+        "alis": "195.45",
+        "stop": "191.50",
+        "risk": "2.02",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "HUNER",
+        "alis": "3.7300",
+        "stop": "3.6500",
+        "risk": "2.14",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "KFEIN",
+        "alis": "9.4300",
+        "stop": "9.2000",
+        "risk": "2.44",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "DESPC",
+        "alis": "44.18",
+        "stop": "43.00",
+        "risk": "2.67",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "SMART",
+        "alis": "34.44",
+        "stop": "33.40",
+        "risk": "3.02",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "GEDZA",
+        "alis": "30.55",
+        "stop": "29.60",
+        "risk": "3.11",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "ENSRI",
+        "alis": "9.9200",
+        "stop": "9.5900",
+        "risk": "3.33",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "BLUME",
+        "alis": "39.05",
+        "stop": "37.50",
+        "risk": "3.97",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "EGSER",
+        "alis": "3.4900",
+        "stop": "3.3400",
+        "risk": "4.30",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "MARKA",
+        "alis": "53.45",
+        "stop": "51.15",
+        "risk": "4.30",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "ICUGS",
+        "alis": "6.0800",
+        "stop": "5.8100",
+        "risk": "4.44",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      }
+    ]
   }
 }
