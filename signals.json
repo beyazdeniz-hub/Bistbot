@@ -1,5 +1,5 @@
 {
-  "updatedAt": "20.05.2026 14:47:34",
+  "updatedAt": "20.05.2026 17:34:11",
   "signals": [
     {
       "ticker": "GLBMD",
@@ -56,15 +56,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "KRTEK",
-      "alis": "24.94",
-      "stop": "24.52",
-      "risk": "1.68",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "ZERGY",
       "alis": "16.32",
       "stop": "16.04",
@@ -83,28 +74,10 @@
       "grafikUrl": null
     },
     {
-      "ticker": "ALTNY",
-      "alis": "17.52",
-      "stop": "17.17",
-      "risk": "2.00",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "KMPUR",
       "alis": "21.54",
       "stop": "21.10",
       "risk": "2.04",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "BIENY",
-      "alis": "23.83",
-      "stop": "23.34",
-      "risk": "2.06",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -155,10 +128,28 @@
       "grafikUrl": null
     },
     {
+      "ticker": "SDTTR",
+      "alis": "259.13",
+      "stop": "253.00",
+      "risk": "2.37",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
       "ticker": "ALKIM",
       "alis": "18.59",
       "stop": "18.13",
       "risk": "2.47",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "AKSA",
+      "alis": "11.26",
+      "stop": "10.97",
+      "risk": "2.58",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -177,33 +168,6 @@
       "alis": "35.44",
       "stop": "34.52",
       "risk": "2.60",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "PENTA",
-      "alis": "16.16",
-      "stop": "15.73",
-      "risk": "2.66",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "SANKO",
-      "alis": "22.69",
-      "stop": "22.08",
-      "risk": "2.69",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "DITAS",
-      "alis": "34.60",
-      "stop": "33.64",
-      "risk": "2.77",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -236,15 +200,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "PAHOL",
-      "alis": "1.7100",
-      "stop": "1.6600",
-      "risk": "2.92",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "CEMAS",
       "alis": "4.9800",
       "stop": "4.8300",
@@ -267,6 +222,15 @@
       "alis": "15.01",
       "stop": "14.54",
       "risk": "3.13",
+      "current": null,
+      "change": null,
+      "grafikUrl": null
+    },
+    {
+      "ticker": "PINSU",
+      "alis": "11.96",
+      "stop": "11.58",
+      "risk": "3.18",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -371,15 +335,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "AKMGY",
-      "alis": "259.00",
-      "stop": "249.00",
-      "risk": "3.86",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "LINK",
       "alis": "6.3500",
       "stop": "6.1000",
@@ -398,19 +353,19 @@
       "grafikUrl": null
     },
     {
-      "ticker": "ATAGY",
-      "alis": "13.11",
-      "stop": "12.56",
+      "ticker": "DURKN",
+      "alis": "20.72",
+      "stop": "19.85",
       "risk": "4.20",
       "current": null,
       "change": null,
       "grafikUrl": null
     },
     {
-      "ticker": "DURKN",
-      "alis": "20.72",
-      "stop": "19.85",
-      "risk": "4.20",
+      "ticker": "KLGYO",
+      "alis": "5.2250",
+      "stop": "5.0000",
+      "risk": "4.31",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -438,15 +393,6 @@
       "alis": "4.8600",
       "stop": "4.6300",
       "risk": "4.73",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "SKTAS",
-      "alis": "3.7900",
-      "stop": "3.6100",
-      "risk": "4.75",
       "current": null,
       "change": null,
       "grafikUrl": null
