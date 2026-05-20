@@ -2967,5 +2967,155 @@
         "grafikUrl": null
       }
     ]
+  },
+  "20.05.2026": {
+    "date": "20.05.2026",
+    "updatedAt": "20.05.2026 23:25:16",
+    "signals": [
+      {
+        "ticker": "ISGLKF",
+        "alis": "682.13",
+        "stop": "677.00",
+        "risk": "0.75",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "GLBMD",
+        "alis": "12.08",
+        "stop": "11.94",
+        "risk": "1.16",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "HATEK",
+        "alis": "16.17",
+        "stop": "15.92",
+        "risk": "1.55",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "DOAS",
+        "alis": "184.15",
+        "stop": "181.30",
+        "risk": "1.55",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "ZERGY",
+        "alis": "16.32",
+        "stop": "16.04",
+        "risk": "1.72",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "KMPUR",
+        "alis": "21.54",
+        "stop": "21.10",
+        "risk": "2.04",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "DOHOL",
+        "alis": "23.32",
+        "stop": "22.84",
+        "risk": "2.06",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "AYEN",
+        "alis": "33.77",
+        "stop": "32.90",
+        "risk": "2.58",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "POLHO",
+        "alis": "19.45",
+        "stop": "18.91",
+        "risk": "2.78",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "ENERY",
+        "alis": "8.6500",
+        "stop": "8.4000",
+        "risk": "2.89",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "BAKAB",
+        "alis": "48.70",
+        "stop": "46.90",
+        "risk": "3.70",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "PASEU",
+        "alis": "103.65",
+        "stop": "99.75",
+        "risk": "3.76",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "MARMR",
+        "alis": "2.7850",
+        "stop": "2.6800",
+        "risk": "3.77",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "NIBAS",
+        "alis": "6.3400",
+        "stop": "6.0900",
+        "risk": "3.94",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "DURKN",
+        "alis": "20.72",
+        "stop": "19.85",
+        "risk": "4.20",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      },
+      {
+        "ticker": "ZGYO",
+        "alis": "32.86",
+        "stop": "31.38",
+        "risk": "4.50",
+        "current": null,
+        "change": null,
+        "grafikUrl": null
+      }
+    ]
   }
 }
