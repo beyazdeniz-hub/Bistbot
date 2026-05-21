@@ -1,38 +1,11 @@
 {
-  "updatedAt": "21.05.2026 18:04:12",
+  "updatedAt": "21.05.2026 20:32:02",
   "signals": [
-    {
-      "ticker": "KSTUR",
-      "alis": "2916",
-      "stop": "2898",
-      "risk": "0.62",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
     {
       "ticker": "ALTIN",
       "alis": "79.78",
       "stop": "79.25",
       "risk": "0.66",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "AYES",
-      "alis": "30.50",
-      "stop": "30.00",
-      "risk": "1.64",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "ATEKS",
-      "alis": "91.25",
-      "stop": "89.75",
-      "risk": "1.64",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -47,28 +20,10 @@
       "grafikUrl": null
     },
     {
-      "ticker": "EKIZ",
-      "alis": "91.20",
-      "stop": "89.65",
-      "risk": "1.70",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "AKCNS",
       "alis": "188.15",
       "stop": "183.50",
       "risk": "2.47",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "ZGOLDF",
-      "alis": "695.00",
-      "stop": "677.00",
-      "risk": "2.59",
       "current": null,
       "change": null,
       "grafikUrl": null
@@ -83,33 +38,6 @@
       "grafikUrl": null
     },
     {
-      "ticker": "BINBN",
-      "alis": "175.50",
-      "stop": "170.10",
-      "risk": "3.08",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "LKMNH",
-      "alis": "15.72",
-      "stop": "15.20",
-      "risk": "3.31",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "ARFYE",
-      "alis": "28.90",
-      "stop": "27.94",
-      "risk": "3.32",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
       "ticker": "RYSAS",
       "alis": "18.39",
       "stop": "17.75",
@@ -119,82 +47,10 @@
       "grafikUrl": null
     },
     {
-      "ticker": "BESTE",
-      "alis": "29.01",
-      "stop": "28.00",
-      "risk": "3.48",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "AKHAN",
-      "alis": "28.18",
-      "stop": "27.18",
-      "risk": "3.55",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "SDTTR",
-      "alis": "258.25",
-      "stop": "248.80",
-      "risk": "3.66",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "UCAYM",
-      "alis": "31.15",
-      "stop": "30.00",
-      "risk": "3.69",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "LMKDC",
-      "alis": "37.58",
-      "stop": "35.94",
-      "risk": "4.36",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "MOBTL",
-      "alis": "14.36",
-      "stop": "13.70",
-      "risk": "4.60",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "KLGYO",
-      "alis": "4.9700",
-      "stop": "4.7400",
-      "risk": "4.63",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "TARKM",
-      "alis": "507.00",
-      "stop": "482.50",
-      "risk": "4.83",
-      "current": null,
-      "change": null,
-      "grafikUrl": null
-    },
-    {
-      "ticker": "AKSA",
-      "alis": "11.00",
-      "stop": "10.45",
-      "risk": "5.00",
+      "ticker": "IEYHO",
+      "alis": "108.34",
+      "stop": "104.50",
+      "risk": "3.54",
       "current": null,
       "change": null,
       "grafikUrl": null
